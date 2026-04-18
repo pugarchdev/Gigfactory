@@ -106,7 +106,7 @@ const LogoSection = () => {
   const allLogos = [...logos, ...logos];
 
   return (
-    <section className="py-12 border-y border-dark-border bg-[#000000] overflow-hidden relative">
+    <section className="py-12 border-y border-dark-border  overflow-hidden relative">
       <div className="container mx-auto px-6 mb-8">
         <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">
           Trusted by industry leaders globally

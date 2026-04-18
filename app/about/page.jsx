@@ -65,7 +65,7 @@ export default function AboutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px]">
+    <main className="min-h-screen  text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px]">
       
       {/* Background Ambient Glow */}
       <div className="fixed inset-0 pointer-events-none">

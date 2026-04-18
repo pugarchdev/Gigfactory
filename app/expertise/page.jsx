@@ -1,7 +1,39 @@
+/* eslint-disable react-hooks/static-components */
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+
+// --- REUSABLE ANIMATION WRAPPER ---
+const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(false)
+  const domRef = useRef()
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(domRef.current)
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (domRef.current) observer.observe(domRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={domRef}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-x-0 translate-y-0 scale-100' : animationClass
+        } ${className}`}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function OurExpertise() {
   const router = useRouter()
@@ -145,93 +177,99 @@ export default function OurExpertise() {
     }
   ]
 
-  // Reusable Section Component to keep the code DRY
+  // Reusable Section Component
   const ServiceSection = ({ title, items }) => (
     <div className="mb-24">
-      <div className="flex items-center gap-4 mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-tight">
-          {title}
-        </h2>
-        <div className="h-[2px] flex-grow bg-zinc-800"></div>
-        <div className="h-2 w-2 rounded-full bg-[#6EDD4D]"></div>
-      </div>
+      {/* Animated Section Title */}
+      <AnimatedSection animationClass="opacity-0 -translate-x-10">
+        <div className="flex items-center gap-4 mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-tight">
+            {title}
+          </h2>
+          <div className="h-[2px] flex-grow bg-zinc-800"></div>
+          <div className="h-2 w-2 rounded-full bg-[#6EDD4D]"></div>
+        </div>
+      </AnimatedSection>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {items.map((service, index) => (
-          <div 
-            key={index} 
-            onClick={() => handleServiceClick(service.title)}
-            className="group relative flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] cursor-pointer"
+          /* Staggered Card Animation */
+          <AnimatedSection
+            key={index}
+            animationClass="opacity-0 translate-y-12"
+            delay={index * 100} // Cards cascade in 100ms apart
+            className="h-full"
           >
-            {/* Visual Header (Image/Video) */}
-            <div className="aspect-video w-full overflow-hidden bg-zinc-950">
-              {service.video ? (
-                <video
-                  autoPlay loop muted playsInline
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                >
-                  <source src={service.video} type="video/mp4" />
-                </video>
-              ) : (
-                <img 
-                  src={service.image} 
-                  alt={service.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-              )}
-              {/* Overlay on Hover */}
-              <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+            <div
+              onClick={() => handleServiceClick(service.title)}
+              className="h-full group relative flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] cursor-pointer"
+            >
+              {/* Visual Header (Image/Video) */}
+              <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
+                {service.video ? (
+                  <video
+                    autoPlay loop muted playsInline
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  >
+                    <source src={service.video} type="video/mp4" />
+                  </video>
+                ) : (
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                )}
+                {/* Overlay on Hover */}
+                <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
 
-            {/* Content Area */}
-            <div className="p-8 flex flex-col flex-grow">
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors">
-                {service.title}
-              </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                {service.description}
-              </p>
+              {/* Content Area */}
+              <div className="p-8 flex flex-col flex-grow">
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors duration-300">
+                  {service.title}
+                </h3>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                  {service.description}
+                </p>
 
-              {/* Features List */}
-              <ul className="mt-auto space-y-3">
-                {service.features.map((item, i) => (
-                  <li key={i} className="flex items-center text-sm text-zinc-300">
-                    <span className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#6EDD4D]/10 text-[10px] text-[#6EDD4D]">
-                      ✔
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+                {/* Features List */}
+                <ul className="mt-auto space-y-3">
+                  {service.features.map((item, i) => (
+                    <li key={i} className="flex items-center text-sm text-zinc-300">
+                      <span className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#6EDD4D]/10 text-[10px] text-[#6EDD4D]">
+                        ✔
+                      </span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          </AnimatedSection>
         ))}
       </div>
     </div>
   )
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30">
-      
-      {/* Background Ambient Glows */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#6EDD4D]/5 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#6EDD4D]/5 rounded-full blur-[120px]"></div>
-      </div>
+    <main className="min-h-screen  text-zinc-100 font-sans selection:bg-[#6EDD4D]/30">  
 
       <div className="relative z-10">
         {/* Page Hero Header */}
-        <header className="py-24 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-16">
-          <div className="container mx-auto">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
-              Our Expertise
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-              World-Class <span className="text-[#6EDD4D]">BIM Solutions</span>
-            </h1>
-            <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed">
-              From high-precision 3D modeling to strategic consulting, we deliver integrated intelligence for complex construction projects worldwide.
-            </p>
+        <header className="py-24 md:py-12 px-6 text-center border-b border-zinc-900 backdrop-blur-md mb-16 mt-[-40px] md:mt-[-80px]">
+          <div className="container mx-auto pt-20">
+            <AnimatedSection animationClass="opacity-0 translate-y-10">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
+                Our Expertise
+              </span>
+              <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+                World-Class <span className="text-[#6EDD4D]">BIM Solutions</span>
+              </h1>
+              <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed">
+                From high-precision 3D modeling to strategic consulting, we deliver integrated intelligence for complex construction projects worldwide.
+              </p>
+            </AnimatedSection>
           </div>
         </header>
 

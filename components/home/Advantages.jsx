@@ -151,7 +151,7 @@ export default function Advantages({ onContactClick }) {
     }, [selectedAdvantageId])
 
     return (
-        <section className="relative w-full py-16 px-6 bg-zinc-950">
+        <section className="relative w-full py-16 px-6">
             <div className="container mx-auto">
                 {/* Main Glassmorphism Container */}
                 <div className="relative overflow-hidden rounded-[3rem] border border-zinc-800 bg-zinc-900/50 backdrop-blur-xl p-10 md:p-16 text-center shadow-2xl">

@@ -12,6 +12,7 @@ import CaseStudies from '@/components/home/CaseStudies';
 
 import ContactModal from '@/components/home/ContactModal';
 import Video from '@/components/home/Video'
+import StatsBar from '@/components/home/StatsBar';
 export default function Home() {
   // State to manage the visibility of the Contact Modal
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -47,6 +48,7 @@ export default function Home() {
       {/* Logo Section */}
       <LogoSection />
 
+       <StatsBar/>
       {/* Services Section */}
       <Services onContactClick={openContactModal} serviceToOpen={serviceToOpen} />
 

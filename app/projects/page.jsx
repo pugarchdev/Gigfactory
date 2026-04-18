@@ -1,7 +1,40 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { useState, useEffect, useRef } from 'react'
 import { MapPin, Maximize2, CheckCircle2, Clock, Zap } from 'lucide-react'
+
+// --- UNIQUE ANIMATION WRAPPER FOR PROJECTS PAGE (Blur + Scale Reveal) ---
+const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(false)
+  const domRef = useRef()
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(domRef.current)
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (domRef.current) observer.observe(domRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={domRef}
+      style={{ transitionDelay: `${delay}ms` }}
+      // Added blur-0 and a premium cubic-bezier easing for a cinematic feel
+      className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        isVisible ? 'opacity-100 translate-x-0 translate-y-0 scale-100 blur-0' : animationClass
+      } ${className}`}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function Projects() {
   const services = [
@@ -153,103 +186,116 @@ export default function Projects() {
       location: "USA",
       scope: "BIM - LOD 350, Modeling + Clash Detection + Clash Resolution, Support + Documentation",
       status: "Ongoing",
-      type: "Hyderabad, India",
+      type: "Data Centre",
     },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" } }
-  };
-
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30">
+    <main className="min-h-screen text-zinc-100 selection:bg-[#6EDD4D]/30 pb-12">
+      
+      <div className="relative z-10">
+        {/* Page Hero Header */}
+        <header className="py-24 md:py-22 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-16 mt-[-40px] md:mt-[-70px]">
+          <div className="container mx-auto pt-20">
+            {/* Header zooms in and unblurs */}
+            <AnimatedSection animationClass="opacity-0 scale-110 blur-xl">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
+                Our Portfolio
+              </span>
+              <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase">
+                Projects <span className="text-[#6EDD4D]">Excellence</span>
+              </h1>
+              <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed">
+                Delivered across 10+ million sq.ft of construction projects worldwide.
+              </p>
+            </AnimatedSection>
+          </div>
+        </header>
 
-      {/* Background Ambient Glow */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#6EDD4D]/10 blur-[120px]"></div>
+        <section className="py-12 px-6">
+          <div className="container mx-auto max-w-7xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((project, index) => (
+                
+                <AnimatedSection 
+                  key={index} 
+                  animationClass="opacity-0 scale-[0.85] blur-md translate-y-16" 
+                  delay={(index % 3) * 150} // Slightly wider stagger for a cooler effect
+                  className="h-full"
+                >
+                  <div className="h-full group flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_40px_rgba(110,221,77,0.1)]">
+
+                    {/* Visual Header */}
+                    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
+                      <img 
+                        src={project.image} 
+                        alt={project.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                      />
+                      
+                      {/* Overlay on Hover */}
+                      <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                      <div className="absolute top-6 left-6 flex flex-wrap gap-2 z-10">
+                        <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md ${
+                          project.status.toLowerCase() === 'completed' 
+                          ? 'bg-[#6EDD4D]/20 border-[#6EDD4D]/40 text-[#6EDD4D]' 
+                          : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
+                        }`}>
+                          {project.status.toLowerCase() === 'completed' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+                          {project.status}
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-700 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
+                          {project.type}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-8 flex flex-col flex-grow">
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors leading-tight">
+                        {project.title}
+                      </h3>
+                      <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                        {project.description}
+                      </p>
+
+                      <div className="mb-8 p-5 rounded-2xl bg-zinc-950/50 border border-zinc-800/50">
+                        <div className="flex items-center gap-2 mb-3 text-[#6EDD4D]">
+                          <Zap size={14} fill="currentColor" />
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Scope</span>
+                        </div>
+                        <p className="text-zinc-400 text-xs leading-relaxed">
+                          {project.scope}
+                        </p>
+                      </div>
+
+                      {/* Details Footer */}
+                      <div className="mt-auto pt-6 border-t border-zinc-800 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-[#6EDD4D]/10 text-[#6EDD4D]"><Maximize2 size={16} /></div>
+                          <div>
+                            <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Area</p>
+                            <p className="text-sm font-bold text-zinc-100">{project.area}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-right">
+                          <div>
+                            <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Location</p>
+                            <p className="text-sm font-bold text-zinc-100">{project.location}</p>
+                          </div>
+                          <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400"><MapPin size={16} /></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </AnimatedSection>
+
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
-
-      <header className="relative py-24 px-6 border-b border-zinc-900 bg-zinc-900/20 text-center overflow-hidden">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="container mx-auto relative z-10">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
-            Our Portfolio
-          </span>
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter italic">
-            PROJECTS <span className="text-[#6EDD4D] italic">EXCELLENCE</span>
-          </h1>
-          <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed">
-            Delivered across 10+ million sq.ft of construction projects worldwide.
-          </p>
-        </motion.div>
-      </header>
-
-      <section className="py-20 px-6">
-        <div className="container mx-auto max-w-7xl">
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((project, index) => (
-              <motion.div key={index} variants={itemVariants} className="group flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/40 hover:shadow-[0_0_40px_rgba(110,221,77,0.05)]">
-
-                {/* Visual Header */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-
-                  <div className="absolute top-6 left-6 flex flex-wrap gap-2">
-                    <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md ${
-                      project.status.toLowerCase() === 'completed' 
-                      ? 'bg-[#6EDD4D]/20 border-[#6EDD4D]/40 text-[#6EDD4D]' 
-                      : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
-                    }`}>
-                      {project.status.toLowerCase() === 'completed' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                      {project.status}
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
-                      {project.type}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-8 flex flex-col flex-grow">
-                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors leading-tight">{project.title}</h3>
-                  <p className="text-zinc-500 text-sm leading-relaxed mb-6 line-clamp-2 italic">{project.description}</p>
-
-                  <div className="mb-8 p-4 rounded-2xl bg-zinc-950/50 border border-zinc-800/50">
-                    <div className="flex items-center gap-2 mb-2 text-[#6EDD4D]">
-                      <Zap size={14} fill="currentColor" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">Scope</span>
-                    </div>
-                    <p className="text-zinc-400 text-xs leading-relaxed line-clamp-3 italic">{project.scope}</p>
-                  </div>
-
-                  {/* Details Footer */}
-                  <div className="mt-auto pt-6 border-t border-zinc-800 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-[#6EDD4D]/10 text-[#6EDD4D]"><Maximize2 size={16} /></div>
-                      <div>
-                        <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Area</p>
-                        <p className="text-sm font-bold text-zinc-100">{project.area}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-right">
-                      <div>
-                        <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Location</p>
-                        <p className="text-sm font-bold text-zinc-100">{project.location}</p>
-                      </div>
-                      <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400"><MapPin size={16} /></div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
     </main>
   );
 }
