@@ -1,301 +1,185 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { MapPin, Maximize2, CheckCircle2, Clock, Zap } from 'lucide-react'
+import { MapPin, Maximize2, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
 
-// --- UNIQUE ANIMATION WRAPPER FOR PROJECTS PAGE (Blur + Scale Reveal) ---
-const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
+// --- NESTED IMAGE CAROUSEL COMPONENT ---
+const CardCarousel = ({ images }) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const next = (e) => {
+    e.preventDefault(); e.stopPropagation()
+    setCurrentIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prev = (e) => {
+    e.preventDefault(); e.stopPropagation()
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950 group/carousel">
+      {images.filter(img => img && img.trim() !== "").map((img, i) => (
+        <img
+          key={i}
+          src={img}
+          alt="Project view"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out ${i === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105 pointer-events-none'
+            }`}
+        />
+      ))}
+
+      <div className="absolute inset-0 flex items-center justify-between px-3 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-300 z-20">
+        <button onClick={prev} className="p-2 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-[#6EDD4D] hover:text-black transition-all">
+          <ChevronLeft size={18} />
+        </button>
+        <button onClick={next} className="p-2 rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-[#6EDD4D] hover:text-black transition-all">
+          <ChevronRight size={18} />
+        </button>
+      </div>
+
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        {images.filter(img => img && img.trim() !== "").map((_, i) => (
+          <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === currentIndex ? 'w-4 bg-[#6EDD4D]' : 'w-1.5 bg-white/30'}`} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// --- INDIVIDUAL PROJECT CARD ---
+const ProjectCard = ({ project }) => (
+  <div className="group h-full flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01]">
+
+    <CardCarousel images={project.images} />
+
+    <div className="p-6 flex flex-col flex-grow">
+      {/* 1. Header Row */}
+      <div className="flex justify-between items-start mb-4">
+        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-200">
+          {project.type}
+        </span>
+        <span className={`text-[10px] font-bold uppercase tracking-widest ${project.status === 'Completed' ? 'text-[#6EDD4D]' : 'text-amber-400'
+          }`}>
+          {project.status}
+        </span>
+      </div>
+
+      {/* 2. Title Section */}
+      <div className="h-[48px] mb-2">
+        <h3 className="text-lg font-bold text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
+          {project.title}
+        </h3>
+      </div>
+
+      {/* 3. Description */}
+      <div className="h-[40px] mb-5">
+        <p className="text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2">
+          {project.description}
+        </p>
+      </div>
+
+      {/* 4. Scope Box */}
+      <div className="mb-6 p-4 rounded-xl bg-zinc-800/50 border border-zinc-700/50 h-[90px] flex flex-col justify-center">
+        <div className="flex items-center gap-2 mb-1.5 text-[#6EDD4D]">
+          <Zap size={12} fill="currentColor" />
+          <span className="text-[10px] font-bold uppercase tracking-widest">Scope</span>
+        </div>
+        <p className="text-zinc-200 text-xs font-semibold leading-relaxed line-clamp-2">
+          {project.scope}
+        </p>
+      </div>
+
+      {/* 5. Footer Row - Labels removed as requested */}
+      <div className="mt-auto pt-4 border-t border-zinc-800/50 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-white">
+          <Maximize2 size={14} className="text-[#6EDD4D]" />
+          <span className="text-xs font-bold">{project.area}</span>
+        </div>
+        <div className="flex items-center gap-2 text-white">
+          <span className="text-xs font-bold">{project.location}</span>
+          <MapPin size={14} className="text-zinc-500" />
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+// --- ROW WRAPPER ---
+const ProjectRow = ({ projects }) => {
   const [isVisible, setIsVisible] = useState(false)
-  const domRef = useRef()
+  const rowRef = useRef(null)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true)
-          observer.unobserve(domRef.current)
-        }
-      },
-      { threshold: 0.1 }
-    )
-    if (domRef.current) observer.observe(domRef.current)
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setIsVisible(true); observer.unobserve(rowRef.current) }
+    }, { threshold: 0.1 })
+    if (rowRef.current) observer.observe(rowRef.current)
     return () => observer.disconnect()
   }, [])
 
   return (
-    <div
-      ref={domRef}
-      style={{ transitionDelay: `${delay}ms` }}
-      // Added blur-0 and a premium cubic-bezier easing for a cinematic feel
-      className={`transition-all duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-        isVisible ? 'opacity-100 translate-x-0 translate-y-0 scale-100 blur-0' : animationClass
-      } ${className}`}
-    >
-      {children}
+    <div ref={rowRef} className={`grid grid-cols-1 md:grid-cols-3 gap-8 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      {projects.map((p, i) => <ProjectCard key={i} project={p} />)}
     </div>
   )
 }
 
 export default function Projects() {
-  const services = [
-    {
-      title: "Microsoft B3 Building",
-      description: "End to End BIM Support for Brownfield Commercial building project for Mmoser",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop",
-      area: "6,00,000 sqft",
-      location: "Hyderabad",
-      scope: "BIM - LOD 350, LOD 500, Clash Detection + Clash Resolution, Support + Documentation, BEP Preparation and Control",
-      status: "Ongoing",
-      type: "Commercial",
-    },
-    {
-      title: "Ryan International School",
-      description: "End to End BIM support for school project for architecture trade, focusing on sheet production",
-      image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop",
-      area: "95000 sqft",
-      location: "Pune",
-      scope: "BIM - LOD 350, Modeling + Documentation",
-      status: "Ongoing",
-      type: "Institutional",
-    },
-    {
-      title: "Bluestar Interior Fitout",
-      description: "End-to-End BIM Support for Bluestar Interior Fitout Project for AMS Project Consultants, aimed at driving project management through BIM.",
-      image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop",
-      area: "35000 sqft",
-      location: "Pune",
-      scope: "BIM - LOD 350, Modeling + Documentation, 4D Monitoring and Controls",
-      status: "Completed",
-      type: "Commercial",
-    },
-    {
-      title: "Webworks Data Centre",
-      description: "Tracking and monitoring of project using BIM 4D, Synchro and Primavera P6 in weekly frequency - tradewise/phasewise and contractor wise",
-      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800&auto=format&fit=crop",
-      area: "8,00,000 sqft",
-      location: "Navi Mumbai",
-      scope: "BIM - LOD 350, Modeling + Documentation, 4D Monitoring and Controls",
-      status: "Ongoing",
-      type: "Data Centre",
-    },
-    {
-      title: "Mall Project (Kolkata)",
-      description: "BIM support for Edifice Client's interior works in Brookfield Mall, a high-end mall project.",
-      image: "https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?q=80&w=800&auto=format&fit=crop",
-      area: "70,000 sqft",
-      location: "Kolkata",
-      scope: "BIM ID - LOD 350, Modeling + Clash Detection + Clash Resolution, Support + Documentation",
-      status: "Completed",
-      type: "Retail",
-    },
-    {
-      title: "Antariksh Logistics Park",
-      description: "MEPF planning, design and engineering support for logistic park by Space Deck Logistics",
-      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800&auto=format&fit=crop",
-      area: "2,68,000 sqft",
-      location: "Bhiwandi",
-      scope: "End to End Design, DBR Preparation, Trade drawings, Site visit and commissioning support",
-      status: "Completed",
-      type: "Logistics",
-    },
-    {
-      title: "Mall Project (Vizag)",
-      description: "BIM Support for Edifice for interior trade in a high end mall project",
-      image: "https://images.unsplash.com/photo-1561501900-3701fa6a0864?q=80&w=800&auto=format&fit=crop",
-      area: "3,30,000 sqft",
-      location: "Vizag",
-      scope: "BIM ID - LOD 350, Modeling + Clash Detection + Clash Resolution, Support + Documentation",
-      status: "Completed",
-      type: "Retail",
-    },
-    {
-      title: "Peer Review & Optimisation",
-      description: "Peer review of MEPF design for luxury villas in Dubai, undertaken for Gulf Islamic Investment.",
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
-      area: "1,80,000 Sqft",
-      location: "Dubai",
-      scope: "Peer review adhering to norms and optimisation of design for value engineering",
-      status: "Completed",
-      type: "Residential",
-    },
-    {
-      title: "Mission Critical (Confidential)",
-      description: "Rectification of architectural BIM model and sheet extraction for data center project for Edifice (Aconnex Project)",
-      image: "https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?q=80&w=800&auto=format&fit=crop",
-      area: "5,00,000 sqft",
-      location: "Navi Mumbai",
-      scope: "BIM - LOD 350, Modeling(Rectification) + Documentation",
-      status: "Ongoing",
-      type: "Data Centre",
-    },
-    {
-      title: "3 Star Hotel in Puri",
-      description: "Ensuring a clash-free building model for D&GM to add value to construction execution.",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop",
-      area: "1,00,000 sqft",
-      location: "Puri",
-      scope: "BIM LOD 350 - All Trades (Ar/St/MEPF) + Clash Detection + Clash Resolution Support",
-      status: "Completed",
-      type: "Hospitality",
-    },
-    {
-      title: "Billionaire Bunglow (Goa)",
-      description: "End to End BIM Support for Luxury Villa to add value for Execution by making the building clash free",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=800&auto=format&fit=crop",
-      area: "30,000 sqft",
-      location: "Goa",
-      scope: "BIM LOD 350 - All Trades (Ar/St/MEPF) + Clash Detection + Clash Resolution Support",
-      status: "Completed",
-      type: "Residential",
-    },
-    {
-      title: "Medical College Project",
-      description: "Preparation of MEPF BOQ for Medical College and hospital at IIT Kanpur for Hosmac",
-      image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop",
-      area: "8,00,000 sqft",
-      location: "Kanpur",
-      scope: "MEP BOQ - Tradewise and preparation of measurement sheet",
-      status: "Completed",
-      type: "Hospital",
-    },
-    {
-      title: "The Address Development",
-      description: "Documentation support for Claramont's architecture and interior trade in a luxury 5-star hotel project.",
-      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800&auto=format&fit=crop",
-      area: "36,000 sqft",
-      location: "Al Marjan, UAE",
-      scope: "BIM - LOD 350, Modeling + Documentation",
-      status: "Completed",
-      type: "Mixed Use",
-    },
-    {
-      title: "Project Visualisation",
-      description: "4D sequencing and visualization for a USA-based retrofitting project integrating Revit and MSP.",
-      image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?q=80&w=800&auto=format&fit=crop",
-      area: "3,30,000 sqft",
-      location: "USA",
-      scope: "4D visualization video by Integrating BIM (Revit) and MS Project Schedule with LOI 350",
-      status: "Completed",
-      type: "Institutional",
-    },
-    {
-      title: "Mission Critical Project (Confidential)",
-      description: "Preparation of architectural BIM for data center project",
-      image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800&auto=format&fit=crop",
-      area: "4,70,000 sqft",
-      location: "USA",
-      scope: "BIM - LOD 350, Modeling + Clash Detection + Clash Resolution, Support + Documentation",
-      status: "Ongoing",
-      type: "Data Centre",
-    },
-  ];
+  const allProjects = [
+    { title: "Microsoft B3 Building", description: "End to End BIM Support for Brownfield Commercial building project for Mmoser", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168313/1.Microsoft.A_qxxxad.jpg", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168318/1.Microsoft.B_rhuk0g.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168315/1.Microsoft.C_wkmgzj.png"], area: "6,00,000 sqft", location: "Hyderabad", scope: "BIM - LOD 350, LOD 500, Clash Detection + Resolution", status: "Ongoing", type: "Commercial" },
+    { title: "Ryan International School", description: "End to End BIM support for school project for architecture trade", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168318/2.Ryan.A_i1gryq.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168336/2.Ryan.B_zxym92.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168332/2.Ryan.C_lxuea2.png"], area: "95,000 sqft", location: "Pune", scope: "BIM - LOD 350, Modeling + Documentation Support", status: "Ongoing", type: "Institutional" },
+    { title: "Bluestar Interior Fitout", description: "End-to-End BIM Support for Bluestar Interior Fitout Project", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776586919/3.Bluestar.A_w3sxxi.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776586922/3.Bluestar.B_xhvbmd.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776586919/3.Bluestar.C_l6zmi6.png"], area: "35,000 sqft", location: "Pune", scope: "BIM - LOD 350, 4D Monitoring and Controls", status: "Completed", type: "Commercial" },
+    { title: "Webworks Data Centre", description: "Tracking and monitoring of project using BIM 4D, Synchro and Primavera P6", images: ["https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800", "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800", "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800"], area: "8,00,000 sqft", location: "Navi Mumbai", scope: "BIM - LOD 350, 4D Monitoring and Controls", status: "Ongoing", type: "Data Centre" },
+    { title: "Mall Project (Kolkata)", description: "BIM support for Edifice Client's interior works in Brookfield Mall", images: ["https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?q=80&w=800", "https://images.unsplash.com/photo-1567449303078-57ad995bd301?q=80&w=800", "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800"], area: "70,000 sqft", location: "Kolkata", scope: "BIM ID - LOD 350, Clash Detection + Resolution", status: "Completed", type: "Retail" },
+    { title: "Antariksh Logistics Park", description: "MEPF planning, design and engineering support for logistic park", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168326/6.Antariksh.A_zme4ue.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168344/6.Antariksh.B_g0qiob.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168334/6.Antariksh.C_rbyemv.png"], area: "2,68,000 sqft", location: "Bhiwandi", scope: "End to End Design, DBR Preparation, Trade drawings", status: "Completed", type: "Logistics" },
+    { title: "Mall Project (Vizag)", description: "BIM Support for Edifice for interior trade in a high end mall project", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168347/7.Vizag.A_xtimdh.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168360/7.Vizag.B_plfgyc.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168365/7.Vizag.C_rpuvuo.png"], area: "3,30,000 sqft", location: "Vizag", scope: "BIM ID - LOD 350, Modeling + Clash Resolution", status: "Completed", type: "Retail" },
+    { title: "Peer Review & Optimisation", description: "Peer review of MEPF design for luxury villas in Dubai", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168366/8.Dubai_e8npds.png", "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800", "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=800"], area: "1,80,000 Sqft", location: "Dubai", scope: "Value engineering and design optimization", status: "Completed", type: "Residential" },
+    { title: "Mission Critical Project(Confidential)", description: "Rectification of architectural BIM model and sheet extraction", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168354/9.Aconnex.A_vyalue.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168352/9.Aconnex.B_m1orgb.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168354/9.Aconnex.C_bwbffb.png"], area: "5,00,000 sqft", location: "Navi Mumbai", scope: "BIM - LOD 350, Modeling + Documentation", status: "Ongoing", type: "Data Centre" },
+    { title: "3 Star Hotel in Puri", description: "Ensuring a clash-free building model for construction execution", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168327/10.Hotel3Star.Puri_k2dfqp.png", "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?q=80&w=800", "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800"], area: "1,00,000 sqft", location: "Puri", scope: "BIM LOD 350 - All Trades + Clash Resolution", status: "Completed", type: "Hospitality" },
+    { title: "Mission Critical Project", description: "Information management services for Colt's data center project (Phases 2 & 3), provided on behalf of the general contractor.", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168336/11.Colt.A_co6bzd.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168337/11.Colt.B_wdj0jd.png"], area: "5,00,000 sqft", location: "Navi Mumbai", scope: "BIM-LOD 400,500 + Clash Detection + Clash Resolution Support + Documentation + As-Built preparation", status: "Ongoing", type: "Data Centre" },
+    { title: "Billionaire Bunglow", description: "End to End BIM Support for Luxury Villa to add value for Execution", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168351/12.Dreamsmith.A_pdd7ds.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168349/12.Dreamsmith.B_xvmnag.png", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168353/12.Dreamsmith.C_zk0toz.png"], area: "30,000 sqft", location: "Goa", scope: "BIM LOD 350 - All Trades + Clash Resolution", status: "Completed", type: "Residential" },
+    { title: "Medical College Project", description: "Preparation of MEPF BOQ for Medical College and hospital", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168356/13.MedicalCollege.IITKanpur_yumrb2.png", "https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=800", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168353/12.Dreamsmith.C_zk0toz.png"], area: "8,00,000 sqft", location: "Kanpur", scope: "MEP BOQ - Tradewise and measurement sheets", status: "Completed", type: "Hospital" },
+    { title: "The Address UAE", description: "Documentation support for luxury 5-star hotel project", images: ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800", "https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800", "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800"], area: "36,00,000 sqft", location: "UAE", scope: "BIM - LOD 350, Modeling + Documentation", status: "Completed", type: "Mixed Use" },
+    { title: "Commercial Project Visualisation", description: "4D sequencing and visualization for a USA-based retrofitting project, achieved by integrating the Revit model with the MSP schedule.", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168349/15.CommercialProjectUSA.A_logab2.jpg", "https://res.cloudinary.com/deinrj3zm/image/upload/v1776168351/15.CommercialProjectUSA.B_tpplz8.jpg", "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800"], area: "-", location: "USA", scope: "4D visualization video( as planned) by Integrating BIM ( Revit ) and MS Project Schedule with LOI 350", status: "Completed", type: "Data Centre" },
+    { title: "Mission Critical Project (Confidential)", description: "Preperation of architectural BIM for data center project", images: ["https://res.cloudinary.com/deinrj3zm/image/upload/v1776168365/16.DataCenter.Hyd_f2q2hl.png", "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=800", "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=800"], area: "4,70,000 sqft", location: "Hyderabad", scope: "BIM - LOD 350, Modeling + Clash Detection + Clash Resolution Support + Documentation", status: "Ongoing", type: "Data Centre" },
+  ]
+
+  const desktopRows = []; for (let i = 0; i < allProjects.length; i += 3) desktopRows.push(allProjects.slice(i, i + 3))
+  const mobileChunks = []; for (let i = 0; i < allProjects.length; i += 5) mobileChunks.push(allProjects.slice(i, i + 5))
 
   return (
-    <main className="min-h-screen text-zinc-100 selection:bg-[#6EDD4D]/30 pb-12">
-      
-      <div className="relative z-10">
-        {/* Page Hero Header */}
-        <header className="py-24 md:py-22 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-16 mt-[-40px] md:mt-[-70px]">
-          <div className="container mx-auto pt-20">
-            {/* Header zooms in and unblurs */}
-            <AnimatedSection animationClass="opacity-0 scale-110 blur-xl">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
-                Our Portfolio
-              </span>
-              <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter uppercase">
-                Projects <span className="text-[#6EDD4D]">Excellence</span>
-              </h1>
-              <p className="max-w-2xl mx-auto text-zinc-400 text-lg md:text-xl leading-relaxed">
-                Delivered across 10+ million sq.ft of construction projects worldwide.
-              </p>
-            </AnimatedSection>
-          </div>
-        </header>
+    <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32 overflow-x-hidden">
+      <header className="py-20 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-16">
+        <div className="container mx-auto">
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+            Project <span className="text-[#6EDD4D]">Portfolio</span>
+          </h1>          <p className="max-w-2xl mx-auto text-zinc-400 text-lg">Delivered across 10+ million sq.ft of construction projects worldwide.</p>
+        </div>
+      </header>
 
-        <section className="py-12 px-6">
-          <div className="container mx-auto max-w-7xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((project, index) => (
-                
-                <AnimatedSection 
-                  key={index} 
-                  animationClass="opacity-0 scale-[0.85] blur-md translate-y-16" 
-                  delay={(index % 3) * 150} // Slightly wider stagger for a cooler effect
-                  className="h-full"
-                >
-                  <div className="h-full group flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_40px_rgba(110,221,77,0.1)]">
+      <div className="container mx-auto max-w-7xl px-6">
+        <div className="hidden md:flex flex-col gap-12">{desktopRows.map((row, idx) => <ProjectRow key={idx} projects={row} />)}</div>
 
-                    {/* Visual Header */}
-                    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
-                      <img 
-                        src={project.image} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                      />
-                      
-                      {/* Overlay on Hover */}
-                      <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                      <div className="absolute top-6 left-6 flex flex-wrap gap-2 z-10">
-                        <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border backdrop-blur-md ${
-                          project.status.toLowerCase() === 'completed' 
-                          ? 'bg-[#6EDD4D]/20 border-[#6EDD4D]/40 text-[#6EDD4D]' 
-                          : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
-                        }`}>
-                          {project.status.toLowerCase() === 'completed' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                          {project.status}
-                        </span>
-                        <span className="px-3 py-1 rounded-full bg-zinc-900/80 border border-zinc-700 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
-                          {project.type}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-8 flex flex-col flex-grow">
-                      <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors leading-tight">
-                        {project.title}
-                      </h3>
-                      <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                        {project.description}
-                      </p>
-
-                      <div className="mb-8 p-5 rounded-2xl bg-zinc-950/50 border border-zinc-800/50">
-                        <div className="flex items-center gap-2 mb-3 text-[#6EDD4D]">
-                          <Zap size={14} fill="currentColor" />
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em]">Scope</span>
-                        </div>
-                        <p className="text-zinc-400 text-xs leading-relaxed">
-                          {project.scope}
-                        </p>
-                      </div>
-
-                      {/* Details Footer */}
-                      <div className="mt-auto pt-6 border-t border-zinc-800 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-[#6EDD4D]/10 text-[#6EDD4D]"><Maximize2 size={16} /></div>
-                          <div>
-                            <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Area</p>
-                            <p className="text-sm font-bold text-zinc-100">{project.area}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 text-right">
-                          <div>
-                            <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">Location</p>
-                            <p className="text-sm font-bold text-zinc-100">{project.location}</p>
-                          </div>
-                          <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400"><MapPin size={16} /></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </AnimatedSection>
-
-              ))}
+        <div className="md:hidden flex flex-col gap-20">
+          {mobileChunks.map((chunk, idx) => (
+            <div key={idx} className="relative">
+              <div className="flex items-center justify-between mb-6 px-2">
+                <h2 className="text-[#6EDD4D] text-[10px] font-bold uppercase tracking-[0.2em]">Batch 0{idx + 1}</h2>
+                <div className="h-px flex-grow mx-4 bg-zinc-800" />
+              </div>
+              <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-6 pb-6">
+                {chunk.map((p, i) => <div key={i} className="min-w-[85vw] snap-center"><ProjectCard project={p} /></div>)}
+              </div>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
       </div>
+
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </main>
-  );
+  )
 }

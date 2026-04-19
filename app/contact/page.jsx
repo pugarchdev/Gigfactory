@@ -94,6 +94,7 @@ export default function LetsDiscuss() {
                 <ContactModal 
                     isOpen={isContactModalOpen} 
                     onClose={() => setIsContactModalOpen(false)} 
+                    initialStep={1}
                 />
             )}
             

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 // Importing all the home page components
 import Hero from '@/components/home/Hero';
@@ -14,16 +15,16 @@ import ContactModal from '@/components/home/ContactModal';
 import Video from '@/components/home/Video'
 import StatsBar from '@/components/home/StatsBar';
 export default function Home() {
+  const router = useRouter();
+  
   // State to manage the visibility of the Contact Modal
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   
   // State to track which service the user clicked on (optional, to pre-fill the form)
   const [serviceToOpen, setServiceToOpen] = useState(null);
 
-  // Function to open the modal, accepts an optional service name
+  // Function to open the modal directly to the form step
   const openContactModal = (serviceName = null) => {
-    // If the click event passes an object (like a default button click), ignore it.
-    // Only set it if it's a string (e.g., '3D Services')
     if (typeof serviceName === 'string') {
       setServiceToOpen(serviceName);
     } else {
@@ -35,7 +36,6 @@ export default function Home() {
   // Function to close the modal
   const closeContactModal = () => {
     setIsContactModalOpen(false);
-    // Reset the service after closing so it doesn't persist to the next time
     setTimeout(() => setServiceToOpen(null), 300); 
   };
 
@@ -64,11 +64,12 @@ export default function Home() {
       {/* Case Studies Section */}
       <CaseStudies onContactClick={() => openContactModal('Case Study Details')} />
 
-      {/* Contact Modal (Hidden by default, triggered by state) */}
+      {/* Contact Modal - Set to initialStep={1} to skip intro and open form directly */}
       <ContactModal 
         isOpen={isContactModalOpen} 
         onClose={closeContactModal} 
         preSelectedService={serviceToOpen}
+        initialStep={1}
       />
       
     </main>

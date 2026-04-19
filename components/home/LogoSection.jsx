@@ -106,7 +106,7 @@ const LogoSection = () => {
   const allLogos = [...logos, ...logos];
 
   return (
-    <section className="py-12 border-y border-dark-border  overflow-hidden relative">
+    <section className="py-12 -mt-24 border-y border-dark-border  overflow-hidden relative">
       <div className="container mx-auto px-6 mb-8">
         <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">
           Trusted by industry leaders globally
@@ -114,7 +114,7 @@ const LogoSection = () => {
       </div>
 
       <div className="relative flex w-full">
-        
+
         {/* Left and Right Fade Gradients */}
         <div className="absolute top-0 bottom-0 left-0 w-32 z-10 bg-gradient-to-r from-[#000000] to-transparent pointer-events-none"></div>
         <div className="absolute top-0 bottom-0 right-0 w-32 z-10 bg-gradient-to-l from-[#000000] to-transparent pointer-events-none"></div>
@@ -128,9 +128,9 @@ const LogoSection = () => {
             const styleProps = logoStyles[logoKey] || {};
 
             return (
-             
-              <div 
-                key={index} 
+
+              <div
+                key={index}
                 className="flex items-center justify-center shrink-0"
               >
                 {logo.image ? (
@@ -146,10 +146,10 @@ const LogoSection = () => {
                     }}
                   />
                 ) : null}
-                
+
                 {/* Fallback Text if image fails */}
-                <div 
-                  className="hidden items-center justify-center bg-dark-surface border border-dark-border px-4 py-2 rounded-lg" 
+                <div
+                  className="hidden items-center justify-center bg-dark-surface border border-dark-border px-4 py-2 rounded-lg"
                   style={{ display: logo.image ? 'none' : 'flex' }}
                 >
                   <span className="text-gray-400 font-bold tracking-wider text-sm">{logo.name}</span>
