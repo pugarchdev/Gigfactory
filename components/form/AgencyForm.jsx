@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/static-components */
-'use client'
-
 import React, { useState } from 'react'
+import { recruitmentApi } from '../../lib/api'
 
 const AgencyForm = ({ onClose }) => {
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [formData, setFormData] = useState({
         // 1. Identity & Accountability
         authPersonName: '', designation: '', linkedinUrl: '', headquarters: '', website: '',
@@ -61,15 +60,25 @@ const AgencyForm = ({ onClose }) => {
         })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         if (!formData.declarationAccepted) {
             alert("Please accept the final declaration.")
             return
         }
-        console.log('Agency Application Data:', formData)
-        alert("Application submitted successfully! Our team will review your profile.")
-        onClose()
+
+        setIsSubmitting(true)
+
+        try {
+            await recruitmentApi.submitAgency(formData)
+            alert("Application submitted successfully! Our team will review your profile.")
+            onClose()
+        } catch (error) {
+            console.error('Failed to submit agency application:', error)
+            alert("Failed to submit application. Please try again.")
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     // Reusable Tailwind classes

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Building2, Home, Factory, HeartPulse, GraduationCap, Ship, Zap, Network, ShoppingBag, Server, MoveRight } from 'lucide-react'
 import ContactModal from '@/components/home/ContactModal'
+import { caseStudiesApi, enquiryApi } from '@/lib/api'
 
 // --- ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
@@ -36,45 +37,63 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
   )
 }
 
+// --- ICON MAPPING UTILITY ---
+const iconMap = {
+  Commercial: <Building2 size={14} />,
+  Residential: <Home size={14} />,
+  Industrial: <Factory size={14} />,
+  Healthcare: <HeartPulse size={14} />,
+  Educational: <GraduationCap size={14} />,
+  Infrastructure: <Ship size={14} />,
+  SmartCity: <Network size={14} />,
+  Retail: <ShoppingBag size={14} />,
+  ITPark: <Server size={14} />,
+  Other: <Building2 size={14} />
+}
+
+const getIconForCategory = (category) => {
+  return iconMap[category] || iconMap.Other
+}
+
 // --- INDIVIDUAL CARD COMPONENT ---
 const CaseStudyCard = ({ study, onDownload }) => (
   <div className="group h-full w-full flex flex-col rounded-[1.5rem] border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01]">
     {/* Image */}
     <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
       <img
-        src={study.image}
-        alt={study.title}
+        src={study.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800'}
+        alt={study.name}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
-      <div className="absolute top-4 left-4">
+      {/* <div className="absolute top-4 left-4">
         <span className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-950/80 border border-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
-          <span className="text-[#6EDD4D]">{study.icon}</span>
+          <span className="text-[#6EDD4D]">{getIconForCategory(study.category)}</span>
           {study.category}
         </span>
-      </div>
+      </div> */}
     </div>
 
     {/* Content */}
     <div className="p-6 flex flex-col flex-grow">
       <div className="h-[52px] mb-2">
         <h3 className="text-lg font-bold text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
-          {study.title}
+          {study.name}
         </h3>
       </div>
 
       <div className="h-[40px] mb-5">
         <p className="text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2">
-          {study.description}
+          {study.features}
         </p>
       </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
-        {study.features.map((feature, i) => (
-          <span key={i} className="text-[10px] font-bold text-zinc-500 uppercase flex items-center gap-1.5">
+        {study.features ? study.features.split(',').slice(0, 2).map((feature, i) => (
+          <span key={i} className="text-[10px] font-bold text-zinc-500 uppercase flex items-center gap-1.5 line-clamp-1">
             <Zap size={10} className="text-[#6EDD4D]" fill="currentColor" />
-            {feature}
+            {feature.trim()}
           </span>
-        ))}
+        )) : null}
       </div>
 
       {/* Download Button */}
@@ -89,10 +108,14 @@ const CaseStudyCard = ({ study, onDownload }) => (
   </div>
 )
 
-const CaseStudies = () => {
+const CaseStudiesListing = () => {
   const router = useRouter()
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
   
+  // --- LIVE DATA STATE ---
+  const [caseStudies, setCaseStudies] = useState([])
+  const [loading, setLoading] = useState(true)
+
   // --- MODAL & FORM STATE ---
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false)
   const [selectedStudy, setSelectedStudy] = useState(null)
@@ -105,17 +128,19 @@ const CaseStudies = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
   const scrollContainerRef = useRef(null)
 
-  const caseStudies = [
-    { id: 1, title: "Commercial Complex Development", category: "Commercial", description: "Complete development of 50,000 sq.ft. commercial complex with advanced BIM integration", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800", features: ["BIM Modeling", "Cost Optimization"], icon: <Building2 size={14} /> },
-    { id: 2, title: "Residential Tower Project", category: "Residential", description: "30-story residential tower with sustainable construction practices", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=800", features: ["Sustainable Design", "Quality Control"], icon: <Home size={14} /> },
-    { id: 3, title: "Industrial Facility", category: "Industrial", description: "Large-scale industrial facility with complex MEP systems", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800", features: ["MEP Integration", "Risk Management"], icon: <Factory size={14} /> },
-    { id: 4, title: "Healthcare Infrastructure", category: "Healthcare", description: "State-of-the-art healthcare facility with specialized requirements", image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800", features: ["Specialized Systems", "QA"], icon: <HeartPulse size={14} /> },
-    { id: 5, title: "Educational Campus", category: "Educational", description: "Multi-building educational campus with integrated infrastructure", image: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800", features: ["Campus Planning", "Sustainable"], icon: <GraduationCap size={14} /> },
-    { id: 6, title: "Transportation Hub", category: "Infrastructure", description: "Major transportation hub with complex civil engineering requirements", image: "https://images.unsplash.com/photo-1473830394358-91588751b241?q=80&w=800", features: ["Civil Engineering", "Management"], icon: <Ship size={14} /> },
-    { id: 7, title: "Smart City Development", category: "Infrastructure", description: "Integrated smart city development with IoT and sustainable systems", image: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800", features: ["IoT Integration", "Smart Systems"], icon: <Network size={14} /> },
-    { id: 8, title: "Shopping Mall Complex", category: "Commercial", description: "Modern shopping mall with entertainment and retail spaces", image: "https://images.unsplash.com/photo-1555529902-5261145633bf?w=800", features: ["Retail Design", "Parking"], icon: <ShoppingBag size={14} /> },
-    { id: 9, title: "IT Park Development", category: "Commercial", description: "Technology park with advanced infrastructure and amenities", image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800", features: ["Tech Infrastructure", "Green Building"], icon: <Server size={14} /> }
-  ]
+  useEffect(() => {
+    const fetchStudies = async () => {
+      try {
+        const data = await caseStudiesApi.list()
+        setCaseStudies(data)
+      } catch (error) {
+        console.error('Failed to fetch case studies:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStudies()
+  }, [])
 
   // Desktop chunks
   const desktopRows = []
@@ -151,16 +176,59 @@ const CaseStudies = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleForceDownload = async (url, filename) => {
+    // If it's a Cloudinary URL, add the attachment flag to force download
+    let downloadUrl = url;
+    if (url.includes('cloudinary.com') && !url.includes('fl_attachment')) {
+      downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+    }
+
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename || 'case-study.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Force download failed, falling back to direct attachment link", e);
+      // Direct navigation to a Cloudinary URL with fl_attachment will trigger download
+      window.location.href = downloadUrl;
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // SIMULATED BACKEND API CALL
-    setTimeout(() => {
-      setPdfLink('/assets/dummy-case-study.pdf')
+    try {
+      // 1. Submit lead to enquiries
+      await enquiryApi.send({
+        ...formData,
+        message: `Case Study Download Interest (All Page): ${selectedStudy.name}`,
+        companyName: 'Individual Lead'
+      })
+
+      // 2. Set PDF link from study and set success
+      const link = selectedStudy.pdfLink || '#'
+      setPdfLink(link)
       setIsSuccess(true)
+
+      // 3. Trigger automatic download
+      if (link && link !== '#') {
+        handleForceDownload(link, `${selectedStudy.name.replace(/\s+/g, '_')}.pdf`);
+      }
+    } catch (error) {
+      console.error("Error submitting form", error)
+      alert("Something went wrong. Please try again.")
+    } finally {
       setIsSubmitting(false)
-    }, 1500)
+    }
   }
 
   return (
@@ -359,4 +427,4 @@ const CaseStudies = () => {
   )
 }
 
-export default CaseStudies
+export default CaseStudiesListing

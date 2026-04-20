@@ -165,6 +165,12 @@ export default function OurExpertise() {
       description: "Strategic project planning and comprehensive support services for successful project delivery",
       image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590142/PLANNING_AND_PROJECT_SUPPORT_tuvgtz.png",
       features: ["Project Planning", "Coordination Support", "Delivery Management"]
+    },
+    {
+      title: "3D Visualization & Detailing",
+      description: "High-fidelity 3D visualizations and detailed models that bring design intent to life — from concept to construction-ready documentation.",
+      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776688464/3DVisualization_qlz74b.png",
+      features: ["Photorealistic Renders", "Walkthroughs & Fly-throughs", "Realistic Visualization"]
     }
   ]
 
@@ -178,12 +184,12 @@ export default function OurExpertise() {
     const handleScroll = () => {
       if (!scrollContainerRef.current) return;
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      
+
       if (scrollWidth === clientWidth) {
         setScrollProgress(0);
         return;
       }
-      
+
       const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
       setScrollProgress(progress);
     };
@@ -210,7 +216,7 @@ export default function OurExpertise() {
 
         <div className="relative">
           <div className="-mx-6">
-            <div 
+            <div
               ref={scrollContainerRef}
               onScroll={handleScroll}
               className="flex gap-4 md:gap-8 overflow-x-auto pb-8 no-scrollbar snap-x snap-mandatory px-6 scroll-pl-6 md:grid md:grid-cols-2 lg:grid-cols-3"
@@ -230,9 +236,8 @@ export default function OurExpertise() {
                       // Toggle active state on tap. Removed router navigation.
                       onClick={() => setActiveCard(isActive ? null : index)}
                       // We use lg:hover classes for desktop, and explicit active classes for mobile tap
-                      className={`h-full group relative flex flex-col rounded-[2.5rem] border bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 cursor-pointer lg:hover:border-[#6EDD4D]/50 lg:hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] ${
-                        isActive ? 'border-[#6EDD4D]/50 shadow-[0_0_40px_rgba(110,221,77,0.1)]' : 'border-zinc-800'
-                      }`}
+                      className={`h-full group relative flex flex-col rounded-[2.5rem] border bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 cursor-pointer lg:hover:border-[#6EDD4D]/50 lg:hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] ${isActive ? 'border-[#6EDD4D]/50 shadow-[0_0_40px_rgba(110,221,77,0.1)]' : 'border-zinc-800'
+                        }`}
                     >
                       <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
                         {service.video ? (
@@ -281,7 +286,7 @@ export default function OurExpertise() {
           {/* MOBILE SLIDER INDICATOR (Hidden on tablet/desktop grids) */}
           <div className="md:hidden flex justify-center items-center mt-2">
             <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
-              <div 
+              <div
                 className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
                 style={{ transform: `translateX(${scrollProgress * 2}%)` }}
               />

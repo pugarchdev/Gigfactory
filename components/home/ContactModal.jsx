@@ -1,18 +1,33 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
+import { enquiryApi } from '../../lib/api';
 
 export default function ContactModal({ isOpen, onClose, preSelectedService, initialStep = 0 }) {
   // --- NEW STATE: Tracks which screen the user is on ---
   // 0: Let's Discuss Box, 1: The Form, 2: Success Message
   const [step, setStep] = useState(initialStep);
   const [isSending, setIsSending] = useState(false);
+  
+  // Track form data
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
       setStep(initialStep); // Reset to requested step when opened
+      setFormData({
+        name: '',
+        company: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
     } else {
       document.body.style.overflow = 'unset';
       // Reset to initial screen when modal is closed
@@ -24,17 +39,36 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, initialStep]);
 
-  const handleSubmit = (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSending(true);
 
-    // Simulate an API call
-    setTimeout(() => {
+    try {
+      const payload = {
+        name: formData.name,
+        companyName: formData.company,
+        email: formData.email,
+        phone: formData.phone,
+        message: preSelectedService 
+          ? `[Service: ${preSelectedService}] ${formData.message}` 
+          : formData.message
+      };
+      
+      await enquiryApi.send(payload);
       setIsSending(false);
       setStep(2); // Move to Success View
-    }, 1500);
+    } catch (error) {
+      console.error('Failed to send enquiry:', error);
+      alert('Failed to send message. Please try again.');
+      setIsSending(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -96,6 +130,10 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Name</label>
                   <input
                     type="text"
+                    name="name"
+                    required
+                    value={formData.name}
+                    onChange={handleInputChange}
                     placeholder="John Doe"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all"
                   />
@@ -104,6 +142,9 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
                   <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Company</label>
                   <input
                     type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
                     placeholder="Acme Corp"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all"
                   />
@@ -116,6 +157,9 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
                   <input
                     required
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     placeholder="john@example.com"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all"
                   />
@@ -125,6 +169,9 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
                   <input
                     required
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     placeholder="+1 (555) 000-0000"
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all"
                   />
@@ -136,6 +183,9 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
                 <textarea
                   required
                   rows="3"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                   placeholder="Tell us about your project requirements..."
                   className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white resize-none focus:outline-none focus:border-[#6EDD4D] transition-all"
                 ></textarea>
@@ -172,4 +222,4 @@ export default function ContactModal({ isOpen, onClose, preSelectedService, init
       </div>
     </div>
   );
-}
+}

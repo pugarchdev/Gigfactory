@@ -1,7 +1,6 @@
-'use client'
-
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { caseStudiesApi, enquiryApi } from '../../lib/api'
 
 // --- REUSABLE ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
@@ -49,57 +48,22 @@ export default function CaseStudies({ onContactClick }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [pdfLink, setPdfLink] = useState('')
+  const [caseStudies, setCaseStudies] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const caseStudies = [
-    {
-      id: 1,
-      title: "Commercial Complex Development",
-      category: "Commercial",
-      description: "Complete development of 50,000 sq.ft. commercial complex with advanced BIM integration.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop",
-      features: ["BIM Modeling", "Cost Optimization", "Timeline Management"]
-    },
-    {
-      id: 2,
-      title: "Residential Tower Project",
-      category: "Residential",
-      description: "30-story residential tower with sustainable construction practices.",
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
-      features: ["Sustainable Design", "Quality Control", "Safety Compliance"]
-    },
-    {
-      id: 3,
-      title: "Industrial Facility",
-      category: "Industrial",
-      description: "Large-scale industrial facility with complex MEP systems.",
-      image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80",
-      features: ["MEP Integration", "Project Coordination", "Risk Management"]
-    },
-    {
-      id: 4,
-      title: "Healthcare Infrastructure",
-      category: "Healthcare",
-      description: "State-of-the-art healthcare facility with specialized requirements.",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
-      features: ["Specialized Systems", "Regulatory Compliance", "Quality Assurance"]
-    },
-    {
-      id: 5,
-      title: "Educational Campus",
-      category: "Educational",
-      description: "Multi-building educational campus with integrated infrastructure.",
-      image: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop",
-      features: ["Campus Planning", "Infrastructure Integration", "Sustainable Solutions"]
-    },
-    {
-      id: 6,
-      title: "Transportation Hub",
-      category: "Infrastructure",
-      description: "Major transportation hub with complex civil engineering requirements.",
-      image: "https://images.unsplash.com/photo-1555529733-0e670560f7e1?auto=format&fit=crop&w=800&q=80",
-      features: ["Civil Engineering", "Structural Design", "Project Management"]
+  useEffect(() => {
+    const loadCaseStudies = async () => {
+      try {
+        const data = await caseStudiesApi.list()
+        setCaseStudies(data)
+      } catch (error) {
+        console.error('Failed to load case studies:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+    loadCaseStudies()
+  }, [])
 
   // Calculate scroll progress for the slider indicator
   const handleScroll = () => {
@@ -134,30 +98,67 @@ export default function CaseStudies({ onContactClick }) {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleForceDownload = async (url, filename) => {
+    // If it's a Cloudinary URL, add the attachment flag to force download
+    let downloadUrl = url;
+    if (url.includes('cloudinary.com') && !url.includes('fl_attachment')) {
+      downloadUrl = url.replace('/upload/', '/upload/fl_attachment/');
+    }
+
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename || 'case-study.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error("Force download failed, falling back to direct attachment link", e);
+      // Direct navigation to a Cloudinary URL with fl_attachment will trigger download
+      window.location.href = downloadUrl;
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // SIMULATED BACKEND API CALL
-    // Replace this setTimeout block with your actual fetch/axios call to save the lead
-    // and retrieve the PDF URL.
     try {
-      // Example of actual implementation:
-      // const response = await fetch('/api/download-case-study', { method: 'POST', body: JSON.stringify(formData) });
-      // const data = await response.json();
-      // setPdfLink(data.pdfUrl);
+      // 1. Submit lead to enquiries
+      await enquiryApi.send({
+        ...formData,
+        message: `Case Study Download Interest: ${selectedStudy.name}`,
+        companyName: 'Individual Lead'
+      })
 
-      setTimeout(() => {
-        // Simulating successful response after 1.5 seconds
-        setPdfLink('/assets/dummy-case-study.pdf') // The URL returned from your backend
-        setIsSuccess(true)
-        setIsSubmitting(false)
-      }, 1500)
+      // 2. Set PDF link from study and set success
+      const link = selectedStudy.pdfLink || '#'
+      setPdfLink(link)
+      setIsSuccess(true)
 
+      // 3. Trigger automatic download
+      if (link && link !== '#') {
+        handleForceDownload(link, `${selectedStudy.name.replace(/\s+/g, '_')}.pdf`);
+      }
     } catch (error) {
       console.error("Error submitting form", error)
+      alert("Something went wrong. Please try again.")
+    } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (loading && caseStudies.length === 0) {
+    return (
+      <section id="case-studies" className="py-20 text-center">
+        <div className="animate-pulse text-zinc-500">Loading Case Studies...</div>
+      </section>
+    )
   }
 
   return (
@@ -202,23 +203,22 @@ export default function CaseStudies({ onContactClick }) {
                   <div className="w-full h-56 md:h-64 overflow-hidden relative">
                     <div className="absolute inset-0 bg-zinc-950/20 z-10 group-hover:bg-transparent transition-all duration-500"></div>
                     <img
-                      src={study.image}
-                      alt={study.title}
+                      src={study.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'}
+                      alt={study.name}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                     />
-                    <div className="absolute top-4 right-4 z-20">
+                    {/* <div className="absolute top-4 right-4 z-20">
                       <span className="px-4 py-1.5 bg-zinc-950/80 backdrop-blur-md border border-zinc-700 rounded-full text-xs font-bold text-[#6EDD4D] uppercase tracking-wider shadow-lg">
                         {study.category}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Content */}
                   <div className="p-8 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#6EDD4D] transition-colors line-clamp-1">{study.title}</h3>
-                    <p className="text-zinc-400 mb-8 flex-grow text-sm leading-relaxed line-clamp-3">{study.description}</p>
+                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#6EDD4D] transition-colors line-clamp-1">{study.name}</h3>
+                    <p className="text-zinc-400 mb-8 flex-grow text-sm leading-relaxed line-clamp-3">{study.features}</p>
 
-                    {/* CHANGED BUTTON TEXT AND HANDLER */}
                     <button
                       onClick={() => handleOpenModal(study)}
                       className="w-full py-3.5 rounded-xl bg-zinc-950 text-white font-bold border border-zinc-800 hover:bg-[#6EDD4D] hover:text-zinc-950 hover:border-[#6EDD4D] hover:shadow-[0_0_15px_rgba(110,221,77,0.3)] transition-all flex justify-center items-center gap-2 group/btn"
@@ -305,7 +305,6 @@ export default function CaseStudies({ onContactClick }) {
             >
               <i className="fa-solid fa-xmark text-xl"></i>
             </button>
-
             {/* Modal Header */}
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-white mb-2">
@@ -314,7 +313,7 @@ export default function CaseStudies({ onContactClick }) {
               <p className="text-zinc-400 text-sm">
                 {isSuccess 
                   ? "Your case study is ready. Click below to download." 
-                  : `Enter your details to download the full study for "${selectedStudy?.title}".`}
+                  : `Enter your details to download the full study for "${selectedStudy?.name}".`}
               </p>
             </div>
 
@@ -376,7 +375,6 @@ export default function CaseStudies({ onContactClick }) {
                 <a 
                   href={pdfLink}
                   download
-                  // Adding target="_blank" is a good fallback if it's a cross-origin link
                   target="_blank" 
                   rel="noreferrer"
                   onClick={handleCloseModal}

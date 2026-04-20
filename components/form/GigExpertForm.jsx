@@ -1,8 +1,6 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { gigExpertApi } from '../../lib/api';
 
 const GigExpertForm = ({ isOpen, onClose }) => {
     const router = useRouter();
@@ -57,16 +55,23 @@ const GigExpertForm = ({ isOpen, onClose }) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSending(true);
 
-        // Simulate API delay
-        setTimeout(() => {
-            setIsSending(false);
+        try {
+            const payload = {
+                ...formData
+            };
+            await gigExpertApi.submitFeedback(payload);
             setIsSubmitted(true);
-            console.log('Form Data:', formData);
-        }, 1500);
+            console.log('Form Submitted to Backend:', payload);
+        } catch (error) {
+            console.error('Failed to submit GigExpert feedback:', error);
+            alert('Failed to submit feedback. Please try again.');
+        } finally {
+            setIsSending(false);
+        }
     };
 
     const gigExpertTypeOptions = [
