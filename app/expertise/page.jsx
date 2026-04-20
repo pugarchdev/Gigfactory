@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/static-components */
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 
 // --- REUSABLE ANIMATION WRAPPER ---
@@ -36,29 +35,21 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 }
 
 export default function OurExpertise() {
-  const router = useRouter()
 
-  const handleServiceClick = (serviceTitle) => {
-    const serviceMapping = {
-      'Architectural Design': '2d',
-      '3D Modeling': '3d',
-      '4D/5D Construction Simulation': '4d',
-      'Scan to BIM': '2d',
-      'Construction Documentation': '2d',
-      'Constructability Review': 'audit',
-      'Clash Coordination': '3d',
-      'Value Engineering': 'pp-c',
-      'Quantity Takeoff': 'boq'
+  // --- AUTO-SCROLL LOGIC ---
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          const yOffset = -100;
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 300);
     }
-
-    const serviceId = serviceMapping[serviceTitle] || '2d'
-
-    router.push('/')
-    setTimeout(() => {
-      const event = new CustomEvent('openServiceModal', { detail: serviceId })
-      window.dispatchEvent(event)
-    }, 100)
-  }
+  }, []);
 
   const bimServices = [
     {
@@ -177,91 +168,130 @@ export default function OurExpertise() {
     }
   ]
 
-  // --- UPDATED SERVICE SECTION WITH CENTERED POPUP HEADINGS ---
-  const ServiceSection = ({ title, items }) => (
-    <div className="mb-24">
-      {/* Centered Heading with Pop Animation */}
-      <div className="flex justify-center mb-16 px-6">
-        <AnimatedSection
-          animationClass="opacity-0 scale-50 translate-y-10"
-          className="w-full flex items-center justify-center gap-4 md:gap-10"
-        >
-          {/* Left Decorative Gradient Line */}
-          <div className="hidden sm:block h-[1px] flex-grow bg-gradient-to-r from-transparent to-zinc-800"></div>
+  // --- UPDATED SERVICE SECTION WITH SLIDER LOGIC & MOBILE TAP STATE ---
+  const ServiceSection = ({ title, items, id }) => {
+    const [scrollProgress, setScrollProgress] = useState(0)
+    // Tracks which card is tapped on mobile
+    const [activeCard, setActiveCard] = useState(null)
+    const scrollContainerRef = useRef(null)
 
-          <div className="flex flex-col items-center">
-            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter text-center">
-              {title}
-            </h2>
-            {/* Visual Underline for Mobile Visibility */}
-            <div className="mt-4 h-1 w-24 bg-[#6EDD4D] rounded-full shadow-[0_0_15px_rgba(110,221,77,0.4)]"></div>
+    const handleScroll = () => {
+      if (!scrollContainerRef.current) return;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      
+      if (scrollWidth === clientWidth) {
+        setScrollProgress(0);
+        return;
+      }
+      
+      const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+      setScrollProgress(progress);
+    };
+
+    return (
+      <div id={id} className="mb-24 scroll-mt-24">
+        <div className="flex justify-center mb-12 md:mb-16 px-6">
+          <AnimatedSection
+            animationClass="opacity-0 scale-50 translate-y-10"
+            className="w-full flex items-center justify-center gap-4 md:gap-10"
+          >
+            <div className="hidden sm:block h-[1px] flex-grow bg-gradient-to-r from-transparent to-zinc-800"></div>
+
+            <div className="flex flex-col items-center">
+              <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter text-center">
+                {title}
+              </h2>
+              <div className="mt-4 h-1 w-24 bg-[#6EDD4D] rounded-full shadow-[0_0_15px_rgba(110,221,77,0.4)]"></div>
+            </div>
+
+            <div className="hidden sm:block h-[1px] flex-grow bg-gradient-to-l from-transparent to-zinc-800"></div>
+          </AnimatedSection>
+        </div>
+
+        <div className="relative">
+          <div className="-mx-6">
+            <div 
+              ref={scrollContainerRef}
+              onScroll={handleScroll}
+              className="flex gap-4 md:gap-8 overflow-x-auto pb-8 no-scrollbar snap-x snap-mandatory px-6 scroll-pl-6 md:grid md:grid-cols-2 lg:grid-cols-3"
+            >
+              {items.map((service, index) => {
+                // Check if this specific card is active
+                const isActive = activeCard === index;
+
+                return (
+                  <AnimatedSection
+                    key={index}
+                    animationClass="opacity-0 translate-y-12"
+                    delay={index * 100}
+                    className="snap-start shrink-0 w-[85vw] max-w-[320px] md:max-w-none md:w-auto h-full"
+                  >
+                    <div
+                      // Toggle active state on tap. Removed router navigation.
+                      onClick={() => setActiveCard(isActive ? null : index)}
+                      // We use lg:hover classes for desktop, and explicit active classes for mobile tap
+                      className={`h-full group relative flex flex-col rounded-[2.5rem] border bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 cursor-pointer lg:hover:border-[#6EDD4D]/50 lg:hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] ${
+                        isActive ? 'border-[#6EDD4D]/50 shadow-[0_0_40px_rgba(110,221,77,0.1)]' : 'border-zinc-800'
+                      }`}
+                    >
+                      <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
+                        {service.video ? (
+                          <video
+                            autoPlay loop muted playsInline
+                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                          >
+                            <source src={service.video} type="video/mp4" />
+                          </video>
+                        ) : (
+                          <img
+                            src={service.image}
+                            alt={service.title}
+                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                          />
+                        )}
+                        <div className={`absolute inset-0 bg-[#6EDD4D]/10 transition-opacity duration-500 lg:group-hover:opacity-100 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                      </div>
+
+                      <div className="p-8 flex flex-col flex-grow">
+                        <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 lg:group-hover:text-[#6EDD4D] ${isActive ? 'text-[#6EDD4D]' : 'text-white'}`}>
+                          {service.title}
+                        </h3>
+                        <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                          {service.description}
+                        </p>
+
+                        <ul className="mt-auto space-y-3">
+                          {service.features.map((item, i) => (
+                            <li key={i} className="flex items-center text-sm text-zinc-300">
+                              <span className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#6EDD4D]/10 text-[10px] text-[#6EDD4D]">
+                                ✔
+                              </span>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </AnimatedSection>
+                )
+              })}
+            </div>
           </div>
 
-          {/* Right Decorative Gradient Line */}
-          <div className="hidden sm:block h-[1px] flex-grow bg-gradient-to-l from-transparent to-zinc-800"></div>
-        </AnimatedSection>
-      </div>
-
-      {/* --- MOBILE HORIZONTAL SCROLL WRAPPER --- */}
-      <div className="relative">
-        <div className="overflow-x-auto no-scrollbar pb-10 -mx-6 px-6">
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full">
-            {items.map((service, index) => (
-              <AnimatedSection
-                key={index}
-                animationClass="opacity-0 translate-y-12"
-                delay={index * 100}
-                className="h-full w-[300px] md:w-auto flex-shrink-0 md:flex-shrink"
-              >
-                <div
-                  onClick={() => handleServiceClick(service.title)}
-                  className="h-full group relative flex flex-col rounded-[2.5rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_40px_rgba(110,221,77,0.1)] cursor-pointer"
-                >
-                  <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
-                    {service.video ? (
-                      <video
-                        autoPlay loop muted playsInline
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      >
-                        <source src={service.video} type="video/mp4" />
-                      </video>
-                    ) : (
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  </div>
-
-                  <div className="p-8 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#6EDD4D] transition-colors duration-300">
-                      {service.title}
-                    </h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                      {service.description}
-                    </p>
-
-                    <ul className="mt-auto space-y-3">
-                      {service.features.map((item, i) => (
-                        <li key={i} className="flex items-center text-sm text-zinc-300">
-                          <span className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#6EDD4D]/10 text-[10px] text-[#6EDD4D]">
-                            ✔
-                          </span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
+          {/* MOBILE SLIDER INDICATOR (Hidden on tablet/desktop grids) */}
+          <div className="md:hidden flex justify-center items-center mt-2">
+            <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+              <div 
+                className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+                style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+              />
+            </div>
           </div>
+
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <main className="min-h-screen text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 overflow-x-hidden">
@@ -288,10 +318,10 @@ export default function OurExpertise() {
           </div>
         </header>
 
-        <div className="container mx-auto px-6 pb-24">
-          <ServiceSection title="BIM Services" items={bimServices} />
-          <ServiceSection title="BIM Consulting" items={bimConsulting} />
-          <ServiceSection title="Other Services" items={otherServices} />
+        <div className="container mx-auto px-6 ">
+          <ServiceSection title="BIM Services" items={bimServices} id="bim-services" />
+          <ServiceSection title="BIM Consulting" items={bimConsulting} id="bim-consulting" />
+          <ServiceSection title="Other Services" items={otherServices} id="other-services" />
         </div>
       </div>
     </main>

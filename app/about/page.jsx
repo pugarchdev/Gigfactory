@@ -1,285 +1,312 @@
 'use client'
 
+import { useRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from 'framer-motion'
 import { Lightbulb, Users, Target, TrendingUp, ArrowRight } from 'lucide-react'
+
+// --- NUMBER COUNTER COMPONENT ---
+const AnimatedNumber = ({ value }) => {
+  const numericValue = parseInt(value.replace(/[^0-9]/g, ''))
+  const suffix = value.replace(/[0-9]/g, '')
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+  const motionValue = useMotionValue(0)
+  const springValue = useSpring(motionValue, { damping: 40, stiffness: 100, duration: 2000 })
+
+  useEffect(() => {
+    if (isInView) motionValue.set(numericValue)
+  }, [isInView, motionValue, numericValue])
+
+  useEffect(() => {
+    return springValue.on("change", (latest) => {
+      if (ref.current) {
+        ref.current.textContent = Intl.NumberFormat('en-US').format(latest.toFixed(0)) + suffix
+      }
+    })
+  }, [springValue, suffix])
+
+  return <span ref={ref}>0{suffix}</span>
+}
 
 export default function AboutPage() {
   const router = useRouter()
+  const containerRef = useRef(null)
+
+  // --- PARALLAX SCROLL SETUP ---
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  })
+  const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
+  const textOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0])
 
   const culturePillars = [
-    {
-      title: "Intelligence-Driven Thinking",
-      description: "We embrace creativity and forward-thinking solutions",
-      icon: <Lightbulb size={24} />
-    },
-    {
-      title: "Collaboration Over Silos",
-      description: "We work together to achieve exceptional results",
-      icon: <Users size={24} />
-    },
-    {
-      title: "Ownership & Accountability",
-      description: "We uphold the highest standards of ethics and transparency",
-      icon: <Target size={24} />
-    },
-    {
-      title: "Continuous Learning",
-      description: "We strive for outstanding quality in everything we do",
-      icon: <TrendingUp size={24} />
-    }
+    { title: "Intelligence-Driven Thinking", description: "We embrace creativity and forward-thinking solutions", icon: <Lightbulb size={24} /> },
+    { title: "Collaboration Over Silos", description: "We work together to achieve exceptional results", icon: <Users size={24} /> },
+    { title: "Ownership & Accountability", description: "We uphold the highest standards of ethics and transparency", icon: <Target size={24} /> },
+    { title: "Continuous Learning", description: "We strive for outstanding quality in everything we do", icon: <TrendingUp size={24} /> }
   ]
 
-  const team = [
-    {
-      name: "Mason Walker",
-      role: "Lead Architect",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400&auto=format&fit=crop"
-    },
-    {
-      name: "Isabella Rivera",
-      role: "BIM Manager",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop"
-    },
-    {
-      name: "Amelia Scott",
-      role: "Structural Engineer",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop"
-    }
-  ]
-
-  // --- Animations ---
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
   }
 
   const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
-  }
-
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
   }
 
   return (
-    <main className="min-h-screen  text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px]">
+    <main ref={containerRef} className="min-h-screen bg-[#030303] text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px] overflow-hidden relative">
       
-      {/* Background Ambient Glow */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#6EDD4D]/5 blur-[150px]"></div>
+      {/* --- ADVANCED BACKGROUND SYSTEM --- */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* 1. The Blueprint Grid */}
+        <div className="absolute inset-0 opacity-[0.15]" 
+             style={{ backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`, 
+                      backgroundSize: '40px 40px' }}>
+        </div>
+        
+        {/* 2. Moving Laser Beams */}
+        <motion.div 
+          animate={{ x: ['-100%', '100%'] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+          className="absolute top-[30%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#6EDD4D]/40 to-transparent"
+        />
+        <motion.div 
+          animate={{ y: ['-100%', '100%'] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
+          className="absolute top-0 left-[20%] w-[1px] h-full bg-gradient-to-b from-transparent via-[#6EDD4D]/20 to-transparent"
+        />
+
+        {/* 3. Deep Ambient Glows */}
+        <motion.div 
+          animate={{ y: [0, -60, 0], opacity: [0.2, 0.5, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-1/4 w-[700px] h-[700px] bg-[#6EDD4D]/10 blur-[180px] rounded-full" 
+        />
+        <motion.div 
+          animate={{ x: [0, 80, 0], opacity: [0.1, 0.4, 0.1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          className="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 blur-[150px] rounded-full" 
+        />
       </div>
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 px-6 flex flex-col items-center text-center z-10">
-        <motion.div initial="hidden" animate="visible" variants={fadeUp} className="max-w-4xl mx-auto">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
-            About Us
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tighter leading-tight">
-            Integrated Construction <br/>
-            <span className="text-[#6EDD4D]">Technology Platform</span>
-          </h1>
-          <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+      <section className="relative pt-48 px-6 flex flex-col items-center text-center z-10">
+        <motion.div style={{ opacity: textOpacity }} initial="hidden" animate="visible" variants={staggerContainer} className="max-w-4xl mx-auto">
+          <motion.div variants={fadeUp}>
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6 shadow-[0_0_20px_rgba(110,221,77,0.2)]">
+              Who We Are
+            </span>
+          </motion.div>
+          
+          <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-[1.2]">
+            Integrated Construction <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6EDD4D] via-emerald-300 to-[#6EDD4D] bg-[length:200%_auto] animate-text-gradient">Technology Platform</span>
+          </motion.h1>
+          
+          <motion.p variants={fadeUp} className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium">
             Building Intelligence. Growing Together. At Gigfactory, culture is not just about where we work — it&apos;s about how we think, collaborate, and build.
-          </p>
+          </motion.p>
         </motion.div>
 
-        {/* Hero Image */}
-        <motion.div 
-          initial="hidden" animate="visible" variants={scaleIn}
-          className="w-full max-w-6xl relative rounded-[2rem] overflow-hidden border border-zinc-800 shadow-[0_0_50px_rgba(110,221,77,0.05)] aspect-[21/9] bg-zinc-900"
-        >
-          <img 
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" 
-            alt="Team collaborating" 
-            className="w-full h-full object-cover opacity-80"
+        {/* Hero Image - Zoomed Out Parallax */}
+        <div className="w-full max-w-7xl relative rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.7)] aspect-[21/9] bg-zinc-900 group">
+          <motion.img
+            style={{ y: heroImageY }}
+            initial={{ scale: 1.1, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.7 }}
+            transition={{ duration: 1.8, ease: "easeOut" }}
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
+            alt="Team collaborating"
+            className="absolute inset-[-10%] w-[120%] h-[120%] object-cover origin-top transition-all duration-1000 group-hover:opacity-100"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
-        </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-transparent opacity-90"></div>
+          
+          {/* Subtle Scanning Line on Image */}
+          <motion.div 
+            animate={{ top: ['0%', '100%', '0%'] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            className="absolute left-0 w-full h-[2px] bg-[#6EDD4D]/20 z-20 pointer-events-none"
+          />
+        </div>
       </section>
 
       {/* 2. STATS BAR */}
-      <section className="relative -mt-16 z-20 px-6">
-        <motion.div 
-          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeUp}
-          className="max-w-4xl mx-auto rounded-2xl bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-8 flex flex-wrap justify-around gap-8 shadow-2xl"
+      <section className="relative -mt-24 z-20 px-6">
+        <motion.div
+          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeUp}
+          className="max-w-5xl mx-auto rounded-[2.5rem] bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-10 md:p-14 flex flex-wrap justify-around gap-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)] relative overflow-hidden group"
         >
-          <div className="text-center">
-            <h3 className="text-4xl font-black text-[#6EDD4D] mb-1">10M+</h3>
-            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Sq ft Delivered</p>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+          <div className="text-center relative z-10">
+            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="10M+" /></h3>
+            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Delivered SqFt</p>
           </div>
-          <div className="w-px bg-zinc-800 hidden md:block"></div>
-          <div className="text-center">
-            <h3 className="text-4xl font-black text-[#6EDD4D] mb-1">1000+</h3>
-            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Experts Network</p>
+          <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+          <div className="text-center relative z-10">
+            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="100+" /></h3>
+            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Global Clients</p>
           </div>
-          <div className="w-px bg-zinc-800 hidden md:block"></div>
-          <div className="text-center">
-            <h3 className="text-4xl font-black text-[#6EDD4D] mb-1">100%</h3>
-            <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">Reliability</p>
+          <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+          <div className="text-center relative z-10">
+            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="250+" /></h3>
+            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Projects Done</p>
           </div>
         </motion.div>
       </section>
 
       {/* 3. WHO WE ARE */}
-      <section className="py-32 px-6">
+      <section className="py-40 px-6 relative z-10">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-              <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tighter">
-                What Drives Us <br/>
-                <span className="text-zinc-500">Forward</span>
-              </h2>
-              <div className="space-y-6 text-zinc-400 leading-relaxed text-lg">
-                <p>
-                  Gigfactory Private Limited revolutionizes the construction industry by providing an integrated, technology-powered, one-stop solution for all your project needs. We have a diverse network of 1000+ experts spanning architecture, Structure, Interior design, project management, engineering, and more.
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
+              <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-black text-white mb-10 tracking-tighter leading-none">
+                What Drives Us <br />
+                <span className="text-[#6EDD4D]">Forward</span>
+              </motion.h2>
+              <motion.div variants={fadeUp} className="space-y-8 text-zinc-400 leading-relaxed text-lg font-medium">
+                <p className="border-l-2 border-[#6EDD4D]/30 pl-6">
+                  Gigfactory Private Limited revolutionizes the construction industry by providing an integrated, technology-powered, one-stop solution for all your project needs.
                 </p>
-                <p>
-                  Our platform streamlines workflows, optimizes resource allocation, and drives efficiency in design and construction. With a proven track record of delivering over 10 Million Sq ft across diverse sectors, Gigfactory is committed to providing Quality and reliability to our partners in every project.
+                <p className="pl-6">
+                  Our platform streamlines workflows, optimizes resource allocation, and drives efficiency in design and construction. With a proven track record of delivering over 10 Million Sq ft across diverse sectors.
                 </p>
-              </div>
+              </motion.div>
             </motion.div>
-            
-         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn} className="relative">
-              <div className="aspect-square rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-900/50 shadow-[0_0_30px_rgba(110,221,77,0.05)]">
-                <img 
-                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop" 
-                  alt="Company Forward Vision" 
-                  className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-700"
+
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }} 
+              whileInView={{ opacity: 1, x: 0 }} 
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="relative group"
+            >
+              <div className="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 bg-zinc-900 shadow-2xl relative">
+                <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-10 mix-blend-overlay"></div>
+                <img
+                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop"
+                  alt="Company Vision"
+                  className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-[1.5s] ease-out"
                 />
               </div>
+              {/* Decorative Frame Element */}
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 border-b-2 border-l-2 border-[#6EDD4D] rounded-bl-[2rem] opacity-40 group-hover:opacity-100 transition-opacity duration-500"></div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* 4. MISSION & VISION */}
-      <section className="py-20 px-6 bg-zinc-900/20 border-y border-zinc-900">
+      <section className="py-5 px-6 relative z-10">
         <div className="container mx-auto max-w-6xl">
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          <motion.div
+            initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 gap-10"
           >
-            {/* Mission */}
-            <motion.div variants={fadeUp} className="p-10 rounded-[2rem] bg-zinc-900/40 border border-zinc-800 hover:border-[#6EDD4D]/30 transition-colors">
-              <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                <Target className="text-[#6EDD4D]" size={28} />
-                Our Mission
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                To deliver exceptional construction technology services that enhance project outcomes, reduce costs, improve timelines, and promote sustainability through innovative digital solutions and expert collaboration.
-              </p>
-            </motion.div>
-
-            {/* Vision */}
-            <motion.div variants={fadeUp} className="p-10 rounded-[2rem] bg-zinc-900/40 border border-zinc-800 hover:border-[#6EDD4D]/30 transition-colors">
-              <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                <Lightbulb className="text-[#6EDD4D]" size={28} />
-                Our Vision
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">
-                To become the global leader in construction technology solutions, transforming how buildings are designed, constructed, and managed through digital innovation and sustainable practices.
-              </p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 5. EXPLORE OUR VALUES (Pillars Grid) */}
-      <section className="py-32 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row gap-16">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="md:w-1/3">
-              <h2 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter">
-                Explore Our <br/>
-                <span className="text-[#6EDD4D]">Values</span>
-              </h2>
-              <p className="text-zinc-400 leading-relaxed mb-8">
-                Our culture pillars define how we operate, collaborate, and innovate within the construction industry.
+            <motion.div 
+              variants={fadeUp} 
+              whileHover={{ y: -15 }}
+              className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
+            >
+              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
+                <Target className="text-[#6EDD4D] group-hover:text-black transition-colors" size={36} />
+              </div>
+              <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Our Mission</h3>
+              <p className="text-zinc-400 text-lg leading-relaxed font-medium">
+                To deliver exceptional construction technology services that enhance project outcomes, reduce costs, and promote sustainability through innovative digital solutions.
               </p>
             </motion.div>
 
             <motion.div 
-              initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-              className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6"
+              variants={fadeUp} 
+              whileHover={{ y: -15 }}
+              className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
             >
-              {culturePillars.map((pillar, index) => (
-                <motion.div 
-                  key={index} variants={fadeUp}
-                  className="p-8 rounded-3xl bg-zinc-900/30 border border-zinc-800/50 hover:bg-zinc-900/80 hover:border-[#6EDD4D]/30 transition-all duration-300"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[#6EDD4D]/10 flex items-center justify-center text-[#6EDD4D] mb-6">
-                    {pillar.icon}
-                  </div>
-                  <h4 className="text-lg font-bold text-white mb-3">{pillar.title}</h4>
-                  <p className="text-sm text-zinc-500 leading-relaxed">{pillar.description}</p>
-                </motion.div>
-              ))}
+              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
+                <Lightbulb className="text-[#6EDD4D] group-hover:text-black transition-colors" size={36} />
+              </div>
+              <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Our Vision</h3>
+              <p className="text-zinc-400 text-lg leading-relaxed font-medium">
+                To become the global leader in construction technology solutions, transforming building lifecycle management through digital innovation.
+              </p>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 6. TEAM SECTION */}
-      {/* <section className="py-20 px-6">
-        <div className="container mx-auto max-w-6xl text-center">
+      {/* 5. EXPLORE OUR VALUES */}
+      <section className="py-40 px-6 relative z-10">
+        <div className="container mx-auto max-w-6xl text-center mb-20">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tighter">
-              Our Expert Collaboration <span className="text-[#6EDD4D]">Team</span>
+            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+              Explore Our <span className="text-[#6EDD4D]">Values</span>
             </h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto mb-16">
-              Our dynamic network is led by industry veterans committed to sharing knowledge, ensuring quality, and transforming construction outcomes.
+            <p className="text-zinc-500 text-xl max-w-2xl mx-auto font-medium">
+              The core principles that guide every pixel and every project we build.
             </p>
           </motion.div>
-
-          <motion.div 
-            initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8"
-          >
-            {team.map((member, index) => (
-              <motion.div key={index} variants={scaleIn} className="group text-left">
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden mb-6 bg-zinc-900 relative">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="w-full h-full object-cover grayscale opacity-80 transition-all duration-500 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
-                  />
-                
-                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-zinc-950 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-end gap-3">
-                    <svg className="text-white hover:text-[#6EDD4D] cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-                    <svg className="text-white hover:text-[#6EDD4D] cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-                  </div>
-                </div>
-                <h4 className="text-xl font-bold text-white mb-1">{member.name}</h4>
-                <p className="text-sm text-[#6EDD4D] font-medium tracking-wide uppercase">{member.role}</p>
-              </motion.div>
-            ))}
-          </motion.div>
         </div>
-      </section> */}
 
-      {/* 7. CTA SECTION */}
-      <section className="pt-32 pb-10 px-6 text-center">
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter">
-            Ready To Simplify Your <br/>
+        <div className="container mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {culturePillars.map((pillar, index) => (
+            <motion.div
+              key={index} 
+              initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+              whileHover={{ scale: 1.05, backgroundColor: "rgba(110, 221, 77, 0.05)" }}
+              className="p-10 rounded-[2.5rem] bg-zinc-900/20 backdrop-blur-md border border-white/5 hover:border-[#6EDD4D]/30 transition-all duration-500 text-center flex flex-col items-center"
+            >
+              <div className="w-16 h-16 rounded-full bg-zinc-950 border border-[#6EDD4D]/20 flex items-center justify-center text-[#6EDD4D] mb-8 shadow-[0_0_30px_rgba(110,221,77,0.1)]">
+                {pillar.icon}
+              </div>
+              <h4 className="text-xl font-bold text-white mb-4 tracking-tight">{pillar.title}</h4>
+              <p className="text-sm text-zinc-500 leading-relaxed font-medium">{pillar.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. CTA SECTION */}
+      <section className="pt-10 pb-20 px-6 text-center relative z-10">
+        <motion.div 
+          initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+          className="relative max-w-5xl mx-auto bg-zinc-900/30 backdrop-blur-3xl border border-white/10 rounded-[4rem] p-16 md:p-24 overflow-hidden"
+        >
+          <motion.div 
+            animate={{ scale: [1, 1.4, 1], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#6EDD4D] blur-[150px] rounded-full pointer-events-none"
+          />
+
+          <h2 className="relative z-10 text-5xl md:text-7xl font-black text-white mb-10 tracking-tighter leading-tight">
+            Ready To Simplify Your <br />
             <span className="text-[#6EDD4D]">Project Management?</span>
           </h2>
-          <div className="mt-10">
-            <button 
+          <div className="mt-12 relative z-10">
+            <button
               onClick={() => router.push('/contact')}
-              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-[#6EDD4D] px-10 py-4 font-black uppercase tracking-widest text-zinc-950 transition-all hover:bg-[#6EDD4D]/90 hover:shadow-[0_0_30px_rgba(110,221,77,0.4)]"
+              className="group relative inline-flex items-center justify-center gap-4 rounded-full bg-[#6EDD4D] px-12 py-6 font-black uppercase tracking-[0.2em] text-zinc-950 transition-all hover:bg-white hover:shadow-[0_0_50px_rgba(110,221,77,0.5)] text-sm"
             >
               <span>Get Started Now</span>
-              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={22} className="transition-transform group-hover:translate-x-2" />
             </button>
           </div>
         </motion.div>
       </section>
 
+      <style jsx global>{`
+        @keyframes text-gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-text-gradient {
+          animation: text-gradient 6s ease infinite;
+        }
+      `}</style>
     </main>
   )
 }

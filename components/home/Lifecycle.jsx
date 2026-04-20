@@ -34,8 +34,11 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 }
 
 export default function Lifecycle({ onContactClick }) {
-  // We track which stage is active. Clicking on mobile sets this.
   const [activeStage, setActiveStage] = useState(null)
+  
+  // NEW: State and Ref for the mobile scroll slider
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const scrollContainerRef = useRef(null)
 
   const stages = [
     { id: 1, name: 'Initiation', icon: 'fa-lightbulb', image: '/assets/Intiation Phase.png', description: 'Feasibility & concept phase planning', outputs: ['Early Design Clarity', 'Initial Budget Confidence', 'Stakeholder Alignment'] },
@@ -46,9 +49,22 @@ export default function Lifecycle({ onContactClick }) {
   ]
 
   const handleStageClick = (id) => {
-    // If clicking the same one, close it. Otherwise, open the new one.
     setActiveStage(prev => prev === id ? null : id)
   }
+
+  // NEW: Calculate scroll progress for the slider indicator
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    
+    if (scrollWidth === clientWidth) {
+      setScrollProgress(0);
+      return;
+    }
+    
+    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+    setScrollProgress(progress);
+  };
 
   return (
     <section className="container mx-auto px-6 -mt-20 pt-0 pb-12 relative overflow-hidden">
@@ -76,9 +92,14 @@ export default function Lifecycle({ onContactClick }) {
       </div>
 
       {/* Horizontal Scroll on Mobile, Grid on Desktop */}
-      <div className="relative mb-12">
-        <div className="overflow-x-auto no-scrollbar pb-12 -mx-6 px-6">
-          <div className="flex lg:grid lg:grid-cols-5 gap-4 min-w-max lg:min-w-full items-start">
+      <div className="relative mb-8 md:mb-12">
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="overflow-x-auto no-scrollbar pb-12 -mx-6 px-6 snap-x snap-mandatory"
+        >
+          {/* Replaced lg:min-w-full with lg:min-w-0 to prevent desktop grid overflow */}
+          <div className="flex lg:grid lg:grid-cols-5 gap-4 min-w-max lg:min-w-0 items-start">
             {stages.map((stage, idx) => {
               const isActive = activeStage === stage.id
 
@@ -87,7 +108,8 @@ export default function Lifecycle({ onContactClick }) {
                   key={stage.id}
                   animationClass="opacity-0 translate-y-16"
                   delay={idx * 150}
-                  className="w-[300px] md:w-[350px] lg:w-auto flex-shrink-0 lg:flex-shrink"
+                  // NEW: Added dynamic mobile width (85vw) and snap-center
+                  className="w-[85vw] max-w-[320px] md:max-w-[350px] lg:max-w-none lg:w-auto flex-shrink-0 lg:flex-shrink snap-center"
                 >
                   <div
                     onClick={() => handleStageClick(stage.id)}
@@ -137,14 +159,23 @@ export default function Lifecycle({ onContactClick }) {
             })}
           </div>
         </div>
+        
+        {/* NEW: MOBILE SLIDER INDICATOR (Hidden on lg screens) */}
+        <div className="lg:hidden flex justify-center items-center -mt-4 mb-4">
+          <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+            <div 
+              className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+              style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+            />
+          </div>
+        </div>
+        
       </div>
 
       {/* Static Contact Button */}
-      <div className="flex flex-col items-center pt-8">
-
-        {/* NEW HEADING HERE */}
+      <div className="flex flex-col items-center pt-4 md:pt-8">
         <AnimatedSection animationClass="opacity-0 translate-y-4" className="text-center">
-          <h3 className="text-3xl md:text-4xl font-bold text-white mb-10 -mt-16 tracking-tight">
+          <h3 className="text-3xl md:text-4xl font-bold text-white mb-10 md:-mt-16 tracking-tight">
             Got a challenge or idea?
           </h3>
         </AnimatedSection>
@@ -156,7 +187,7 @@ export default function Lifecycle({ onContactClick }) {
           >
             <div className="absolute inset-0 bg-[#6EDD4D] translate-y-full group-hover:translate-y-0 transition-transform duration-500 -z-10"></div>
             <span className="flex items-center gap-4">
-              Let's Solve it Together
+              Let&apos;s Solve it Together
               <i className="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i>
             </span>
           </button>

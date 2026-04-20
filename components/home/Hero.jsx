@@ -115,7 +115,7 @@ export default function Hero({ onContactClick }) {
         {/* Heading - Added drop shadow for clarity against images */}
         <AnimatedSection animationClass="opacity-0 translate-y-12" delay={200}>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8 tracking-tight max-w-5xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
-            Global Capacity Center <br className="hidden md:block" />
+            Global Capability Center <br className="hidden md:block" />
             <span className="text-[#6EDD4D]">for Construction Services</span>
           </h1>
         </AnimatedSection>

@@ -1,85 +1,86 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { motion, useInView, useMotionValue, useSpring } from 'framer-motion'
 
-// --- REUSABLE ANIMATION WRAPPER ---
-const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
-    const [isVisible, setIsVisible] = useState(false)
-    const domRef = useRef()
+// --- NUMBER COUNTER COMPONENT ---
+const AnimatedNumber = ({ value }) => {
+    const numericValue = parseInt(value.replace(/[^0-9]/g, ''))
+    const suffix = value.replace(/[0-9]/g, '')
+
+    const ref = useRef(null)
+    const isInView = useInView(ref, { once: true, margin: "-50px" })
+    
+    const motionValue = useMotionValue(0)
+    const springValue = useSpring(motionValue, {
+        damping: 40,
+        stiffness: 100,
+        duration: 2000
+    })
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    setIsVisible(true)
-                    observer.unobserve(domRef.current)
-                }
-            },
-            { threshold: 0.1 }
-        )
+        if (isInView) {
+            motionValue.set(numericValue)
+        }
+    }, [isInView, motionValue, numericValue])
 
-        if (domRef.current) observer.observe(domRef.current)
-        return () => observer.disconnect()
-    }, [])
+    useEffect(() => {
+        return springValue.on("change", (latest) => {
+            if (ref.current) {
+                ref.current.textContent = Intl.NumberFormat('en-US').format(latest.toFixed(0)) + suffix
+            }
+        })
+    }, [springValue, suffix])
 
-    return (
-        <div
-            ref={domRef}
-            style={{ transitionDelay: `${delay}ms` }}
-            className={`transition-all duration-700 ease-[0.34,1.56,0.64,1] ${isVisible ? 'opacity-100 translate-x-0 translate-y-0 scale-100' : animationClass
-                } ${className}`}
-        >
-            {children}
-        </div>
-    )
+    return <span ref={ref}>0{suffix}</span>
 }
 
 export default function StatsBar() {
     const stats = [
-        { value: "10k+", label: "Worldwide Clients" },
-        { value: "14+", label: "Years Experience" },
-        { value: "$20M", label: "Total Funding" }
+        { value: "100+", label: "Worldwide Clients" },
+        { value: "10M+", label: "Delivered" },
+        { value: "250+", label: "Projects" }
     ]
 
     return (
         <section className="py-12 w-full px-6 flex justify-center md:mt-[-60px] md:mb-[-80px]">
-            {/* Main Container */}
-            <AnimatedSection
-                animationClass="opacity-0 scale-75"
-                className="w-full max-w-5xl"
-                delay={100}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
+                // INCREASED PADDING: Changed p-[1px] to p-[4px] to make the border thicker
+                className="w-full max-w-5xl relative p-[4px] rounded-[2rem] overflow-hidden group"
             >
-                <div className="relative rounded-[2rem] border border-zinc-800 bg-zinc-900/40 backdrop-blur-xl p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden group hover:border-[#6EDD4D]/30 transition-colors duration-500">
+                {/* WIDER GRADIENT: Changed transparent_0_340deg to transparent_0_260deg for a longer light tail */}
+                <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                    className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_260deg,#6EDD4D_360deg)] z-0"
+                />
 
-                    {/* Subtle ambient glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                {/* ADJUSTED RADIUS: Changed rounded-[calc(2rem-1px)] to rounded-[calc(2rem-4px)] to match the new border thickness */}
+                <div className="relative z-10 rounded-[calc(2rem-4px)] bg-zinc-950/90 backdrop-blur-xl p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-500 w-full h-full">
 
-                    {/* Stats Grid */}
-                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between divide-y md:divide-y-0 md:divide-x divide-zinc-800">
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[calc(2rem-4px)]"></div>
 
+                    <div className="relative z-20 flex flex-col md:flex-row items-center justify-between divide-y md:divide-y-0 md:divide-x divide-zinc-800/50">
                         {stats.map((stat, index) => (
-                            /* REMOVED (index * 150): 
-                               By setting a static delay (e.g., 500ms), 
-                               all items wait for the box to finish scaling, then pop together.
-                            */
-                            <AnimatedSection
+                            <div
                                 key={index}
-                                animationClass="opacity-0 scale-50"
-                                delay={500}
                                 className="w-full flex flex-col items-center justify-center py-8 md:py-0"
                             >
                                 <h3 className="text-5xl md:text-6xl font-black mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#6EDD4D] to-[#4ade80] drop-shadow-sm">
-                                    {stat.value}
+                                    <AnimatedNumber value={stat.value} />
                                 </h3>
                                 <p className="text-zinc-400 text-base md:text-lg font-medium tracking-wide">
                                     {stat.label}
                                 </p>
-                            </AnimatedSection>
+                            </div>
                         ))}
-
                     </div>
                 </div>
-            </AnimatedSection>
+            </motion.div>
         </section>
     )
 }

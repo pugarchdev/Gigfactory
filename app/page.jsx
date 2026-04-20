@@ -56,7 +56,7 @@ export default function Home() {
       <Lifecycle onContactClick={() => openContactModal('Lifecycle Consultation')} />
 
       {/* Advantages Section */}
-      <Advantages onContactClick={() => openContactModal('Partnership Inquiry')} />
+      {/* <Advantages onContactClick={() => openContactModal('Partnership Inquiry')} /> */}
 
       {/* Trust Section */}
       <Video />

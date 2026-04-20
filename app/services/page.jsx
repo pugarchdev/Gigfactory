@@ -46,6 +46,7 @@ const FeatureItem = ({ text }) => (
 
 const ServicesPageContent = () => {
     const router = useRouter()
+    const searchParams = useSearchParams() 
     const [activeService, setActiveService] = useState('')
     const sectionRefs = useRef({})
 
@@ -100,7 +101,28 @@ const ServicesPageContent = () => {
         }
     ]
 
+    const handleServiceClick = (serviceId) => {
+        setActiveService(serviceId)
+        const element = document.getElementById(`service-${serviceId}`)
+        if (element) {
+            const yOffset = -100
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
+            window.scrollTo({ top: y, behavior: 'smooth' })
+        }
+    }
+
     useEffect(() => {
+        const serviceQuery = searchParams.get('service')
+        if (serviceQuery) {
+            // We use a small timeout to ensure Framer Motion and the DOM 
+            // have fully rendered the elements before we try to scroll to them.
+            setTimeout(() => {
+                handleServiceClick(serviceQuery)
+            }, 300)
+        }
+    }, [searchParams])
+
+        useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -118,16 +140,6 @@ const ServicesPageContent = () => {
 
         return () => observer.disconnect()
     }, [])
-
-    const handleServiceClick = (serviceId) => {
-        setActiveService(serviceId)
-        const element = document.getElementById(`service-${serviceId}`)
-        if (element) {
-            const yOffset = -100
-            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
-            window.scrollTo({ top: y, behavior: 'smooth' })
-        }
-    }
 
     return (
         <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32">
@@ -169,7 +181,7 @@ const ServicesPageContent = () => {
                     </aside>
 
                     {/* MAIN CONTENT AREA */}
-                    <div className="lg:w-3/4 xl:w-4/5 space-y-40">
+                    <div className="lg:w-3/4 xl:w-4/5">
                         {servicesData.map((service, index) => (
                             <section
                                 key={service.id}
@@ -248,7 +260,7 @@ const ServicesPageContent = () => {
                                 </div>
 
                                 {index !== servicesData.length - 1 && (
-                                    <div className="mt-40 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+                                    <div className="my-20 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
                                 )}
                             </section>
                         ))}

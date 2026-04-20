@@ -36,6 +36,9 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 }
 
 export default function Services({ onContactClick }) {
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollContainerRef = useRef(null);
+
   const services = [
     {
       id: '2D Services',
@@ -87,6 +90,21 @@ export default function Services({ onContactClick }) {
     }
   ];
 
+  // Calculate scroll percentage to update the mobile slider
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    
+    // Avoid division by zero if there's no scrollable area
+    if (scrollWidth === clientWidth) {
+      setScrollProgress(0);
+      return;
+    }
+    
+    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
+    setScrollProgress(progress);
+  };
+
   return (
     <section className="container mx-auto px-6 py-20 relative overflow-hidden">
 
@@ -102,12 +120,14 @@ export default function Services({ onContactClick }) {
         .animate-subtle-pulse {
           animation: subtle-pulse 2s ease-in-out infinite;
         }
+        /* Hide scrollbar for Chrome, Safari and Opera */
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        /* Hide scrollbar for IE, Edge and Firefox */
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
       {/* Header */}
-      <div className="text-center mb-20 relative z-10">
+      <div className="text-center mb-16 md:mb-20 relative z-10">
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 -mt-12 tracking-tight">
             Services We <span className="text-[#6EDD4D]">Deliver</span>
@@ -120,28 +140,36 @@ export default function Services({ onContactClick }) {
         </AnimatedSection>
       </div>
 
-      {/* Services Grid */}
-      <div className="relative mb-24 z-10">
-        <div className="overflow-x-auto no-scrollbar -mx-6 px-6 pb-8">
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 min-w-max md:min-w-full">
+      {/* Services Grid & Slider Container */}
+      <div className="relative mb-16 md:mb-24 z-10">
+        
+        {/* Horizontal Scroll Area */}
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          // Added snap-x and snap-mandatory for smooth mobile swiping
+          className="overflow-x-auto no-scrollbar -mx-6 px-6 pb-8 snap-x snap-mandatory"
+        >
+          {/* Changed min-w-full to md:min-w-0 so grid doesn't break on desktop */}
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 min-w-max md:min-w-0">
             {services.map((service, idx) => (
               <AnimatedSection
                 key={idx}
                 animationClass="opacity-0 scale-75"
                 delay={idx * 100}
-                className="w-[300px] md:w-auto h-full flex-shrink-0 md:flex-shrink"
+                // Dynamic width: 85vw on mobile lets the next card peek in. Snap-center snaps it into place.
+                className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto h-full flex-shrink-0 md:flex-shrink snap-center"
               >
                 <div className="relative overflow-hidden bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 p-8 rounded-[2.5rem] transition-all duration-500 ease-out hover:-translate-y-3 hover:border-[#6EDD4D]/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),0_0_20px_rgba(110,221,77,0.1)] group flex flex-col items-center text-center h-full">
 
                   <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#6EDD4D]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                  {/* ICON CONTAINER - Increased to w-24 h-24 */}
+                  {/* ICON CONTAINER */}
                   <div className="w-24 h-24 rounded-3xl bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-8 relative z-10 group-hover:bg-[#6EDD4D] group-hover:rotate-[10deg] transition-all duration-500 overflow-hidden shadow-xl">
                     {service.iconPath ? (
                       <img
                         src={service.iconPath}
                         alt={service.title}
-                        // Increased image size to w-14/h-14 or w-16/h-16
                         className="w-14 h-14 object-contain relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                       />
                     ) : (
@@ -152,7 +180,7 @@ export default function Services({ onContactClick }) {
                   <h3 className="text-2xl font-bold text-white mb-4 relative z-10 group-hover:text-[#6EDD4D] transition-colors duration-300">{service.title}</h3>
                   <div className="relative bg-zinc-950/50 p-5 rounded-2xl flex-grow mb-8 text-sm text-zinc-400 leading-relaxed text-left w-full border-l-2 border-zinc-800 group-hover:border-[#6EDD4D] transition-all duration-500">{service.desc}</div>
 
-                  <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-700 text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn">
+                  <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-700 text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn mt-auto">
                     <span className="relative z-10 flex items-center gap-2">Know More <i className="fa-solid fa-arrow-right text-xs group-hover/btn:translate-x-2 transition-transform duration-300"></i></span>
                     <div className="absolute inset-0 bg-[#6EDD4D] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                   </Link>
@@ -161,11 +189,23 @@ export default function Services({ onContactClick }) {
             ))}
           </div>
         </div>
+
+        {/* MOBILE SLIDER INDICATOR (Hidden on tablet/desktop) */}
+        <div className="md:hidden flex justify-center items-center mt-2">
+          <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+            <div 
+              className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+              // Moves the pill 0% to 200% of its own width as the user scrolls 0% to 100% of the container
+              style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+            />
+          </div>
+        </div>
+
       </div>
 
       {/* CTA SECTION */}
       <div className="relative z-10 text-center pt-0 pb-10">
-        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={100} className="-mt-12">
+        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={100} className="md:-mt-12">
           <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
             Have a project <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">in mind?</span>
@@ -175,7 +215,7 @@ export default function Services({ onContactClick }) {
         <AnimatedSection animationClass="opacity-0 scale-0" delay={300}>
           <button
             onClick={onContactClick}
-            className="group animate-subtle-pulse bg-transparent border border-[#6EDD4D]/60 hover:border-[#6EDD4D] text-[#6EDD4D] font-bold px-12 py-6 rounded-2xl text-lg transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(110,221,77,0.05)] hover:shadow-[0_0_50px_rgba(110,221,77,0.2)] flex items-center gap-4 mx-auto"
+            className="group animate-subtle-pulse bg-transparent border border-[#6EDD4D]/60 hover:border-[#6EDD4D] text-[#6EDD4D] font-bold px-8 md:px-12 py-5 md:py-6 rounded-2xl text-base md:text-lg transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(110,221,77,0.05)] hover:shadow-[0_0_50px_rgba(110,221,77,0.2)] flex items-center justify-center gap-4 mx-auto w-[90%] md:w-auto"
           >
             Start Your Project Today
             <i className="fa-solid fa-arrow-right group-hover:translate-x-2 transition-transform duration-300"></i>

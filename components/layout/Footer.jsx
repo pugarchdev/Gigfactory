@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image' // Added for the logo
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { FaLinkedinIn, FaTwitter } from 'react-icons/fa'
+import {FaLinkedinIn} from 'react-icons/fa'
 import ContactModal from '@/components/home/ContactModal'
 import GigExpertForm from '@/components/form/GigExpertForm'
 
@@ -33,94 +33,114 @@ export default function Footer() {
     }
 
     return (
-        <footer className="relative border-t border-dark-border bg-dark-base pt-24 pb-12 overflow-hidden">
+        <footer className="relative border-t border-dark-border bg-dark-base pt-16 lg:pt-24 pb-8 lg:pb-12 overflow-hidden">
+            {/* Background Effects */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[150px] bg-neon-green/5 blur-[100px] rounded-t-full pointer-events-none"></div>
 
             <div className="container mx-auto px-6 relative z-10 max-w-7xl">
                 <motion.div
-                    className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-20"
+                    className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-12 lg:mb-16"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                 >
-                    {/* Section 1: Logo Replacement */}
-                    <motion.div variants={itemVariants} className="lg:col-span-3 flex flex-col gap-6">
+                    {/* Section 1: Logo & Description */}
+                    <motion.div variants={itemVariants} className="md:col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col gap-6">
                         <Link href="/" className="inline-block">
                             <Image
-                                src="/assets/GIG.png" // Replace with your actual logo path
+                                src="/assets/GIG.png"
                                 alt="Gigfactory Logo"
                                 width={180}
                                 height={50}
                                 className="object-contain"
                             />
                         </Link>
-                        <p className="text-zinc-400 text-base leading-relaxed max-w-xs font-medium">
+                        <div className="flex items-center gap-2 ml-1 opacity-90 group-hover:opacity-100 transition-opacity">
+                            {/* India Flag SVG */}
+                            <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="24" height="16" fill="#FF9933" />
+                                <rect y="5.33" width="24" height="5.33" fill="white" />
+                                <rect y="10.67" width="24" height="5.33" fill="#138808" />
+                                <circle cx="12" cy="8" r="2" fill="#000080" />
+                            </svg>
+                            {/* UK Flag SVG */}
+                            <a
+                                href="https://www.baca.uk.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block hover:opacity-80 transition-opacity" // Optional: adds a slight hover effect
+                            >
+                                <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="24" height="16" fill="#012169" />
+                                    <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.67" />
+                                    <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.33" />
+                                    <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
+                                    <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.67" />
+                                </svg>
+                            </a>
+                        </div>
+                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium">
                             Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
                         </p>
                     </motion.div>
 
-                    <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-12">
+                    {/* Section 2: Links Columns */}
+                    <div className="md:col-span-12 lg:col-span-6 xl:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-4 xl:gap-8">
                         <motion.div variants={itemVariants}>
-                            <h3 className="text-[#6EDD4D] font-bold text-lg uppercase tracking-widest mb-8">Expertise</h3>
-                            <ul className="space-y-5 text-zinc-400 text-base font-medium">
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors">BIM</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors">Planning</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors">Risk</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors">Cost</Link></li>
+                            <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Expertise</h3>
+                            <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
+                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM</Link></li>
+
+                                <li><Link href="/expertise#other-services" className="hover:text-[#6EDD4D] transition-colors inline-block">Planning</Link></li>
+                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Risk</Link></li>
+                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Cost</Link></li>
                             </ul>
                         </motion.div>
 
                         <motion.div variants={itemVariants}>
-                            <h3 className="text-[#6EDD4D] font-bold text-lg uppercase tracking-widest mb-8">Services</h3>
-                            <ul className="space-y-5 text-zinc-400 text-base font-medium">
-                                <li><Link href="/services?service=2d" className="hover:text-[#6EDD4D] transition-colors">2D Services</Link></li>
-                                <li><Link href="/services?service=3d" className="hover:text-[#6EDD4D] transition-colors">BIM 3D Services</Link></li>
-                                <li><Link href="/services?service=4d" className="hover:text-[#6EDD4D] transition-colors">4D Services</Link></li>
-                                <li><Link href="/services?service=pp-c" className="hover:text-[#6EDD4D] transition-colors">Project Planning & Controls</Link></li>
-                                <li><Link href="/services?service=boq" className="hover:text-[#6EDD4D] transition-colors">BOQ & Quantity Intelligence</Link></li>
-                                <li><Link href="/services?service=audit" className="hover:text-[#6EDD4D] transition-colors">Audit & Verification Services</Link></li>
+                            <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Services</h3>
+                            <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
+                                <li><Link href="/services?service=2d" className="hover:text-[#6EDD4D] transition-colors inline-block">2D Services</Link></li>
+                                <li><Link href="/services?service=3d" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM 3D Services</Link></li>
+                                <li><Link href="/services?service=4d" className="hover:text-[#6EDD4D] transition-colors inline-block">4D Services</Link></li>
+                                <li><Link href="/services?service=pp-c" className="hover:text-[#6EDD4D] transition-colors inline-block">Project Planning & Controls</Link></li>
+                                <li><Link href="/services?service=boq" className="hover:text-[#6EDD4D] transition-colors inline-block">BOQ & Quantity Intelligence</Link></li>
+                                <li><Link href="/services?service=audit" className="hover:text-[#6EDD4D] transition-colors inline-block">Audit & Verification</Link></li>
                             </ul>
                         </motion.div>
 
                         <motion.div variants={itemVariants}>
-                            <h3 className="text-[#6EDD4D] font-bold text-lg uppercase tracking-widest mb-8">Quick Links</h3>
-                            <ul className="space-y-5 text-zinc-400 text-base font-medium">
-                                <li><Link href="/about" className="hover:text-[#6EDD4D] transition-colors">About</Link></li>
-                                {/* FIXED: Ensure the href matches your actual projects page filename */}
+                            <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Quick Links</h3>
+                            <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
+                                <li><Link href="/about" className="hover:text-[#6EDD4D] transition-colors inline-block">About</Link></li>
                                 <li><Link href="/projects" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Projects</Link></li>
                                 <li><Link href="/case-studies" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Case Studies</Link></li>
                                 <li>
                                     <button
                                         onClick={() => setIsGigExpertFormOpen(true)}
-                                        className="hover:text-[#6EDD4D] transition-colors text-left"
+                                        className="hover:text-[#6EDD4D] transition-colors text-left inline-block"
                                     >
-                                        GigExpert Feedback Form
+                                        GigExpert Feedback
                                     </button>
                                 </li>
                             </ul>
                         </motion.div>
 
                         <motion.div variants={itemVariants}>
-                            <h3 className="text-[#6EDD4D] font-bold text-lg uppercase tracking-widest mb-8">Contact</h3>
-                            <ul className="space-y-5 text-zinc-400 text-base font-medium">
-                                <li><a href="tel:+919876543210" className="hover:text-[#6EDD4D] transition-colors">Call</a></li>
+                            <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Contact</h3>
+                            <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
+                                <li><a href="tel:+919876543210" className="hover:text-[#6EDD4D] transition-colors inline-block">Call</a></li>
                                 <li>
                                     <button
                                         onClick={() => setIsContactModalOpen(true)}
-                                        className="hover:text-[#6EDD4D] transition-colors text-left"
+                                        className="hover:text-[#6EDD4D] transition-colors text-left inline-block"
                                     >
                                         Email Us
                                     </button>
                                 </li>
                                 <li>
-                                    {/* <button
-                                    onClick={() => setIsContactModalOpen(true)}
-                                    className="hover:text-[#6EDD4D] hover:translate-x-1 inline-block transition-all duration-300 text-left"
-                                >
-                                    Get In Touch
-                                </button> */}
                                     <Link
                                         href="/contact"
                                         className="hover:text-[#6EDD4D] hover:translate-x-1 inline-block transition-all duration-300 text-left"
@@ -132,27 +152,25 @@ export default function Footer() {
                         </motion.div>
                     </div>
 
-                    <motion.div variants={itemVariants} className="lg:col-span-2 flex flex-col items-start lg:items-end gap-6">
-                        <h3 className="text-[#6EDD4D] font-bold text-lg uppercase tracking-widest">Connect</h3>
-                        <div className="flex gap-4">
-                            <a href="#" className="w-12 h-12 rounded-full border border-dark-border bg-dark-base flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#6EDD4D] hover:bg-[#6EDD4D]/10 transition-all">
-                                <FaLinkedinIn size={20} />
-                            </a>
-                            <a href="#" className="w-12 h-12 rounded-full border border-dark-border bg-dark-base flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#6EDD4D] hover:bg-[#6EDD4D]/10 transition-all">
-                                <FaTwitter size={20} />
-                            </a>
-                        </div>
+                    {/* Section 3: Connect Box */}
+                    <motion.div variants={itemVariants} className="md:col-span-12 lg:col-span-2 flex flex-col items-start lg:items-end mt-4 lg:mt-0">
+                        <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Connect</h3>
+                        <a href="https://www.linkedin.com/company/gigfactory/?viewAsMember=true" className="w-12 h-12 rounded-full border border-dark-border bg-dark-base flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#6EDD4D] hover:bg-[#6EDD4D]/10 transition-all"
+                            target="_blank">
+                            <FaLinkedinIn size={20} />
+                        </a>
                     </motion.div>
                 </motion.div>
 
+                {/* Bottom Bar */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
-                    transition={{ delay: 1.2, duration: 1 }}
-                    className="border-t border-dark-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs uppercase font-bold tracking-[0.2em] text-zinc-500"
+                    transition={{ delay: 0.8, duration: 1 }}
+                    className="border-t border-dark-border pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] text-zinc-500 text-center md:text-left"
                 >
                     <p>&copy; {new Date().getFullYear()} Gigfactory. All rights reserved.</p>
-                    <div className="flex gap-10">
+                    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
                         <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
                     </div>

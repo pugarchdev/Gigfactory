@@ -44,26 +44,7 @@ export default function Navbar() {
             />
 
             {/* SVG Flags Container */}
-            <div className="flex items-center gap-2 ml-1 opacity-90 group-hover:opacity-100 transition-opacity">
-
-              {/* India Flag SVG */}
-              <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="24" height="16" fill="#FF9933" />
-                <rect y="5.33" width="24" height="5.33" fill="white" />
-                <rect y="10.67" width="24" height="5.33" fill="#138808" />
-                <circle cx="12" cy="8" r="2" fill="#000080" />
-              </svg>
-
-              {/* UK Flag SVG */}
-              <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="24" height="16" fill="#012169" />
-                <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.67" />
-                <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.33" />
-                <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
-                <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.67" />
-              </svg>
-
-            </div>
+           
           </div>
 
           {/* Subtitle */}
