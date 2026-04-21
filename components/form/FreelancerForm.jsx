@@ -70,7 +70,26 @@ const FreelancerForm = ({ onClose }) => {
         setIsSubmitting(true)
 
         try {
-            await recruitmentApi.submitFreelancer(formData)
+            let finalFormData = { ...formData };
+
+            // Handle PDF upload if chosen
+            if (formData.portfolioFile) {
+                try {
+                    const uploadRes = await recruitmentApi.uploadFile(formData.portfolioFile);
+                    if (uploadRes && uploadRes.url) {
+                        finalFormData.portfolioPdfUrl = uploadRes.url;
+                        // Remove the file object as it's not needed by the final JSON submission
+                        delete finalFormData.portfolioFile;
+                    }
+                } catch (uploadError) {
+                    console.error('File upload failed:', uploadError);
+                    alert("Failed to upload portfolio PDF. Please try again or provide a link instead.");
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
+            await recruitmentApi.submitFreelancer(finalFormData)
             alert("Application submitted successfully! Our team will contact you for technical vetting.")
             onClose()
         } catch (error) {
@@ -84,7 +103,7 @@ const FreelancerForm = ({ onClose }) => {
     // Reusable Tailwind classes
     const inputBaseStyle = "w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] transition-all placeholder:text-zinc-600"
     const labelStyle = "block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2"
-    
+
     // Helper component for Section Headers
     const SectionHeader = ({ number, title }) => (
         <h3 className="text-[#6EDD4D] text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -98,7 +117,7 @@ const FreelancerForm = ({ onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 overflow-y-auto bg-zinc-950/80 backdrop-blur-md">
-            <div 
+            <div
                 className="relative w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 md:p-12 shadow-2xl my-8 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
@@ -171,14 +190,13 @@ const FreelancerForm = ({ onClose }) => {
                                     <div
                                         key={service.id}
                                         onClick={() => handleServiceToggle(service.id)}
-                                        className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center text-center gap-2 transition-all ${
-                                            isActive 
-                                            ? 'border-[#6EDD4D] bg-[#6EDD4D]/10 text-white shadow-[0_0_15px_rgba(110,221,77,0.1)]' 
+                                        className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center text-center gap-2 transition-all ${isActive
+                                            ? 'border-[#6EDD4D] bg-[#6EDD4D]/10 text-white shadow-[0_0_15px_rgba(110,221,77,0.1)]'
                                             : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-600'
-                                        }`}
+                                            }`}
                                     >
                                         <div className={`w-5 h-5 rounded flex items-center justify-center border ${isActive ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'border-zinc-600 bg-zinc-900'}`}>
-                                            {isActive && <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>}
+                                            {isActive && <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg>}
                                         </div>
                                         <span className="font-bold text-sm">{service.label}</span>
                                     </div>
@@ -188,7 +206,7 @@ const FreelancerForm = ({ onClose }) => {
 
                         {/* Dynamic Sub-Panels */}
                         <div className="space-y-6">
-                            
+
                             {/* BIM Details */}
                             {formData.selectedServices.includes('BIM') && (
                                 <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
@@ -331,8 +349,70 @@ const FreelancerForm = ({ onClose }) => {
                         <SectionHeader number="4" title="Evidence & Commercials" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2">
+
+                                {/* URL FIELD */}
                                 <label className={labelStyle}>Portfolio / Work Samples URL</label>
-                                <input type="url" name="portfolioUrl" value={formData.portfolioUrl} onChange={handleInputChange} placeholder="Dropbox / Drive / Behance / Website link" className={inputBaseStyle} />
+                                <input
+                                    type="url"
+                                    name="portfolioUrl"
+                                    value={formData.portfolioUrl}
+                                    onChange={handleInputChange}
+                                    placeholder="Dropbox / Drive / Website link"
+                                    className={`${inputBaseStyle} mb-4`}
+                                />
+
+                                {/* PDF UPLOAD */}
+                                <label className={labelStyle}>Or Upload Portfolio (PDF)</label>
+
+                                <div className="flex items-center gap-4">
+                                    <input
+                                        type="file"
+                                        name="portfolioFile"
+                                        accept="application/pdf"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file && file.size > 10 * 1024 * 1024) {
+                                                alert("File is too large! Maximum limit is 10MB. Please compress your PDF or provide a link instead.");
+                                                e.target.value = '';
+                                                return;
+                                            }
+                                            setFormData({
+                                                ...formData,
+                                                portfolioFile: file,
+                                            })
+                                        }}
+                                        className={`${inputBaseStyle} file:bg-[#6EDD4D] file:text-black file:font-bold file:px-4 file:py-2 file:rounded-lg file:border-0 file:mr-4 cursor-pointer`}
+                                    />
+                                </div>
+
+                                {/* FILE NAME + REMOVE */}
+                                {formData.portfolioFile && (
+                                    <div className="flex items-center justify-between mt-3 bg-zinc-900/60 border border-zinc-800 rounded-lg px-3 py-2">
+
+                                        <p className="text-sm text-zinc-300 truncate max-w-[85%]">
+                                            {formData.portfolioFile.name}
+                                        </p>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setFormData({
+                                                    ...formData,
+                                                    portfolioFile: null,
+                                                })
+                                            }
+                                            className="ml-3 w-6 h-6 flex items-center justify-center rounded-full border border-red-500 text-red-500 text-xs hover:bg-red-500 hover:text-white transition-all"
+                                        >
+                                            ✕
+                                        </button>
+
+                                    </div>
+                                )}
+
+                                <p className="text-xs text-zinc-500 mt-2">
+                                    Provide a link or upload a PDF (max 10MB allowed)
+                                </p>
+
                             </div>
                             <div>
                                 <label className={labelStyle}>Standard Commercial Basis</label>
@@ -372,7 +452,7 @@ const FreelancerForm = ({ onClose }) => {
                     {/* Section 5: Final Declaration */}
                     <div className="bg-[#6EDD4D]/5 border border-[#6EDD4D]/20 rounded-[1.5rem] p-6 md:p-8">
                         <SectionHeader number="5" title="Final Declaration" />
-                        
+
                         <div className="flex items-start gap-4 mb-8">
                             <input
                                 type="checkbox"

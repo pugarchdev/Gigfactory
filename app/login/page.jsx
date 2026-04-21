@@ -52,22 +52,24 @@ export default function Login() {
 
     return (
         <main className="min-h-screen bg-[#030303] text-zinc-100 selection:bg-[#6EDD4D]/30 relative overflow-hidden">
-            
+
             {/* --- ADVANCED BACKGROUND SYSTEM --- */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 {/* 1. Blueprint Grid */}
-                <div className="absolute inset-0 opacity-[0.12]" 
-                     style={{ backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`, 
-                              backgroundSize: '45px 45px' }}>
+                <div className="absolute inset-0 opacity-[0.12]"
+                    style={{
+                        backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`,
+                        backgroundSize: '45px 45px'
+                    }}>
                 </div>
-                
+
                 {/* 2. Moving Laser Scanning Beams */}
-                <motion.div 
+                <motion.div
                     animate={{ x: ['-100%', '100%'] }}
                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                     className="absolute top-[20%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#6EDD4D]/30 to-transparent"
                 />
-                <motion.div 
+                <motion.div
                     animate={{ y: ['-100%', '100%'] }}
                     transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
                     className="absolute top-0 left-[15%] w-[1px] h-full bg-gradient-to-b from-transparent via-[#6EDD4D]/15 to-transparent"
@@ -88,16 +90,16 @@ export default function Login() {
                                 Interested in becoming a <br /> <span className="text-[#6EDD4D]">Gigfactory Expert?</span>
                             </h2>
                             <div className="flex flex-col sm:flex-row gap-6">
-                                <motion.button 
+                                <motion.button
                                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                    onClick={() => setShowAgencyForm(true)} 
+                                    onClick={() => setShowAgencyForm(true)}
                                     className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs bg-white text-zinc-950 hover:bg-zinc-200 transition-all shadow-xl"
                                 >
                                     Apply as an Agency
                                 </motion.button>
-                                <motion.button 
+                                <motion.button
                                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                    onClick={() => setShowFreelancerForm(true)} 
+                                    onClick={() => setShowFreelancerForm(true)}
                                     className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs bg-[#6EDD4D] text-zinc-950 hover:shadow-[0_0_30px_rgba(110,221,77,0.4)] transition-all"
                                 >
                                     Apply as a Freelancer
@@ -110,23 +112,23 @@ export default function Login() {
                 {/* ===== MAIN LOGIN CARD (CORE Section) ===== */}
                 <AnimatedSection animationClass="opacity-0 translate-y-12" delay={200}>
                     <section className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-[3rem] border border-white/5 bg-zinc-900/40 overflow-hidden mb-32 shadow-[0_40px_100px_rgba(0,0,0,0.8)] backdrop-blur-md">
-                        
+
                         {/* LEFT SIDE: GREEN BOX */}
                         <div className="p-16 md:p-24 flex flex-col items-center justify-center bg-[#6EDD4D] relative overflow-hidden">
                             {/* Inner Decoration */}
                             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-                            
-                            <motion.h1 
+
+                            <motion.h1
                                 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}
                                 className="text-8xl md:text-[11rem] font-black mb-4 text-white tracking-tighter drop-shadow-2xl leading-none"
                             >
                                 CORE
                             </motion.h1>
-                            <motion.p 
+                            <motion.p
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
                                 className="text-zinc-900 text-center text-lg font-black uppercase tracking-[0.3em] leading-tight relative z-10"
                             >
-                                Gigfactory Project <br /> Management Platform
+                                Centralised operations <br /> for Realtime execution
                             </motion.p>
                         </div>
 
@@ -142,9 +144,9 @@ export default function Login() {
                                     <label className={labelStyle}>Password</label>
                                     <input type="password" placeholder="Enter your password" className={inputBaseStyle} />
                                 </div>
-                                <motion.button 
+                                <motion.button
                                     whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                                    type="submit" 
+                                    type="submit"
                                     className="w-full mt-6 bg-[#6EDD4D] text-zinc-950 font-black text-sm tracking-[0.2em] py-5 rounded-2xl shadow-[0_15px_30px_rgba(110,221,77,0.2)] hover:shadow-[0_20px_40px_rgba(110,221,77,0.3)] transition-all uppercase"
                                 >
                                     LOG IN

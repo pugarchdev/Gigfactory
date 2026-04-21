@@ -10,7 +10,7 @@ const AnimatedNumber = ({ value }) => {
 
     const ref = useRef(null)
     const isInView = useInView(ref, { once: true, margin: "-50px" })
-    
+
     const motionValue = useMotionValue(0)
     const springValue = useSpring(motionValue, {
         damping: 40,
@@ -38,7 +38,7 @@ const AnimatedNumber = ({ value }) => {
 export default function StatsBar() {
     const stats = [
         { value: "100+", label: "Worldwide Clients" },
-        { value: "10M+", label: "Delivered" },
+        { value: "10M+", label: "SqFt Delivered" },
         { value: "250+", label: "Projects" }
     ]
 
@@ -53,7 +53,7 @@ export default function StatsBar() {
                 className="w-full max-w-5xl relative p-[4px] rounded-[2rem] overflow-hidden group"
             >
                 {/* WIDER GRADIENT: Changed transparent_0_340deg to transparent_0_260deg for a longer light tail */}
-                <motion.div 
+                <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
                     className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_260deg,#6EDD4D_360deg)] z-0"

@@ -67,7 +67,7 @@ export default function OurExpertise() {
     {
       title: "4D/5D Construction Simulation",
       description: "Time and cost simulation for construction planning and project management optimization",
-      video: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589573/4D_5D_MODELIING_vxjwlu.png",
+      video: "https://res.cloudinary.com/deinrj3zm/video/upload/v1776763530/website-3_eejp5q.mp4",
       features: ["Construction Sequencing", "Cost Analysis", "Resource Planning"]
     },
     {

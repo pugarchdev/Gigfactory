@@ -38,20 +38,22 @@ export default function Hero({ onContactClick }) {
   const [currentImg, setCurrentImg] = useState(0)
 
   // Array of background images
-  const images = [
-    "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589095/1_gv7pis.png",
-    "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589098/Screenshot_2026-04-11_102220_uo0pcb.png",
-    "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589091/Screenshot_2026-03-27_125503_ornn0g.png",
-    "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589101/Screenshot_2026-04-15_173533_zcn2tm.png",
-    "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589097/Screenshot_2026-04-02_110457_tqn0kt.png",
+  const media = [
+    { type: "image", src: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589095/1_gv7pis.png" },
+    { type: "image", src: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589098/Screenshot_2026-04-11_102220_uo0pcb.png" },
+    { type: "image", src: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589091/Screenshot_2026-03-27_125503_ornn0g.png" },
+    { type: "image", src: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589101/Screenshot_2026-04-15_173533_zcn2tm.png" },
+    { type: "image", src: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589097/Screenshot_2026-04-02_110457_tqn0kt.png" },
+    { type: "video", src: "https://res.cloudinary.com/deinrj3zm/video/upload/v1776763526/website-2_bhnrc5.mp4" }, // ✅ video added
+
   ]
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImg((prev) => (prev + 1) % images.length)
+      setCurrentImg((prev) => (prev + 1) % media.length)
     }, 5000)
     return () => clearInterval(interval)
-  }, [images.length])
+  }, [media.length])
 
   return (
     <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden py-20 md:py-32 bg-zinc-950 text-white">
@@ -75,16 +77,30 @@ export default function Hero({ onContactClick }) {
 
       {/* --- BACKGROUND IMAGE SLIDESHOW --- */}
       <div className="absolute inset-0 z-0">
-        {images.map((img, index) => (
+        {media.map((item, index) => (
           <div
             key={index}
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 brightness-[0.85] saturate-[1.1]"
+            className="absolute inset-0 transition-opacity duration-1000"
             style={{
-              backgroundImage: `url(${img})`,
-              // Increased opacity to 0.45 for much better visibility
               opacity: currentImg === index ? 0.45 : 0
             }}
-          />
+          >
+            {item.type === "video" ? (
+              <video
+                src={item.src}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover brightness-[0.85] saturate-[1.1]"
+              />
+            ) : (
+              <div
+                className="w-full h-full bg-cover bg-center brightness-[0.85] saturate-[1.1]"
+                style={{ backgroundImage: `url(${item.src})` }}
+              />
+            )}
+          </div>
         ))}
 
         {/* Adjusted Gradient: Keeping edges dark for text readability, but clearing the center */}
@@ -108,7 +124,7 @@ export default function Hero({ onContactClick }) {
         <AnimatedSection animationClass="opacity-0 translate-y-4" delay={0}>
           <div className="mb-8 flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#6EDD4D]/40 bg-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold tracking-widest uppercase animate-blink backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-[#6EDD4D] shadow-[0_0_8px_#6EDD4D]" />
-            Leading Construction Tech
+            GLOBAL CONSTRUCTION EXPERTS
           </div>
         </AnimatedSection>
 
@@ -123,8 +139,7 @@ export default function Hero({ onContactClick }) {
         {/* Paragraph - Increased contrast */}
         <AnimatedSection animationClass="opacity-0 translate-y-12" delay={400}>
           <p className="text-lg md:text-xl text-white max-w-3xl mx-auto mb-12 leading-relaxed drop-shadow-md font-medium">
-            Technology-enabled platform for integrated BIM planning, designing & engineering. Project reference across 10+ Million Sqft.
-          </p>
+            Technology-enabled platform for integrated BIM planning, designing & engineering. Project delivered across 10+ Million Sqft.          </p>
         </AnimatedSection>
 
         {/* Button */}

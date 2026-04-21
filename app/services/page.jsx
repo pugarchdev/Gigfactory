@@ -46,7 +46,7 @@ const FeatureItem = ({ text }) => (
 
 const ServicesPageContent = () => {
     const router = useRouter()
-    const searchParams = useSearchParams() 
+    const searchParams = useSearchParams()
     const [activeService, setActiveService] = useState('')
     const sectionRefs = useRef({})
 
@@ -73,7 +73,8 @@ const ServicesPageContent = () => {
             description: 'Time-based simulation integrating models with project schedules.',
             features: ['Construction Sequencing', 'Timeline Visualization', 'Progress Tracking', 'Schedule Optimization', 'Logistics Planning'],
             benefits: ['Proactive Issue Resolution', 'Reduced Execution Risk', 'Improved Workspace Safety'],
-            image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1200&q=80'
+            media: 'https://res.cloudinary.com/deinrj3zm/video/upload/v1776763523/website-4_eokiyy.mp4', // your video path
+            type: 'video'
         },
         {
             id: 'pp-c',
@@ -110,7 +111,6 @@ const ServicesPageContent = () => {
             window.scrollTo({ top: y, behavior: 'smooth' })
         }
     }
-
     useEffect(() => {
         const serviceQuery = searchParams.get('service')
         if (serviceQuery) {
@@ -122,7 +122,7 @@ const ServicesPageContent = () => {
         }
     }, [searchParams])
 
-        useEffect(() => {
+    useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -204,12 +204,22 @@ const ServicesPageContent = () => {
                                     </p>
                                 </motion.div>
 
-                                <div className="w-full h-[350px] md:h-[500px] rounded-[3rem] border border-zinc-800/50 overflow-hidden mb-16 shadow-2xl relative group">
+                                <div className="w-full h-[220px] sm:h-[280px] md:h-[500px] rounded-[2rem] border border-zinc-800/50 overflow-hidden mb-16 shadow-2xl relative group">                                    {service.type === 'video' ? (
+                                    <video
+                                        src={service.media}
+                                        autoPlay
+                                        loop
+                                        muted
+                                        playsInline
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
                                     <img
                                         src={service.image}
-                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-1000"
                                         alt={service.title}
                                     />
+                                )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 to-transparent"></div>
                                 </div>
 

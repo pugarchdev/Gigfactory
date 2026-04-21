@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import {FaLinkedinIn} from 'react-icons/fa'
+import { FaLinkedinIn } from 'react-icons/fa'
 import ContactModal from '@/components/home/ContactModal'
 import GigExpertForm from '@/components/form/GigExpertForm'
 
@@ -40,14 +40,18 @@ export default function Footer() {
 
             <div className="container mx-auto px-6 relative z-10 max-w-7xl">
                 <motion.div
-                    className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-8 mb-12 lg:mb-16"
-                    variants={containerVariants}
+                    className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 mb-12 lg:mb-16" variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                 >
                     {/* Section 1: Logo & Description */}
-                    <motion.div variants={itemVariants} className="md:col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col gap-6">
+                    <motion.div
+                        variants={itemVariants}
+                        className="md:col-span-12 lg:col-span-3 xl:col-span-3"
+
+                    >
+                        {/* LOGO */}
                         <Link href="/" className="inline-block">
                             <Image
                                 src="/assets/GIG.png"
@@ -57,45 +61,61 @@ export default function Footer() {
                                 className="object-contain"
                             />
                         </Link>
-                        <div className="flex items-center gap-2 ml-1 opacity-90 group-hover:opacity-100 transition-opacity">
-                            {/* India Flag SVG */}
-                            <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="24" height="16" fill="#FF9933" />
-                                <rect y="5.33" width="24" height="5.33" fill="white" />
-                                <rect y="10.67" width="24" height="5.33" fill="#138808" />
-                                <circle cx="12" cy="8" r="2" fill="#000080" />
-                            </svg>
-                            {/* UK Flag SVG */}
-                            <a
-                                href="https://www.baca.uk.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-block hover:opacity-80 transition-opacity" // Optional: adds a slight hover effect
-                            >
-                                <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect width="24" height="16" fill="#012169" />
-                                    <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.67" />
-                                    <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.33" />
-                                    <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
-                                    <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.67" />
+
+                        {/* FLAGS + LINKEDIN (ADDED HERE) */}
+                        <div className="flex flex-col items-start gap-4">
+
+                            {/* FLAGS */}
+                            <div className="flex items-center gap-2">
+                                {/* India Flag */}
+                                <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none">
+                                    <rect width="24" height="16" fill="#FF9933" />
+                                    <rect y="5.33" width="24" height="5.33" fill="white" />
+                                    <rect y="10.67" width="24" height="5.33" fill="#138808" />
+                                    <circle cx="12" cy="8" r="2" fill="#000080" />
                                 </svg>
+
+                                {/* UK Flag */}
+                                <a
+                                    href="https://www.baca.uk.com"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-block hover:opacity-80 transition-opacity"
+                                >
+                                    <svg className="w-6 h-4 rounded-sm shadow-sm" viewBox="0 0 24 16" fill="none">
+                                        <rect width="24" height="16" fill="#012169" />
+                                        <path d="M0 0L24 16M24 0L0 16" stroke="white" strokeWidth="2.67" />
+                                        <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.33" />
+                                        <path d="M12 0V16M0 8H24" stroke="white" strokeWidth="4" />
+                                        <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.67" />
+                                    </svg>
+                                </a>
+                            </div>
+
+                            {/* LINKEDIN */}
+                            <a
+                                href="https://www.linkedin.com/company/gigfactory/?viewAsMember=true"
+                                target="_blank"
+                                className="w-10 h-10 rounded-full border border-dark-border bg-dark-base flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#6EDD4D] hover:bg-[#6EDD4D]/10 transition-all"
+                            >
+                                <FaLinkedinIn size={18} />
                             </a>
                         </div>
+
+                        {/* DESCRIPTION */}
                         <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium">
                             Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
                         </p>
                     </motion.div>
 
                     {/* Section 2: Links Columns */}
-                    <div className="md:col-span-12 lg:col-span-6 xl:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-4 xl:gap-8">
+                    <div className="md:col-span-12 lg:col-span-6 xl:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 xl:gap-16">
                         <motion.div variants={itemVariants}>
                             <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Expertise</h3>
                             <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM</Link></li>
-
-                                <li><Link href="/expertise#other-services" className="hover:text-[#6EDD4D] transition-colors inline-block">Planning</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Risk</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Cost</Link></li>
+                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM Services</Link></li>
+                                <li><Link href="/expertise#other-services" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM Consulting</Link></li>
+                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Other Services</Link></li>
                             </ul>
                         </motion.div>
 
@@ -153,13 +173,7 @@ export default function Footer() {
                     </div>
 
                     {/* Section 3: Connect Box */}
-                    <motion.div variants={itemVariants} className="md:col-span-12 lg:col-span-2 flex flex-col items-start lg:items-end mt-4 lg:mt-0">
-                        <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Connect</h3>
-                        <a href="https://www.linkedin.com/company/gigfactory/?viewAsMember=true" className="w-12 h-12 rounded-full border border-dark-border bg-dark-base flex items-center justify-center text-zinc-400 hover:text-white hover:border-[#6EDD4D] hover:bg-[#6EDD4D]/10 transition-all"
-                            target="_blank">
-                            <FaLinkedinIn size={20} />
-                        </a>
-                    </motion.div>
+
                 </motion.div>
 
                 {/* Bottom Bar */}

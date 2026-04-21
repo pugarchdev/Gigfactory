@@ -141,10 +141,8 @@ export default function CaseStudies({ onContactClick }) {
       setPdfLink(link)
       setIsSuccess(true)
 
-      // 3. Trigger automatic download
-      if (link && link !== '#') {
-        handleForceDownload(link, `${selectedStudy.name.replace(/\s+/g, '_')}.pdf`);
-      }
+      // 3. (REMOVED) Trigger automatic download
+      // We now let the user click the download button in the success state
     } catch (error) {
       console.error("Error submitting form", error)
       alert("Something went wrong. Please try again.")
@@ -372,16 +370,15 @@ export default function CaseStudies({ onContactClick }) {
                 <div className="w-16 h-16 bg-[#6EDD4D]/10 text-[#6EDD4D] rounded-full flex items-center justify-center text-3xl mb-6">
                   <i className="fa-solid fa-check"></i>
                 </div>
-                <a 
-                  href={pdfLink}
-                  download
-                  target="_blank" 
-                  rel="noreferrer"
-                  onClick={handleCloseModal}
+                <button 
+                  onClick={() => {
+                    handleForceDownload(pdfLink, `${selectedStudy?.name?.replace(/\s+/g, '_')}.pdf`);
+                    handleCloseModal();
+                  }}
                   className="w-full bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors flex justify-center items-center gap-2"
                 >
                   <i className="fa-solid fa-file-pdf"></i> Download PDF Now
-                </a>
+                </button>
               </div>
             )}
             

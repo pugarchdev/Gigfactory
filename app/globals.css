@@ -3,26 +3,44 @@
 @theme {
   /* Client's Brand Green */
   --color-neon-green: #6EDD4D;
-  
+
   /* Strict Black Theme (TrackFlow Style) */
   --color-dark-base: #000000;
-  --color-dark-surface: #0a0a0a; 
-  --color-dark-border: #1f2937; /* Clean, subtle gray borders */
+  --color-dark-surface: #0a0a0a;
+  --color-dark-border: #1f2937;
+  /* Clean, subtle gray borders */
 
   /* Tailwind v4 Animation Setup */
-  --animate-marquee: marquee 50s linear infinite;
-  
+  --animate-marquee: marquee 600s linear infinite;
+
   @keyframes marquee {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0%);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
   }
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--color-dark-base); }
-::-webkit-scrollbar-thumb { background: var(--color-dark-border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-neon-green); }
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-dark-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-dark-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neon-green);
+}
 
 @layer utilities {
   .glass {

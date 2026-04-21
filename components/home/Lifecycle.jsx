@@ -35,7 +35,7 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 
 export default function Lifecycle({ onContactClick }) {
   const [activeStage, setActiveStage] = useState(null)
-  
+
   // NEW: State and Ref for the mobile scroll slider
   const [scrollProgress, setScrollProgress] = useState(0)
   const scrollContainerRef = useRef(null)
@@ -43,7 +43,7 @@ export default function Lifecycle({ onContactClick }) {
   const stages = [
     { id: 1, name: 'Initiation', icon: 'fa-lightbulb', image: '/assets/Intiation Phase.png', description: 'Feasibility & concept phase planning', outputs: ['Early Design Clarity', 'Initial Budget Confidence', 'Stakeholder Alignment'] },
     { id: 2, name: 'Pre-construction', icon: 'fa-layer-group', image: '/assets/Preconstruction Phase.png', description: 'Pre-Construction Planning & Coordination', outputs: ['Coordinated Model', 'Reduced Conflicts', 'Execution-Ready Documentation'] },
-    { id: 3, name: 'Design Dev', icon: 'fa-bezier-curve', image: '/assets/Design Development Phase.png', description: 'Designing Development & Optimization', outputs: ['Design visualization', 'Early identification of conflicts', 'Digital foundation'] },
+    { id: 3, name: 'Design Development', icon: 'fa-bezier-curve', image: '/assets/Design Development Phase.png', description: 'Designing Development & Optimization', outputs: ['Design visualization', 'Early identification of conflicts', 'Digital foundation'] },
     { id: 4, name: 'Execution', icon: 'fa-person-digging', image: '/assets/Execution Phase.png', description: 'Construction & Execution Phase', outputs: ['Timeline Optimization via 4d', 'Reduced Rework', 'Proactive Resolution'] },
     { id: 5, name: 'Handover', icon: 'fa-check-to-slot', image: '/assets/Handover Phase.png', description: 'Handover & Commissioning', outputs: ['Digital Twin', 'Legal BIM Model', 'Predictive Maintenance'] }
   ]
@@ -56,12 +56,12 @@ export default function Lifecycle({ onContactClick }) {
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    
+
     if (scrollWidth === clientWidth) {
       setScrollProgress(0);
       return;
     }
-    
+
     const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
     setScrollProgress(progress);
   };
@@ -93,7 +93,7 @@ export default function Lifecycle({ onContactClick }) {
 
       {/* Horizontal Scroll on Mobile, Grid on Desktop */}
       <div className="relative mb-8 md:mb-12">
-        <div 
+        <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
           className="overflow-x-auto no-scrollbar pb-12 -mx-6 px-6 snap-x snap-mandatory"
@@ -159,17 +159,17 @@ export default function Lifecycle({ onContactClick }) {
             })}
           </div>
         </div>
-        
+
         {/* NEW: MOBILE SLIDER INDICATOR (Hidden on lg screens) */}
         <div className="lg:hidden flex justify-center items-center -mt-4 mb-4">
           <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
-            <div 
+            <div
               className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
               style={{ transform: `translateX(${scrollProgress * 2}%)` }}
             />
           </div>
         </div>
-        
+
       </div>
 
       {/* Static Contact Button */}

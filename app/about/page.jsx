@@ -60,37 +60,39 @@ export default function AboutPage() {
 
   return (
     <main ref={containerRef} className="min-h-screen bg-[#030303] text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px] overflow-hidden relative">
-      
+
       {/* --- ADVANCED BACKGROUND SYSTEM --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* 1. The Blueprint Grid */}
-        <div className="absolute inset-0 opacity-[0.15]" 
-             style={{ backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`, 
-                      backgroundSize: '40px 40px' }}>
+        <div className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
+          }}>
         </div>
-        
+
         {/* 2. Moving Laser Beams */}
-        <motion.div 
+        <motion.div
           animate={{ x: ['-100%', '100%'] }}
           transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
           className="absolute top-[30%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#6EDD4D]/40 to-transparent"
         />
-        <motion.div 
+        <motion.div
           animate={{ y: ['-100%', '100%'] }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear", delay: 2 }}
           className="absolute top-0 left-[20%] w-[1px] h-full bg-gradient-to-b from-transparent via-[#6EDD4D]/20 to-transparent"
         />
 
         {/* 3. Deep Ambient Glows */}
-        <motion.div 
+        <motion.div
           animate={{ y: [0, -60, 0], opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-1/4 w-[700px] h-[700px] bg-[#6EDD4D]/10 blur-[180px] rounded-full" 
+          className="absolute top-[-10%] left-1/4 w-[700px] h-[700px] bg-[#6EDD4D]/10 blur-[180px] rounded-full"
         />
-        <motion.div 
+        <motion.div
           animate={{ x: [0, 80, 0], opacity: [0.1, 0.4, 0.1] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          className="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 blur-[150px] rounded-full" 
+          className="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 blur-[150px] rounded-full"
         />
       </div>
 
@@ -102,12 +104,12 @@ export default function AboutPage() {
               Who We Are
             </span>
           </motion.div>
-          
+
           <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-[1.2]">
             Integrated Construction <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6EDD4D] via-emerald-300 to-[#6EDD4D] bg-[length:200%_auto] animate-text-gradient">Technology Platform</span>
           </motion.h1>
-          
+
           <motion.p variants={fadeUp} className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium">
             Building Intelligence. Growing Together. At Gigfactory, culture is not just about where we work — it&apos;s about how we think, collaborate, and build.
           </motion.p>
@@ -125,39 +127,62 @@ export default function AboutPage() {
             className="absolute inset-[-10%] w-[120%] h-[120%] object-cover origin-top transition-all duration-1000 group-hover:opacity-100"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-transparent opacity-90"></div>
-          
-          {/* Subtle Scanning Line on Image */}
-          <motion.div 
-            animate={{ top: ['0%', '100%', '0%'] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute left-0 w-full h-[2px] bg-[#6EDD4D]/20 z-20 pointer-events-none"
-          />
+
+
         </div>
       </section>
 
       {/* 2. STATS BAR */}
       <section className="relative -mt-24 z-20 px-6">
-        <motion.div
-          initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} variants={fadeUp}
-          className="max-w-5xl mx-auto rounded-[2.5rem] bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-10 md:p-14 flex flex-wrap justify-around gap-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)] relative overflow-hidden group"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
 
-          <div className="text-center relative z-10">
-            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="10M+" /></h3>
-            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Delivered SqFt</p>
-          </div>
-          <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
-          <div className="text-center relative z-10">
-            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="100+" /></h3>
-            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Global Clients</p>
-          </div>
-          <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
-          <div className="text-center relative z-10">
-            <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter"><AnimatedNumber value="250+" /></h3>
-            <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Projects Done</p>
-          </div>
-        </motion.div>
+        {/* ✅ NEW WRAPPER (this creates the animated border) */}
+        <div className="relative p-[4px] rounded-[2.5rem] overflow-hidden max-w-5xl mx-auto">
+
+          {/* ✅ ROTATING GRADIENT (PUT IT HERE) */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+            className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_260deg,#6EDD4D_360deg)] z-0"
+          />
+
+          {/* ✅ YOUR ORIGINAL BOX (UNCHANGED, just moved inside) */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={fadeUp}
+            className="relative z-10 rounded-[calc(2.5rem-4px)] bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-10 md:p-14 flex flex-wrap justify-around gap-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden group"
+          >
+
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+
+            <div className="text-center relative z-10">
+              <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
+                <AnimatedNumber value="10M+" />
+              </h3>
+              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">SqFt Delivered</p>
+            </div>
+
+            <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+
+            <div className="text-center relative z-10">
+              <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
+                <AnimatedNumber value="100+" />
+              </h3>
+              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Global Clients</p>
+            </div>
+
+            <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+
+            <div className="text-center relative z-10">
+              <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
+                <AnimatedNumber value="250+" />
+              </h3>
+              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Projects Done</p>
+            </div>
+
+          </motion.div>
+        </div>
       </section>
 
       {/* 3. WHO WE ARE */}
@@ -179,9 +204,9 @@ export default function AboutPage() {
               </motion.div>
             </motion.div>
 
-            <motion.div 
-              initial={{ opacity: 0, x: 50 }} 
-              whileInView={{ opacity: 1, x: 0 }} 
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="relative group"
             >
@@ -207,8 +232,8 @@ export default function AboutPage() {
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
             className="grid grid-cols-1 md:grid-cols-2 gap-10"
           >
-            <motion.div 
-              variants={fadeUp} 
+            <motion.div
+              variants={fadeUp}
               whileHover={{ y: -15 }}
               className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
             >
@@ -221,8 +246,8 @@ export default function AboutPage() {
               </p>
             </motion.div>
 
-            <motion.div 
-              variants={fadeUp} 
+            <motion.div
+              variants={fadeUp}
               whileHover={{ y: -15 }}
               className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
             >
@@ -254,7 +279,7 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {culturePillars.map((pillar, index) => (
             <motion.div
-              key={index} 
+              key={index}
               initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
               whileHover={{ scale: 1.05, backgroundColor: "rgba(110, 221, 77, 0.05)" }}
               className="p-10 rounded-[2.5rem] bg-zinc-900/20 backdrop-blur-md border border-white/5 hover:border-[#6EDD4D]/30 transition-all duration-500 text-center flex flex-col items-center"
@@ -271,11 +296,11 @@ export default function AboutPage() {
 
       {/* 6. CTA SECTION */}
       <section className="pt-10 pb-20 px-6 text-center relative z-10">
-        <motion.div 
+        <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
           className="relative max-w-5xl mx-auto bg-zinc-900/30 backdrop-blur-3xl border border-white/10 rounded-[4rem] p-16 md:p-24 overflow-hidden"
         >
-          <motion.div 
+          <motion.div
             animate={{ scale: [1, 1.4, 1], opacity: [0.1, 0.2, 0.1] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#6EDD4D] blur-[150px] rounded-full pointer-events-none"

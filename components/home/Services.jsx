@@ -44,7 +44,7 @@ export default function Services({ onContactClick }) {
       id: '2D Services',
       param: '2d',
       icon: 'fa-pen-ruler',
-      iconPath: '/assets/s2d.png',
+      iconPath: '/assets/S-2D.png',
       title: '2D',
       desc: 'Our team delivers clear, technically accurate drawings that help project stakeholders communicate design intent.'
     },
@@ -52,7 +52,7 @@ export default function Services({ onContactClick }) {
       id: '3D Services',
       param: '3d',
       icon: 'fa-cube',
-      iconPath: '/assets/s3d.png',
+      iconPath: '/assets/S3D-BIM.png',
       title: 'BIM 3D',
       desc: 'Our 3D BIM services help project teams identify issues early, streamline collaboration, and ensure accuracy.'
     },
@@ -60,7 +60,7 @@ export default function Services({ onContactClick }) {
       id: '4D Services',
       param: '4d',
       icon: 'fa-clock',
-      iconPath: '/assets/s4d.png',
+      iconPath: '/assets/S-4D.png',
       title: '4D',
       desc: 'We integrate project schedules with BIM models to simulate, optimize, and control construction sequencing.'
     },
@@ -68,7 +68,7 @@ export default function Services({ onContactClick }) {
       id: 'Project Planning',
       param: 'pp-c',
       icon: 'fa-chart-gantt',
-      iconPath: '/assets/spp&c.png',
+      iconPath: '/assets/S-PP&C.png',
       title: 'Project Planning & Controls',
       desc: 'We support structured planning to enhance coordination and execution clarity across the project lifecycle.'
     },
@@ -76,7 +76,7 @@ export default function Services({ onContactClick }) {
       id: 'BOQ Services',
       param: 'boq',
       icon: 'fa-calculator',
-      iconPath: '/assets/sboq.png',
+      iconPath: '/assets/S-BOQ&Quantity Intelligence.png',
       title: 'BOQ & Quantity Intelligence',
       desc: 'We deliver accurate cost and quantity support to enhance financial transparency and procurement alignment.'
     },
@@ -84,7 +84,7 @@ export default function Services({ onContactClick }) {
       id: 'Audit Services',
       param: 'audit',
       icon: 'fa-clipboard-check',
-      iconPath: '/assets/saudit.png',
+      iconPath: '/assets/S-Audit&Verification.png',
       title: 'Audit & Verification Services',
       desc: 'We ensure compliance, transparency, and technical accuracy across all critical project stages.'
     }
@@ -94,13 +94,13 @@ export default function Services({ onContactClick }) {
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    
+
     // Avoid division by zero if there's no scrollable area
     if (scrollWidth === clientWidth) {
       setScrollProgress(0);
       return;
     }
-    
+
     const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
     setScrollProgress(progress);
   };
@@ -142,9 +142,9 @@ export default function Services({ onContactClick }) {
 
       {/* Services Grid & Slider Container */}
       <div className="relative mb-16 md:mb-24 z-10">
-        
+
         {/* Horizontal Scroll Area */}
-        <div 
+        <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
           // Added snap-x and snap-mandatory for smooth mobile swiping
@@ -170,7 +170,7 @@ export default function Services({ onContactClick }) {
                       <img
                         src={service.iconPath}
                         alt={service.title}
-                        className="w-14 h-14 object-contain relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                        className="w-26 h-26 object-contain relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                       />
                     ) : (
                       <i className={`fa-solid ${service.icon} text-4xl text-[#6EDD4D] group-hover:text-zinc-950 transition-colors duration-500`}></i>
@@ -193,7 +193,7 @@ export default function Services({ onContactClick }) {
         {/* MOBILE SLIDER INDICATOR (Hidden on tablet/desktop) */}
         <div className="md:hidden flex justify-center items-center mt-2">
           <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
-            <div 
+            <div
               className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
               // Moves the pill 0% to 200% of its own width as the user scrolls 0% to 100% of the container
               style={{ transform: `translateX(${scrollProgress * 2}%)` }}
