@@ -1,7 +1,8 @@
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import Script from 'next/script'; // Import the Next.js Script component
 
-import './globals.css'; // Make sure this path is correct based on your folder structure
+import './globals.css'; 
 
 export const metadata = {
   title: 'GigFactory - Construction Services',
@@ -10,6 +11,7 @@ export const metadata = {
     icon: '/icon.png', 
   },
 };
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
@@ -22,7 +24,24 @@ export default function RootLayout({ children }) {
       </head>
       <body className="antialiased bg-[#050505] text-slate-50 selection:bg-emerald-500/30 overflow-x-hidden">
 
-
+        {/* --- Google Analytics Scripts --- */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-4NBF7RBYVE`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-4NBF7RBYVE');
+            `,
+          }}
+        />
+        {/* ------------------------------ */}
 
         {/* Top Navigation Bar */}
         <Navbar />
