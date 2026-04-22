@@ -60,14 +60,14 @@ export default function OurExpertise() {
     },
     {
       title: "3D Modeling",
-      description: "High-precision 3D modeling services for complex architectural and engineering projects",
+      description: "Expert MEPF Modelling and high-precision 3D modeling for complex architectural and engineering projects",
       image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589574/3D_Modelling_k6eckv.png",
-      features: ["LOD Development", "Family Creation", "Model Coordination"]
+      features: ["LOD Development (upto 500)", "Family Creation", "Model Coordination"]
     },
     {
       title: "4D/5D Construction Simulation",
       description: "Time and cost simulation for construction planning and project management optimization",
-      video: "https://res.cloudinary.com/deinrj3zm/video/upload/v1776763530/website-3_eejp5q.mp4",
+      video: "https://res.cloudinary.com/deinrj3zm/video/upload/v1776850206/website-5_tsdexy.mp4",
       features: ["Construction Sequencing", "Cost Analysis", "Resource Planning"]
     },
     {
@@ -95,16 +95,16 @@ export default function OurExpertise() {
       features: ["Clash Detection", "Conflict Resolution", "System Coordination"]
     },
     {
-      title: "Value Engineering",
-      description: "Value engineering analysis to optimize costs while maintaining quality and functionality",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589590/VALUE_ENGINEERING_nbppku.png",
-      features: ["Cost Optimization", "Alternative Solutions", "Quality Assurance"]
-    },
-    {
       title: "Quantity Takeoff",
       description: "Accurate quantity extraction and material takeoffs from BIM models for cost estimation",
       image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589585/QUANTITY_TAKEOFF_ji1can.png",
       features: ["Material Quantification", "Cost Estimation", "Quantity Analysis"]
+    },
+    {
+      title: "Digital Twins",
+      description: "End-to-end digital twin handover with 6D/7D BIM data delivery, enabling seamless integration with facilities management platforms",
+      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589590/VALUE_ENGINEERING_nbppku.png",
+      features: ["Digital Twin Handover & COBie Data Delivery", "6D/7D BIM Integration", "FM Software Compatibility"]
     }
   ]
 
@@ -167,6 +167,12 @@ export default function OurExpertise() {
       features: ["Project Planning", "Coordination Support", "Delivery Management"]
     },
     {
+      title: "Value Engineering",
+      description: "Value engineering analysis to optimize costs while maintaining quality and functionality",
+      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589590/VALUE_ENGINEERING_nbppku.png",
+      features: ["Cost Optimization", "Alternative Solutions", "Quality Assurance"]
+    },
+    {
       title: "3D Visualization & Detailing",
       description: "High-fidelity 3D visualizations and detailed models that bring design intent to life — from concept to construction-ready documentation.",
       image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776688464/3DVisualization_qlz74b.png",
@@ -180,6 +186,29 @@ export default function OurExpertise() {
     // Tracks which card is tapped on mobile
     const [activeCard, setActiveCard] = useState(null)
     const scrollContainerRef = useRef(null)
+
+    // 🔥 AUTO SCROLL (ADD HERE)
+    useEffect(() => {
+      const container = scrollContainerRef.current
+      if (!container) return
+
+      const interval = setInterval(() => {
+        const card = container.querySelector('div')
+        const cardWidth = card?.offsetWidth || 300
+        const gap = 16
+        const scrollAmount = cardWidth + gap
+
+        const maxScroll = container.scrollWidth - container.clientWidth
+
+        if (container.scrollLeft + scrollAmount >= maxScroll) {
+          container.scrollTo({ left: 0, behavior: 'smooth' })
+        } else {
+          container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+        }
+      }, 5000)
+
+      return () => clearInterval(interval)
+    }, [items])
 
     const handleScroll = () => {
       if (!scrollContainerRef.current) return;

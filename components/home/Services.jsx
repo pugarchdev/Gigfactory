@@ -200,8 +200,17 @@ export default function Services({ onContactClick }) {
             />
           </div>
         </div>
-
       </div>
+
+      <AnimatedSection animationClass="opacity-0 translate-y-10" delay={50} className="flex justify-center -mt-16">
+        <Link
+          href="/services?service=3d-bim"
+          className="inline-flex items-center gap-2 text-sm md:text-base font-semibold text-[#6EDD4D] border border-[#6EDD4D]/40 px-6 py-3 rounded-full hover:bg-[#6EDD4D] hover:text-zinc-950 transition-all duration-300 mb-20 group"
+        >
+          Explore More Services
+          <i className="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform duration-300"></i>
+        </Link>
+      </AnimatedSection>
 
       {/* CTA SECTION */}
       <div className="relative z-10 text-center pt-0 pb-10">

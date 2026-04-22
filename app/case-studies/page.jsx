@@ -111,7 +111,7 @@ const CaseStudyCard = ({ study, onDownload }) => (
 const CaseStudiesListing = () => {
   const router = useRouter()
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
-  
+
   // --- LIVE DATA STATE ---
   const [caseStudies, setCaseStudies] = useState([])
   const [loading, setLoading] = useState(true)
@@ -141,6 +141,27 @@ const CaseStudiesListing = () => {
     }
     fetchStudies()
   }, [])
+  // ✅ AUTO SCROLL EFFECT (ADD HERE)
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const interval = setInterval(() => {
+      const cardWidth = container.querySelector('div')?.offsetWidth || 300
+      const gap = 16
+      const scrollAmount = cardWidth + gap
+
+      const maxScroll = container.scrollWidth - container.clientWidth
+
+      if (container.scrollLeft + scrollAmount >= maxScroll) {
+        container.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [caseStudies])
 
   // Desktop chunks
   const desktopRows = []
@@ -168,7 +189,7 @@ const CaseStudiesListing = () => {
 
   const handleCloseModal = () => {
     setIsDownloadModalOpen(false)
-    setTimeout(() => setSelectedStudy(null), 300) 
+    setTimeout(() => setSelectedStudy(null), 300)
   }
 
   const handleInputChange = (e) => {
@@ -263,7 +284,7 @@ const CaseStudiesListing = () => {
         {/* Mobile View (Single Continuous Slider) */}
         <div className="md:hidden relative z-10">
           <div className="-mx-6">
-            <div 
+            <div
               ref={scrollContainerRef}
               onScroll={handleScroll}
               /* FORCE NATIVE SCROLLBAR TO HIDE USING ARBITRARY VARIANTS */
@@ -285,7 +306,7 @@ const CaseStudiesListing = () => {
           {/* CUSTOM MOBILE SLIDER INDICATOR */}
           <div className="flex justify-center items-center mt-2">
             <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
-              <div 
+              <div
                 className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
                 style={{ transform: `translateX(${scrollProgress * 2}%)` }}
               />
@@ -321,15 +342,15 @@ const CaseStudiesListing = () => {
       {isDownloadModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleCloseModal}
           ></div>
-          
+
           {/* Modal Content */}
           <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            
-            <button 
+
+            <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
             >
@@ -341,8 +362,8 @@ const CaseStudiesListing = () => {
                 {isSuccess ? "Ready to Download!" : "Get the Case Study"}
               </h3>
               <p className="text-zinc-400 text-sm">
-                {isSuccess 
-                  ? "Your case study is ready. Click below to download." 
+                {isSuccess
+                  ? "Your case study is ready. Click below to download."
                   : `Enter your details to download the full study for "${selectedStudy?.title}".`}
               </p>
             </div>
@@ -350,8 +371,8 @@ const CaseStudiesListing = () => {
             {!isSuccess ? (
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="name"
                     required
                     placeholder="Full Name"
@@ -361,8 +382,8 @@ const CaseStudiesListing = () => {
                   />
                 </div>
                 <div>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     name="email"
                     required
                     placeholder="Email Address"
@@ -372,8 +393,8 @@ const CaseStudiesListing = () => {
                   />
                 </div>
                 <div>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     name="phone"
                     required
                     placeholder="Contact Number"
@@ -383,8 +404,8 @@ const CaseStudiesListing = () => {
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
                   />
                 </div>
-                
-                <button 
+
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full mt-4 bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
@@ -401,10 +422,10 @@ const CaseStudiesListing = () => {
                 <div className="w-16 h-16 bg-[#6EDD4D]/10 text-[#6EDD4D] rounded-full flex items-center justify-center text-3xl mb-6">
                   <i className="fa-solid fa-check"></i>
                 </div>
-                <a 
+                <a
                   href={pdfLink}
                   download
-                  target="_blank" 
+                  target="_blank"
                   rel="noreferrer"
                   onClick={handleCloseModal}
                   className="w-full bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors flex justify-center items-center gap-2"

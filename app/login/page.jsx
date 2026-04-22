@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import AgencyForm from '@/components/form/AgencyForm'
 import FreelancerForm from '@/components/form/FreelancerForm'
+import { Lightbulb, Users, Target, TrendingUp } from 'lucide-react'
 
 // --- REUSABLE ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
@@ -41,10 +42,10 @@ export default function Login() {
     const [showFreelancerForm, setShowFreelancerForm] = useState(false)
 
     const culturePillars = [
-        { title: "Intelligence-Driven Thinking", description: "We embrace creativity and forward-thinking solutions" },
-        { title: "Collaboration Over Silos", description: "We work together to achieve exceptional results" },
-        { title: "Ownership & Accountability", description: "We uphold the highest standards of ethics and transparency" },
-        { title: "Continuous Learning", description: "We strive for outstanding quality in everything we do" }
+        { title: "Intelligence-Driven Thinking", description: "We embrace creativity and forward-thinking solutions", icon: <Lightbulb size={20} /> },
+        { title: "Collaboration Over Silos", description: "We work together to achieve exceptional results", icon: <Users size={20} /> },
+        { title: "Ownership & Accountability", description: "We uphold the highest standards of ethics and transparency", icon: <Target size={24} /> },
+        { title: "Continuous Learning", description: "We strive for outstanding quality in everything we do", icon: <TrendingUp size={24} /> }
     ]
 
     const inputBaseStyle = "w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all placeholder:text-zinc-600 focus:bg-zinc-900/50"
@@ -185,8 +186,8 @@ export default function Login() {
                                 delay={index * 150}
                             >
                                 <div className="p-10 h-full rounded-[2.5rem] bg-white/5 border border-white/5 transition-all duration-500 hover:border-[#6EDD4D]/30 hover:bg-[#6EDD4D]/5 group">
-                                    <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-[#6EDD4D]/40 transition-all duration-500">
-                                        <div className="w-2 h-2 rounded-full bg-[#6EDD4D] shadow-[0_0_15px_#6EDD4D]"></div>
+                                    <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-[#6EDD4D]/40 transition-all duration-500 text-[#6EDD4D] group-hover:text-white">
+                                        {pillar.icon}
                                     </div>
 
                                     <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[#6EDD4D] transition-colors tracking-tight">

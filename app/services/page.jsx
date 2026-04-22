@@ -68,6 +68,14 @@ const ServicesPageContent = () => {
             image: 'https://res.cloudinary.com/deinrj3zm/image/upload/v1776588660/3D.Desktop_f37aeh.png'
         },
         {
+            id: '3d-bim',
+            title: '3D BIM Services',
+            description: 'Precision modeling that drives smarter decisions across every stage.',
+            features: ['Architectural, Structural & MEPF Modeling', 'LOD 100-500 Model Development', 'Clash Detection & Coordination', 'Coordinated sheet generation and documentation'],
+            benefits: ['Federated BIM Models ready for construction', 'Clash-free coordination reports', 'IFC & Revit deliverables compatible with global standards'],
+            image: 'https://res.cloudinary.com/deinrj3zm/image/upload/v1776588660/3D.Desktop_f37aeh.png'
+        },
+        {
             id: '4d',
             title: '4D Services',
             description: 'Time-based simulation integrating models with project schedules.',
@@ -162,7 +170,6 @@ const ServicesPageContent = () => {
                     {/* STICKY SIDEBAR */}
                     <aside className="lg:w-1/4 xl:w-1/5 shrink-0">
                         <div className="sticky top-32 bg-zinc-900/30 backdrop-blur-xl border border-zinc-800/50 rounded-[2rem] p-6 hidden lg:block shadow-2xl">
-                            <h3 className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mb-6 px-4">Navigation</h3>
                             <nav className="flex flex-col gap-1.5">
                                 {servicesData.map((service) => (
                                     <button

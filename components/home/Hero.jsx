@@ -139,7 +139,7 @@ export default function Hero({ onContactClick }) {
         {/* Paragraph - Increased contrast */}
         <AnimatedSection animationClass="opacity-0 translate-y-12" delay={400}>
           <p className="text-lg md:text-xl text-white max-w-3xl mx-auto mb-12 leading-relaxed drop-shadow-md font-medium">
-            Technology-enabled platform for integrated BIM planning, designing & engineering. Project delivered across 10+ Million Sqft.          </p>
+            Technology-enabled platform for integrated BIM planning, designing & engineering. Projects delivered across 10+ Million Sqft.          </p>
         </AnimatedSection>
 
         {/* Button */}

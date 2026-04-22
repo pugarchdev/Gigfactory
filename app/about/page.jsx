@@ -268,7 +268,7 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-6xl text-center mb-20">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
             <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-              Explore Our <span className="text-[#6EDD4D]">Values</span>
+              Our <span className="text-[#6EDD4D]">Values</span>
             </h2>
             <p className="text-zinc-500 text-xl max-w-2xl mx-auto font-medium">
               The core principles that guide every pixel and every project we build.

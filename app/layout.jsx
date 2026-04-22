@@ -2,13 +2,17 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Script from 'next/script'; // Import the Next.js Script component
 
-import './globals.css'; 
+import './globals.css';
 
 export const metadata = {
-  title: 'GigFactory - Construction Services',
+  title: 'GigFactory - Global Construction Experts',
   description: 'Global Capability Center for Construction Services',
   icons: {
-    icon: '/icon.png', 
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: '/favicon.png',
   },
 };
 

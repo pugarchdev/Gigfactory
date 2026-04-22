@@ -62,6 +62,10 @@ export default function Footer() {
                             />
                         </Link>
 
+                        {/* DESCRIPTION */}
+                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-6">
+                            Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
+                        </p>
                         {/* FLAGS + LINKEDIN (ADDED HERE) */}
                         <div className="flex flex-col items-start gap-4">
 
@@ -101,11 +105,6 @@ export default function Footer() {
                                 <FaLinkedinIn size={18} />
                             </a>
                         </div>
-
-                        {/* DESCRIPTION */}
-                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium">
-                            Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
-                        </p>
                     </motion.div>
 
                     {/* Section 2: Links Columns */}
@@ -114,8 +113,8 @@ export default function Footer() {
                             <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Expertise</h3>
                             <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
                                 <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM Services</Link></li>
-                                <li><Link href="/expertise#other-services" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM Consulting</Link></li>
-                                <li><Link href="/expertise" className="hover:text-[#6EDD4D] transition-colors inline-block">Other Services</Link></li>
+                                <li><Link href="/expertise#bim-consulting" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM Consulting</Link></li>
+                                <li><Link href="/expertise#other-services" className="hover:text-[#6EDD4D] transition-colors inline-block">Other Services</Link></li>
                             </ul>
                         </motion.div>
 
@@ -123,7 +122,8 @@ export default function Footer() {
                             <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Services</h3>
                             <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
                                 <li><Link href="/services?service=2d" className="hover:text-[#6EDD4D] transition-colors inline-block">2D Services</Link></li>
-                                <li><Link href="/services?service=3d" className="hover:text-[#6EDD4D] transition-colors inline-block">BIM 3D Services</Link></li>
+                                <li><Link href="/services?service=3d" className="hover:text-[#6EDD4D] transition-colors inline-block"> 3D Services</Link></li>
+                                <li><Link href="/services?service=3d-bim" className="hover:text-[#6EDD4D] transition-colors inline-block">3D BIM Services</Link></li>
                                 <li><Link href="/services?service=4d" className="hover:text-[#6EDD4D] transition-colors inline-block">4D Services</Link></li>
                                 <li><Link href="/services?service=pp-c" className="hover:text-[#6EDD4D] transition-colors inline-block">Project Planning & Controls</Link></li>
                                 <li><Link href="/services?service=boq" className="hover:text-[#6EDD4D] transition-colors inline-block">BOQ & Quantity Intelligence</Link></li>
@@ -137,6 +137,8 @@ export default function Footer() {
                                 <li><Link href="/about" className="hover:text-[#6EDD4D] transition-colors inline-block">About</Link></li>
                                 <li><Link href="/projects" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Projects</Link></li>
                                 <li><Link href="/case-studies" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Case Studies</Link></li>
+                                <li><Link href="/login" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Become a Gigfactory Expert</Link></li>
+
                                 <li>
                                     <button
                                         onClick={() => setIsGigExpertFormOpen(true)}
