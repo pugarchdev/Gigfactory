@@ -74,7 +74,7 @@ export default function LetsDiscuss() {
                                 href="mailto:contact@gigfactory.com"
                                 className="text-lg md:text-xl font-medium text-white hover:text-[#6EDD4D] transition-colors block"
                             >
-                                contact@gigfactory.com
+                                contact@gigfactory.in
                             </a>
 
                             {/* Large "Your Project" Text Block (Exactly like 1st image: Two lines, tight leading, left-aligned relative to column) */}
