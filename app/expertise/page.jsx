@@ -103,7 +103,7 @@ export default function OurExpertise() {
     {
       title: "Digital Twins",
       description: "End-to-end digital twin handover with 6D/7D BIM data delivery, enabling seamless integration with facilities management platforms",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589590/VALUE_ENGINEERING_nbppku.png",
+      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776932787/Digital_Twins_bbe3f7.png",
       features: ["Digital Twin Handover & COBie Data Delivery", "6D/7D BIM Integration", "FM Software Compatibility"]
     }
   ]

@@ -105,6 +105,33 @@ export default function Services({ onContactClick }) {
     setScrollProgress(progress);
   };
 
+  // ✅ ADD THIS EXACTLY HERE
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    // Only mobile view
+    if (window.innerWidth >= 768) return
+
+    const scrollStep = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container
+
+      // If end → go back to start
+      if (scrollLeft + clientWidth >= scrollWidth - 5) {
+        container.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        container.scrollBy({
+          left: container.clientWidth * 0.85, // matches your card width
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    const interval = setInterval(scrollStep, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <section className="container mx-auto px-6 py-20 relative overflow-hidden">
 
@@ -170,7 +197,7 @@ export default function Services({ onContactClick }) {
                       <img
                         src={service.iconPath}
                         alt={service.title}
-                        className="w-26 h-26 object-contain relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                        className="w-24 h-24 object-contain scale-150 relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
                       />
                     ) : (
                       <i className={`fa-solid ${service.icon} text-4xl text-[#6EDD4D] group-hover:text-zinc-950 transition-colors duration-500`}></i>
@@ -202,13 +229,23 @@ export default function Services({ onContactClick }) {
         </div>
       </div>
 
-      <AnimatedSection animationClass="opacity-0 translate-y-10" delay={50} className="flex justify-center -mt-16">
+      <AnimatedSection
+        animationClass="opacity-0 translate-y-10"
+        delay={50}
+        className="flex justify-center -mt-12"
+      >
         <Link
           href="/services?service=3d-bim"
-          className="inline-flex items-center gap-2 text-sm md:text-base font-semibold text-[#6EDD4D] border border-[#6EDD4D]/40 px-6 py-3 rounded-full hover:bg-[#6EDD4D] hover:text-zinc-950 transition-all duration-300 mb-20 group"
+          className="inline-flex items-center gap-3 whitespace-nowrap 
+               text-lg md:text-xl font-bold 
+               text-zinc-950 bg-[#6EDD4D] 
+               px-10 py-5 rounded-full 
+               shadow-lg shadow-[#6EDD4D]/30
+               hover:bg-[#5ed63f] hover:scale-105 
+               transition-all duration-300 mb-20 group"
         >
           Explore More Services
-          <i className="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform duration-300"></i>
+          <i className="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform duration-300"></i>
         </Link>
       </AnimatedSection>
 

@@ -86,12 +86,12 @@ const LogoSection = () => {
     { name: 'orchid', image: '/assets/orchid-32.png' },
     { name: 'skillbind', image: '/assets/skillbind-29.png' },
     { name: 'ascenders', image: '/assets/ascenders-47.png' },
-    { name: 'freespanz', image: '/assets/FSZ 1.png' },
-    { name: 'gilly', image: '/assets/gilly-37.png' },
-    { name: 'imagegrafix', image: '/assets/imagegrafix-36.png' },
-    { name: 'oarchilos', image: '/assets/oarchilos-33.png' },
+    { name: 'freespanz', image: '/assets/fsz-l6 2 (1).png' },
+    { name: 'gilly', image: '/assets/gilly-l1 1.png' },
+    { name: 'imagegrafix', image: '/assets/ig-l5 1.png' },
+    { name: 'oarchilos', image: '/assets/oarchilos-l2 1.png' },
     { name: 'turnkey', image: '/assets/turnkey-49.png' },
-    { name: 'suresh_babu_and_partners', image: '/assets/suresh_babu_and_partners_logo-28.png' },
+    { name: 'suresh_babu_and_partners', image: '/assets/sbp-l4 1.png' },
     { name: 'Designworks', image: '/assets/Designworks-42.png' },
     { name: 'TGE', image: '/assets/TGE-27.png' },
     { name: 'GBArchitect', image: '/assets/GBArchitect-39.png' },
@@ -100,7 +100,7 @@ const LogoSection = () => {
     { name: 'ans', image: '/assets/ans-48.png' },
     { name: 'Au', image: '/assets/Au-46.png' },
     { name: 'DesignHouse', image: '/assets/DesignHouse-26.png' },
-    { name: 'genesis', image: '/assets/genesis-38.png' }
+    { name: 'genesis', image: '/assets/genesis-l3 1.png' }
   ];
 
   // We combine the array twice to create a seamless infinite loop

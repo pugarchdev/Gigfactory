@@ -108,7 +108,7 @@ export default function Footer() {
                     </motion.div>
 
                     {/* Section 2: Links Columns */}
-                    <div className="md:col-span-12 lg:col-span-6 xl:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 xl:gap-16">
+                    <div className="md:col-span-12 lg:col-span-10 xl:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 xl:gap-16">
                         <motion.div variants={itemVariants}>
                             <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Expertise</h3>
                             <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">

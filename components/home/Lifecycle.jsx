@@ -66,6 +66,31 @@ export default function Lifecycle({ onContactClick }) {
     setScrollProgress(progress);
   };
 
+  // ✅ ADD THIS WHOLE BLOCK RIGHT HERE
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    // Only run on mobile
+    if (window.innerWidth >= 768) return
+
+    const scrollStep = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container
+
+      if (scrollLeft + clientWidth >= scrollWidth - 5) {
+        container.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        container.scrollBy({
+          left: container.clientWidth * 0.85,
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    const interval = setInterval(scrollStep, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
   return (
     <section className="container mx-auto px-6 -mt-20 pt-0 pb-12 relative overflow-hidden">
       <style dangerouslySetInnerHTML={{

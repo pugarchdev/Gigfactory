@@ -73,7 +73,7 @@ const ServicesPageContent = () => {
             description: 'Precision modeling that drives smarter decisions across every stage.',
             features: ['Architectural, Structural & MEPF Modeling', 'LOD 100-500 Model Development', 'Clash Detection & Coordination', 'Coordinated sheet generation and documentation'],
             benefits: ['Federated BIM Models ready for construction', 'Clash-free coordination reports', 'IFC & Revit deliverables compatible with global standards'],
-            image: 'https://res.cloudinary.com/deinrj3zm/image/upload/v1776588660/3D.Desktop_f37aeh.png'
+            image: 'https://res.cloudinary.com/deinrj3zm/image/upload/v1776933727/3D_BIM_qm22vv.png'
         },
         {
             id: '4d',
