@@ -40,7 +40,7 @@ export default function Footer() {
 
             <div className="container mx-auto px-6 relative z-10 max-w-7xl">
                 <motion.div
-                    className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 mb-12 lg:mb-16" variants={containerVariants}
+                    className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 xl:gap-20 mb-12 lg:mb-16" variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
@@ -108,7 +108,7 @@ export default function Footer() {
                     </motion.div>
 
                     {/* Section 2: Links Columns */}
-                    <div className="md:col-span-12 lg:col-span-10 xl:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 xl:gap-16">
+                    <div className="md:col-span-12 lg:col-span-9 xl:col-span-9 grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-16 xl:gap-20">
                         <motion.div variants={itemVariants}>
                             <h3 className="text-[#6EDD4D] font-bold text-sm lg:text-base uppercase tracking-widest mb-6">Expertise</h3>
                             <ul className="space-y-3 text-zinc-400 text-sm lg:text-base font-medium">
@@ -138,15 +138,6 @@ export default function Footer() {
                                 <li><Link href="/projects" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Projects</Link></li>
                                 <li><Link href="/case-studies" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Case Studies</Link></li>
                                 <li><Link href="/login" className="hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Become a Gigfactory Expert</Link></li>
-
-                                <li>
-                                    <button
-                                        onClick={() => setIsGigExpertFormOpen(true)}
-                                        className="hover:text-[#6EDD4D] transition-colors text-left inline-block"
-                                    >
-                                        GigExpert Feedback
-                                    </button>
-                                </li>
                             </ul>
                         </motion.div>
 

@@ -134,16 +134,16 @@ const AgencyForm = ({ onClose }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-12">
 
-                    {/* Section 1: Identity & Accountability */}
+                    {/* Section 1: Basic Details */}
                     <div>
-                        <SectionHeader number="1" title="Identity & Accountability" />
+                        <SectionHeader number="1" title="Basic Details" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className={labelStyle}>Name of Authorised Person *</label>
                                 <input type="text" name="authPersonName" required value={formData.authPersonName} onChange={handleInputChange} placeholder="Person submitting this form" className={inputBaseStyle} />
                             </div>
                             <div>
-                                <label className={labelStyle}>Designation / Role *</label>
+                                <label className={labelStyle}>Role *</label>
                                 <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} placeholder="e.g., Director, Partner, Manager" className={inputBaseStyle} />
                             </div>
                             <div>
@@ -184,9 +184,9 @@ const AgencyForm = ({ onClose }) => {
                         </div>
                     </div>
 
-                    {/* Section 3: Service Selection & Technical Vetting */}
+                    {/* Section 3: Service */}
                     <div>
-                        <SectionHeader number="3" title="Service Selection & Technical Vetting" />
+                        <SectionHeader number="3" title="Service" />
                         <p className="text-zinc-400 text-sm mb-4">Select services your agency provides (check all applicable)</p>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
@@ -357,9 +357,9 @@ const AgencyForm = ({ onClose }) => {
                         </div>
                     </div>
 
-                    {/* Section 4: Evidence & Commercials */}
+                    {/* Section 4: Portfolio & Commercials */}
                     <div>
-                        <SectionHeader number="4" title="Evidence & Commercials" />
+                        <SectionHeader number="4" title="Portfolio & Commercials" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="md:col-span-2">
 

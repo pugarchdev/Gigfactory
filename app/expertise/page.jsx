@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { expertiseApi } from '@/lib/api'
 
 // --- REUSABLE ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
@@ -35,150 +36,25 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 }
 
 export default function OurExpertise() {
+  const [expertiseItems, setExpertiseItems] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  // --- AUTO-SCROLL LOGIC ---
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      setTimeout(() => {
-        const element = document.querySelector(hash);
-        if (element) {
-          const yOffset = -100;
-          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      }, 300);
+    const fetchExpertise = async () => {
+      try {
+        const data = await expertiseApi.list()
+        setExpertiseItems(data || [])
+      } catch (error) {
+        console.error('Failed to fetch expertise:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  }, []);
+    fetchExpertise()
+  }, [])
 
-  const bimServices = [
-    {
-      title: "Architectural Design",
-      description: "Advanced 3D architectural modeling and design visualization with parametric capabilities",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589575/Architectural_Design_oxye26.png",
-      features: ["Parametric Design", "3D Visualization", "Design Optimization"]
-    },
-    {
-      title: "3D Modeling",
-      description: "Expert MEPF Modelling and high-precision 3D modeling for complex architectural and engineering projects",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589574/3D_Modelling_k6eckv.png",
-      features: ["LOD Development (upto 500)", "Family Creation", "Model Coordination"]
-    },
-    {
-      title: "4D/5D Construction Simulation",
-      description: "Time and cost simulation for construction planning and project management optimization",
-      video: "https://res.cloudinary.com/deinrj3zm/video/upload/v1776850206/website-5_tsdexy.mp4",
-      features: ["Construction Sequencing", "Cost Analysis", "Resource Planning"]
-    },
-    {
-      title: "Scan to BIM",
-      description: "Convert point cloud data and laser scans into accurate BIM models for existing buildings",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589587/SCAN_TO_BIM_w2m35h.png",
-      features: ["Point Cloud Processing", "As-Built Modeling", "Accuracy Verification"]
-    },
-    {
-      title: "Construction Documentation",
-      description: "Comprehensive construction documentation with detailed drawings and specifications",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589579/Construction_Documentation_k972go.png",
-      features: ["Drawing Extraction", "Specification Writing", "Document Management"]
-    },
-    {
-      title: "Constructability Review",
-      description: "Thorough constructability analysis to identify potential issues and optimize building methods",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589587/Construction_REVIEW_y2vgik.png",
-      features: ["Buildability Assessment", "Risk Identification", "Optimization Recommendations"]
-    },
-    {
-      title: "Clash Coordination",
-      description: "Advanced clash detection and coordination to resolve conflicts between building systems",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589576/CLASH_COORD_txk03i.png",
-      features: ["Clash Detection", "Conflict Resolution", "System Coordination"]
-    },
-    {
-      title: "Quantity Takeoff",
-      description: "Accurate quantity extraction and material takeoffs from BIM models for cost estimation",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589585/QUANTITY_TAKEOFF_ji1can.png",
-      features: ["Material Quantification", "Cost Estimation", "Quantity Analysis"]
-    },
-    {
-      title: "Digital Twins",
-      description: "End-to-end digital twin handover with 6D/7D BIM data delivery, enabling seamless integration with facilities management platforms",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776932787/Digital_Twins_bbe3f7.png",
-      features: ["Digital Twin Handover & COBie Data Delivery", "6D/7D BIM Integration", "FM Software Compatibility"]
-    }
-  ]
-
-  const bimConsulting = [
-    {
-      title: "BIM Strategy Plan",
-      description: "Comprehensive BIM strategy development and roadmap planning for successful project execution",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589552/BIM_Strategy_plan_cic2l0.png",
-      features: ["Strategic Planning", "Roadmap Development", "Goal Alignment"]
-    },
-    {
-      title: "BIM Implementation",
-      description: "End-to-end BIM implementation support with proven methodologies and best practices",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589555/BIM_Implementation_gzbo7v.png",
-      features: ["Process Setup", "Team Training", "Technology Integration"]
-    },
-    {
-      title: "BIM Execution Plan",
-      description: "Detailed BIM execution planning with clear milestones and deliverables for project success",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589554/BIM_Execution_Plan_tjpwrk.png",
-      features: ["Project Planning", "Milestone Definition", "Quality Control"]
-    },
-    {
-      title: "BIM Audit",
-      description: "Comprehensive BIM audit and assessment to optimize processes and ensure compliance",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589557/BIM_Audit_y3ax7q.png",
-      features: ["Process Review", "Compliance Check", "Performance Analysis"]
-    }
-  ]
-
-  const otherServices = [
-    {
-      title: "CAD Drafting",
-      description: "Professional CAD drafting services with precision and adherence to industry standards",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590140/CAD_Drafting_mpcoc2.png",
-      features: ["2D Drawings", "3D Modeling", "Detailing Services"]
-    },
-    {
-      title: "Architecture & Structure Designing",
-      description: "Integrated architectural and structural design solutions for comprehensive building projects",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590134/Arch_struct._Design.1_epaxdr.png",
-      features: ["Architectural Design", "Structural Analysis", "Integrated Solutions"]
-    },
-    {
-      title: "BOQ Preparation & QTO",
-      description: "Detailed Bill of Quantities preparation and Quantity Takeoff services for accurate cost estimation",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590138/BOQ_PREP_AND_QTO_b0spom.png",
-      features: ["Bill of Quantities", "Quantity Takeoff", "Cost Analysis"]
-    },
-    {
-      title: "Audits",
-      description: "Comprehensive project audits to ensure compliance, quality, and process optimization",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590135/Audits_vynhat.png",
-      features: ["Quality Audits", "Compliance Review", "Process Optimization"]
-    },
-    {
-      title: "Planning & Project Support",
-      description: "Strategic project planning and comprehensive support services for successful project delivery",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776590142/PLANNING_AND_PROJECT_SUPPORT_tuvgtz.png",
-      features: ["Project Planning", "Coordination Support", "Delivery Management"]
-    },
-    {
-      title: "Value Engineering",
-      description: "Value engineering analysis to optimize costs while maintaining quality and functionality",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776589590/VALUE_ENGINEERING_nbppku.png",
-      features: ["Cost Optimization", "Alternative Solutions", "Quality Assurance"]
-    },
-    {
-      title: "3D Visualization & Detailing",
-      description: "High-fidelity 3D visualizations and detailed models that bring design intent to life — from concept to construction-ready documentation.",
-      image: "https://res.cloudinary.com/deinrj3zm/image/upload/v1776688464/3DVisualization_qlz74b.png",
-      features: ["Photorealistic Renders", "Walkthroughs & Fly-throughs", "Realistic Visualization"]
-    }
-  ]
+  // Get unique categories present in the data
+  const categories = Array.from(new Set(expertiseItems.map(item => item.category)))
 
   // --- UPDATED SERVICE SECTION WITH SLIDER LOGIC & MOBILE TAP STATE ---
   const ServiceSection = ({ title, items, id }) => {
@@ -269,33 +145,24 @@ export default function OurExpertise() {
                         }`}
                     >
                       <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
-                        {service.video ? (
-                          <video
-                            autoPlay loop muted playsInline
-                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
-                          >
-                            <source src={service.video} type="video/mp4" />
-                          </video>
-                        ) : (
-                          <img
-                            src={service.image}
-                            alt={service.title}
-                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
-                          />
-                        )}
+                        <img
+                          src={service.image}
+                          alt={service.name}
+                          className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                        />
                         <div className={`absolute inset-0 bg-[#6EDD4D]/10 transition-opacity duration-500 lg:group-hover:opacity-100 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
                       </div>
 
                       <div className="p-8 flex flex-col flex-grow">
                         <h3 className={`text-xl font-bold mb-3 transition-colors duration-300 lg:group-hover:text-[#6EDD4D] ${isActive ? 'text-[#6EDD4D]' : 'text-white'}`}>
-                          {service.title}
+                          {service.name}
                         </h3>
                         <p className="text-zinc-400 text-sm leading-relaxed mb-6">
                           {service.description}
                         </p>
 
                         <ul className="mt-auto space-y-3">
-                          {service.features.map((item, i) => (
+                          {service.points?.map((item, i) => (
                             <li key={i} className="flex items-center text-sm text-zinc-300">
                               <span className="mr-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#6EDD4D]/10 text-[10px] text-[#6EDD4D]">
                                 ✔
@@ -353,9 +220,27 @@ export default function OurExpertise() {
         </header>
 
         <div className="container mx-auto px-6 ">
-          <ServiceSection title="BIM Services" items={bimServices} id="bim-services" />
-          <ServiceSection title="BIM Consulting" items={bimConsulting} id="bim-consulting" />
-          <ServiceSection title="Other Services" items={otherServices} id="other-services" />
+          {loading ? (
+            <div className="text-center py-20 text-zinc-400">Loading expertise items...</div>
+          ) : (
+            <>
+              {categories.map((category) => {
+                const items = expertiseItems.filter(item => item.category === category)
+                const id = category.toLowerCase().replace(/\s+/g, '-')
+                return (
+                  <ServiceSection 
+                    key={category}
+                    title={category} 
+                    items={items} 
+                    id={id} 
+                  />
+                )
+              })}
+              {expertiseItems.length === 0 && (
+                <div className="text-center py-20 text-zinc-400">No expertise items found.</div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </main>

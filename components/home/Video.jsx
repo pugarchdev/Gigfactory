@@ -1,23 +1,36 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { youtubeVideosApi } from '@/lib/api'
 
 const Videos = () => {
   const [activeModal, setActiveModal] = useState(null)
+  const [videos, setVideos] = useState([])
 
-  const videos = [
-    { id: 1, name: "Puneet Arora - AMS Project Consultants", videoId: "cU8iEKLeqvc?si=8pqIXKYRktopX4q8" },
-    { id: 2, name: "Harshad Rajadhyax - Sandersons", videoId: "qJLOReEmQE0?si=Za1t6SjBSyNdgp1N" },
-    { id: 3, name: "Yayati Kene | Real Estate", videoId: "oaIkiqXfBqI?si=BY0LOl5_iXUr-KHz" },
-    { id: 4, name: "Ashish | Construction Expert", videoId: "sC1WwWJkLAI?si=q4xHvLEguOl_CrJy" }
-  ]
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const data = await youtubeVideosApi.list()
+        setVideos(data || [])
+      } catch (error) {
+        console.error('Failed to fetch videos:', error)
+      }
+    }
+    fetchVideos()
+  }, [])
 
   // Duplicate the array for infinite loop
   const displayVideos = [...videos, ...videos]
 
-  const getCleanId = (input) => {
-    if (!input) return "";
-    return input.split('?')[0].split('/').pop().replace('watch?v=', '');
+  const getCleanId = (url) => {
+    if (!url) return "";
+    // Handle watch?v= format
+    if (url.includes('watch?v=')) {
+      return url.split('watch?v=')[1].split('&')[0];
+    }
+    // Handle youtu.be format or direct ID
+    const parts = url.split('?')[0].split('/');
+    return parts[parts.length - 1];
   }
 
   useEffect(() => {
@@ -59,13 +72,13 @@ const Videos = () => {
               >
                 <div
                   className="group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_30px_rgba(110,221,77,0.15)] cursor-pointer h-full flex flex-col"
-                  onClick={() => setActiveModal(video.videoId)}
+                  onClick={() => setActiveModal(video.youtubeLink)}
                 >
                   {/* Thumbnail */}
                   <div className="aspect-video relative w-full overflow-hidden bg-black">
                     <img
-                      src={`https://img.youtube.com/vi/${getCleanId(video.videoId)}/hqdefault.jpg`}
-                      alt={video.name}
+                      src={`https://img.youtube.com/vi/${getCleanId(video.youtubeLink)}/hqdefault.jpg`}
+                      alt={video.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity">
@@ -80,7 +93,7 @@ const Videos = () => {
                   {/* Info */}
                   <div className="p-5">
                     <h4 className="text-zinc-100 font-bold text-base leading-tight group-hover/card:text-[#6EDD4D] transition-colors line-clamp-2">
-                      {video.name}
+                      {video.title}
                     </h4>
                   </div>
                 </div>

@@ -27,15 +27,25 @@ const slideInRight = {
 }
 
 // --- UPDATED LIST ITEM: Clean Hover Effect ---
-const FeatureItem = ({ text }) => (
+const FeatureItem = ({ text, index }) => (
     <motion.li
-        whileHover={{ x: 5 }} // Subtle slide to the right on hover
+        initial={{ opacity: 0, x: -10 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        whileHover={{ x: 5 }}
         className="flex items-start gap-4 group py-2 cursor-default transition-all duration-300"
     >
-        {/* The Icon: Rotates when the LI is hovered */}
-        <div className="text-[#6EDD4D] mt-1 transform group-hover:rotate-[360deg] transition-transform duration-700 ease-in-out shrink-0">
+        {/* The Icon: Rotates automatically when revealed and on hover */}
+        <motion.div
+            initial={{ rotate: 0 }}
+            whileInView={{ rotate: 360 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: "easeInOut", delay: (index * 0.1) + 0.2 }}
+            className="text-[#6EDD4D] mt-1 shrink-0"
+        >
             <CheckCircle size={18} strokeWidth={2.5} />
-        </div>
+        </motion.div>
 
         {/* The Text: Turns white when the LI is hovered */}
         <span className="text-zinc-400 text-lg font-medium leading-tight group-hover:text-white transition-colors duration-300">
@@ -150,7 +160,7 @@ const ServicesPageContent = () => {
     }, [])
 
     return (
-        <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32">
+        <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32 overflow-x-hidden">
             <div className="relative z-10 container mx-auto px-6 pt-24 max-w-7xl">
 
                 {/* PAGE HEADER */}
@@ -199,7 +209,7 @@ const ServicesPageContent = () => {
                                 <motion.div
                                     initial="hidden"
                                     whileInView="visible"
-                                    viewport={{ once: true, margin: "-100px" }}
+                                    viewport={{ once: true, margin: "-50px" }}
                                     variants={popUpVariants}
                                     className="mb-12"
                                 >
@@ -249,7 +259,7 @@ const ServicesPageContent = () => {
                                         </div>
                                         <ul className="flex flex-col gap-1">
                                             {service.features.map((f, i) => (
-                                                <FeatureItem key={i} text={f} />
+                                                <FeatureItem key={i} text={f} index={i} />
                                             ))}
                                         </ul>
                                     </motion.div>
@@ -270,7 +280,7 @@ const ServicesPageContent = () => {
                                         </div>
                                         <ul className="flex flex-col gap-1">
                                             {service.benefits.map((b, i) => (
-                                                <FeatureItem key={i} text={b} />
+                                                <FeatureItem key={i} text={b} index={i} />
                                             ))}
                                         </ul>
                                     </motion.div>
