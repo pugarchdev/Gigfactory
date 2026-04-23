@@ -53,8 +53,25 @@ export default function OurExpertise() {
     fetchExpertise()
   }, [])
 
-  // Get unique categories present in the data
+  // Define preferred order for categories (exact matches we want to prioritize)
+  const preferredOrder = ["BIM Services", "BIM Consulting", "Other Services"]
+
+  // Get unique categories and sort them robustly
   const categories = Array.from(new Set(expertiseItems.map(item => item.category)))
+    .filter(Boolean) // Remove any empty/null categories
+    .sort((a, b) => {
+      // Find index in preferredOrder by normalizing both strings
+      const indexA = preferredOrder.findIndex(p => p.toLowerCase().trim() === a.toLowerCase().trim())
+      const indexB = preferredOrder.findIndex(p => p.toLowerCase().trim() === b.toLowerCase().trim())
+      
+      // If both are in preferredOrder, sort by index
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB
+      // If only one is in preferredOrder, that one comes first
+      if (indexA !== -1) return -1
+      if (indexB !== -1) return 1
+      // If neither are in preferredOrder, sort alphabetically
+      return a.trim().localeCompare(b.trim())
+    })
 
   // --- UPDATED SERVICE SECTION WITH SLIDER LOGIC & MOBILE TAP STATE ---
   const ServiceSection = ({ title, items, id }) => {
