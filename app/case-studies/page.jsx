@@ -364,7 +364,7 @@ const CaseStudiesListing = () => {
               <p className="text-zinc-400 text-sm">
                 {isSuccess
                   ? "Your case study is ready. Click below to download."
-                  : `Enter your details to download the full study for "${selectedStudy?.title}".`}
+                  : `Enter your details to download the full study for "${selectedStudy?.name}".`}
               </p>
             </div>
 

@@ -160,7 +160,7 @@ const ServicesPageContent = () => {
     }, [])
 
     return (
-        <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32 overflow-x-hidden">
+        <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32">
             <div className="relative z-10 container mx-auto px-6 pt-24 max-w-7xl">
 
                 {/* PAGE HEADER */}
@@ -175,11 +175,11 @@ const ServicesPageContent = () => {
                     <div className="w-32 h-2.5 bg-[#6EDD4D] rounded-full"></div>
                 </motion.div>
 
-                <div className="flex flex-col lg:flex-row gap-4 xl:gap-20">
+                <div className="flex flex-col lg:flex-row gap-4 xl:gap-20 items-start">
 
                     {/* STICKY SIDEBAR */}
-                    <aside className="lg:w-1/4 xl:w-1/5 shrink-0">
-                        <div className="sticky top-32 bg-zinc-900/30 backdrop-blur-xl border border-zinc-800/50 rounded-[2rem] p-6 hidden lg:block shadow-2xl">
+                    <aside className="hidden lg:block lg:w-1/4 xl:w-1/5 sticky top-32 z-30 self-start">
+                        <div className="bg-zinc-900/30 backdrop-blur-xl border border-zinc-800/50 rounded-[2rem] p-6 shadow-2xl">
                             <nav className="flex flex-col gap-1.5">
                                 {servicesData.map((service) => (
                                     <button
