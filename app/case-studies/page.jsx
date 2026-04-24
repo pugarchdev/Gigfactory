@@ -359,11 +359,11 @@ const CaseStudiesListing = () => {
 
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-white mb-2">
-                {isSuccess ? "Ready to Download!" : "Get the Case Study"}
+                {isSuccess ? "Download Completed" : "Get the Case Study"}
               </h3>
               <p className="text-zinc-400 text-sm">
                 {isSuccess
-                  ? "Your case study is ready. Click below to download."
+                  ? "Your case study has been downloaded successfully."
                   : `Enter your details to download the full study for "${selectedStudy?.name}".`}
               </p>
             </div>
@@ -430,7 +430,7 @@ const CaseStudiesListing = () => {
                   onClick={handleCloseModal}
                   className="w-full bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors flex justify-center items-center gap-2"
                 >
-                  <i className="fa-solid fa-file-pdf"></i> Download PDF Now
+                  <i className="fa-solid fa-file-pdf"></i> Downloaded
                 </a>
               </div>
             )}

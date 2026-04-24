@@ -162,11 +162,20 @@ export default function OurExpertise() {
                         }`}
                     >
                       <div className="aspect-video w-full overflow-hidden bg-zinc-950 relative">
-                        <img
-                          src={service.image}
-                          alt={service.name}
-                          className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
-                        />
+                        {service.video ? (
+                          <video
+                            autoPlay loop muted playsInline
+                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                          >
+                            <source src={service.video} type="video/mp4" />
+                          </video>
+                        ) : (
+                          <img
+                            src={service.image || '/assets/GIG.png'}
+                            alt={service.name}
+                            className={`w-full h-full object-cover transition-transform duration-700 lg:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                          />
+                        )}
                         <div className={`absolute inset-0 bg-[#6EDD4D]/10 transition-opacity duration-500 lg:group-hover:opacity-100 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
                       </div>
 

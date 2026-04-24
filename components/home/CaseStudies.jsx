@@ -36,7 +36,7 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 
 export default function CaseStudies({ onContactClick }) {
   const router = useRouter()
-  
+
   // State and Ref for the mobile scroll slider
   const [scrollProgress, setScrollProgress] = useState(0)
   const scrollContainerRef = useRef(null)
@@ -69,12 +69,12 @@ export default function CaseStudies({ onContactClick }) {
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    
+
     if (scrollWidth === clientWidth) {
       setScrollProgress(0);
       return;
     }
-    
+
     const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
     setScrollProgress(progress);
   };
@@ -141,8 +141,10 @@ export default function CaseStudies({ onContactClick }) {
       setPdfLink(link)
       setIsSuccess(true)
 
-      // 3. (REMOVED) Trigger automatic download
-      // We now let the user click the download button in the success state
+      // 3. Trigger automatic download
+      if (link && link !== '#') {
+        handleForceDownload(link, `${selectedStudy.name.replace(/\s+/g, '_')}_Case_Study.pdf`);
+      }
     } catch (error) {
       console.error("Error submitting form", error)
       alert("Something went wrong. Please try again.")
@@ -183,7 +185,7 @@ export default function CaseStudies({ onContactClick }) {
       <div className="relative">
         <div className="-mx-6">
           {/* Horizontal Scrollable Wrapper */}
-          <div 
+          <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
             className="flex gap-6 md:gap-8 overflow-x-auto pb-8 no-scrollbar snap-x snap-mandatory px-6 scroll-pl-6"
@@ -234,7 +236,7 @@ export default function CaseStudies({ onContactClick }) {
         {/* SLIDER INDICATOR */}
         <div className="flex justify-center items-center mt-4">
           <div className="w-24 md:w-48 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
-            <div 
+            <div
               className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
               style={{ transform: `translateX(${scrollProgress * 2}%)` }}
             />
@@ -288,16 +290,16 @@ export default function CaseStudies({ onContactClick }) {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleCloseModal}
           ></div>
-          
+
           {/* Modal Content */}
           <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            
+
             {/* Close Button */}
-            <button 
+            <button
               onClick={handleCloseModal}
               className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
             >
@@ -306,11 +308,11 @@ export default function CaseStudies({ onContactClick }) {
             {/* Modal Header */}
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-white mb-2">
-                {isSuccess ? "Ready to Download!" : "Get the Case Study"}
+                {isSuccess ? "Download Completed" : "Get the Case Study"}
               </h3>
               <p className="text-zinc-400 text-sm">
-                {isSuccess 
-                  ? "Your case study is ready. Click below to download." 
+                {isSuccess
+                  ? "Your case study has been downloaded successfully."
                   : `Enter your details to download the full study for "${selectedStudy?.name}".`}
               </p>
             </div>
@@ -319,8 +321,8 @@ export default function CaseStudies({ onContactClick }) {
             {!isSuccess ? (
               <form onSubmit={handleFormSubmit} className="space-y-4">
                 <div>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="name"
                     required
                     placeholder="Full Name"
@@ -330,8 +332,8 @@ export default function CaseStudies({ onContactClick }) {
                   />
                 </div>
                 <div>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     name="email"
                     required
                     placeholder="Email Address"
@@ -341,8 +343,8 @@ export default function CaseStudies({ onContactClick }) {
                   />
                 </div>
                 <div>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     name="phone"
                     required
                     maxLength={10}
@@ -352,8 +354,8 @@ export default function CaseStudies({ onContactClick }) {
                     className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
                   />
                 </div>
-                
-                <button 
+
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full mt-4 bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
@@ -370,18 +372,17 @@ export default function CaseStudies({ onContactClick }) {
                 <div className="w-16 h-16 bg-[#6EDD4D]/10 text-[#6EDD4D] rounded-full flex items-center justify-center text-3xl mb-6">
                   <i className="fa-solid fa-check"></i>
                 </div>
-                <button 
+                <button
                   onClick={() => {
-                    handleForceDownload(pdfLink, `${selectedStudy?.name?.replace(/\s+/g, '_')}.pdf`);
-                    handleCloseModal();
+                    handleForceDownload(pdfLink, `${selectedStudy.name.replace(/\s+/g, '_')}_Case_Study.pdf`);
                   }}
                   className="w-full bg-[#6EDD4D] text-zinc-950 font-bold py-3.5 rounded-xl hover:bg-[#5bc73e] transition-colors flex justify-center items-center gap-2"
                 >
-                  <i className="fa-solid fa-file-pdf"></i> Download PDF Now
+                  <i className="fa-solid fa-file-pdf"></i> Downloaded
                 </button>
               </div>
             )}
-            
+
           </div>
         </div>
       )}
