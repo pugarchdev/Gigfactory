@@ -68,7 +68,7 @@ export default function Footer() {
                         </p>
 
                         {/* STARTUP LOGO */}
-                        <div className="mb-[-10px] ml-[-28px]">
+                        <div className="mb-[-4px] ml-[-20px]">
                             <Image
                                 src="/assets/startuplogo.png"
                                 alt="Startup India Logo"
