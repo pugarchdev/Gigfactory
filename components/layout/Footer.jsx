@@ -63,17 +63,17 @@ export default function Footer() {
                         </Link>
 
                         {/* DESCRIPTION */}
-                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-[-2px]">
+                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-3">
                             Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
                         </p>
 
                         {/* STARTUP LOGO */}
-                        <div className="mb-0 ml-[-2px]">
+                        <div className="mb-3 ml-[-2px]">
                             <Image
                                 src="/assets/startuplogo.png"
                                 alt="Startup India Logo"
-                                width={140}
-                                height={50}
+                                width={90}
+                                height={30}
                                 className="object-contain opacity-70 hover:opacity-100 transition-opacity"
                             />
                         </div>
