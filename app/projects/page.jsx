@@ -135,6 +135,20 @@ const ProjectCard = ({ project }) => (
   </div>
 )
 
+// --- SYNCING INDICATOR ---
+const SyncingIndicator = () => (
+  <div className="flex justify-center py-20">
+    <div className="flex items-center text-zinc-500 font-bold tracking-[0.2em] text-xs uppercase">
+      <span>Loading Projects</span>
+      <span className="flex gap-1 ml-2">
+        <span className="animate-bounce [animation-delay:-0.3s]">.</span>
+        <span className="animate-bounce [animation-delay:-0.15s]">.</span>
+        <span className="animate-bounce">.</span>
+      </span>
+    </div>
+  </div>
+)
+
 // --- ROW WRAPPER (For Desktop View) ---
 const ProjectRow = ({ projects }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -298,6 +312,8 @@ export default function Projects() {
                 <MobileBatchRow key={idx} projects={chunk} />
               ))}
             </div>
+            
+            <SyncingIndicator />
 
             {projects.length === 0 && (
               <div className="text-center py-20 text-zinc-400">No projects found.</div>

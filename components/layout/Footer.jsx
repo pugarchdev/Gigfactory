@@ -63,11 +63,23 @@ export default function Footer() {
                         </Link>
 
                         {/* DESCRIPTION */}
-                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-6">
+                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-[-14px]">
                             Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
                         </p>
+
+                        {/* STARTUP LOGO */}
+                        <div className="mb-[-10px] ml-[-28px]">
+                            <Image
+                                src="/assets/startuplogo.png"
+                                alt="Startup India Logo"
+                                width={140}
+                                height={50}
+                                className="object-contain opacity-70 hover:opacity-100 transition-opacity"
+                            />
+                        </div>
+
                         {/* FLAGS + LINKEDIN (ADDED HERE) */}
-                        <div className="flex flex-col items-start gap-4">
+                        <div className="flex flex-col items-start gap-6">
 
                             {/* FLAGS */}
                             <div className="flex items-center gap-2">
