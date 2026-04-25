@@ -63,12 +63,12 @@ export default function Footer() {
                         </Link>
 
                         {/* DESCRIPTION */}
-                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-[-14px]">
+                        <p className="text-zinc-400 text-sm lg:text-base leading-relaxed max-w-sm font-medium mb-[-8px]">
                             Global Capability Center providing cutting-edge BIM and construction services worldwide. Engineering the future of infrastructure.
                         </p>
 
                         {/* STARTUP LOGO */}
-                        <div className="mb-0 ml-[-10px]">
+                        <div className="mb-0 ml-[-6px]">
                             <Image
                                 src="/assets/startuplogo.png"
                                 alt="Startup India Logo"
