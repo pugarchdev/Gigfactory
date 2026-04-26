@@ -33,21 +33,38 @@ const FeatureItem = ({ text, index }) => (
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: index * 0.1 }}
-        whileHover={{ x: 5 }}
-        className="flex items-start gap-4 group py-2 cursor-default transition-all duration-300"
+        className="flex items-start gap-4 group py-2 cursor-pointer"
     >
-        {/* The Icon: Rotates automatically when revealed and on hover */}
+        {/* Tick + Circle Rotation on FULL ROW Hover */}
         <motion.div
             initial={{ rotate: 0 }}
             whileInView={{ rotate: 360 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, ease: "easeInOut", delay: (index * 0.1) + 0.2 }}
-            className="text-[#6EDD4D] mt-1 shrink-0"
+            transition={{
+                duration: 0.8,
+                ease: "easeInOut",
+                delay: (index * 0.1) + 0.2
+            }}
+            className="
+                text-[#6EDD4D]
+                mt-1
+                shrink-0
+                rounded-full
+                border
+                border-[#6EDD4D]/30
+                p-1
+                bg-[#6EDD4D]/10
+                transition-all
+                duration-700
+                ease-in-out
+                group-hover:rotate-[360deg]
+                group-hover:scale-110
+            "
         >
-            <CheckCircle size={18} strokeWidth={2.5} />
+            <CheckCircle size={16} strokeWidth={2.5} />
         </motion.div>
 
-        {/* The Text: Turns white when the LI is hovered */}
+        {/* Text */}
         <span className="text-zinc-400 text-lg font-medium leading-tight group-hover:text-white transition-colors duration-300">
             {text}
         </span>
