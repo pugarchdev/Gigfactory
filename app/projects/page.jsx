@@ -2,8 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { projectsApi } from '@/lib/api'
-import { MapPin, Maximize2, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
-
+import {
+  MapPin,
+  Maximize2,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  ToggleLeft,
+  ToggleRight
+} from 'lucide-react'
 // --- REUSABLE ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -245,7 +253,8 @@ const MobileBatchRow = ({ projects }) => {
 export default function Projects() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState(null)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -260,16 +269,28 @@ export default function Projects() {
     fetchProjects()
   }, [])
 
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch =
+      project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.location?.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesStatus =
+      statusFilter === null ? true
+        : project.status?.toLowerCase() === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
   // Split into chunks of 3 for desktop rows
   const desktopRows = [];
-  for (let i = 0; i < projects.length; i += 3) {
-    desktopRows.push(projects.slice(i, i + 3))
+  for (let i = 0; i < filteredProjects.length; i += 3) {
+    desktopRows.push(filteredProjects.slice(i, i + 3));
   }
 
   // Split into chunks of 5 for Mobile Batches
   const mobileChunks = [];
-  for (let i = 0; i < projects.length; i += 5) {
-    mobileChunks.push(projects.slice(i, i + 5))
+  for (let i = 0; i < filteredProjects.length; i += 5) {
+    mobileChunks.push(filteredProjects.slice(i, i + 5));
   }
 
   return (
@@ -281,22 +302,139 @@ export default function Projects() {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      <header className="py-20 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-16 relative z-10">
-        <div className="container mx-auto">
-          <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-              Project <span className="text-[#6EDD4D]">Portfolio</span>
-            </h1>
-          </AnimatedSection>
-          <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-            <p className="max-w-2xl mx-auto text-zinc-400 text-lg">
-              Delivered across 10+ million sq.ft of construction projects worldwide.
-            </p>
-          </AnimatedSection>
-        </div>
+      <header className="py-14 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-8 relative z-10">        <div className="container mx-auto">
+        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+            Project <span className="text-[#6EDD4D]">Portfolio</span>
+          </h1>
+        </AnimatedSection>
+        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
+          <p className="max-w-2xl mx-auto text-zinc-400 text-lg">
+            Delivered across 10+ million sq.ft of construction projects worldwide.
+          </p>
+        </AnimatedSection>
+      </div>
       </header>
 
       <div className="container mx-auto max-w-7xl px-6">
+        <div className="mb-14 flex flex-col md:flex-row gap-5 justify-center items-center">
+
+          {/* Search Bar */}
+          <div className="relative w-full md:w-[650px] group">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-hover:text-[#6EDD4D] transition-all"
+            />
+
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="
+        w-full pl-12 pr-4 py-3 rounded-2xl
+        bg-zinc-900/30
+        border border-zinc-800
+        text-white
+        placeholder:text-zinc-700
+        backdrop-blur-md
+        outline-none
+        transition-all duration-500
+        hover:bg-zinc-900/60
+        hover:border-[#6EDD4D]/30
+        focus:border-[#6EDD4D]
+        focus:bg-zinc-900/80
+      "
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+
+            {/* TOGGLE */}
+            <div
+              className="
+    relative w-[180px] h-[38px]
+    rounded-full
+    bg-zinc-950/30
+    border border-[#6EDD4D]/20
+    overflow-hidden
+    backdrop-blur-xl
+    opacity-45
+    hover:opacity-100
+    transition-all duration-500
+    group
+    "
+            >
+
+              {/* Active Slider */}
+              {statusFilter && (
+                <div
+                  className={`
+        absolute top-[3px]
+        w-[85px] h-[32px]
+        rounded-full
+        bg-[#6EDD4D]
+        shadow-[0_0_18px_rgba(110,221,77,0.25)]
+        transition-all duration-500
+        ${statusFilter === 'ongoing'
+                      ? 'left-[3px]'
+                      : 'left-[92px]'
+                    }
+        `}
+                />
+              )}
+
+              {/* Ongoing */}
+              <button
+                onClick={() => setStatusFilter('ongoing')}
+                className={`
+      relative z-10 w-1/2 h-full text-[11px] font-black uppercase
+      ${statusFilter === 'ongoing'
+                    ? 'text-black'
+                    : 'text-zinc-500 group-hover:text-zinc-300'
+                  }
+      `}
+              >
+                Ongoing
+              </button>
+
+              {/* Complete */}
+              <button
+                onClick={() => setStatusFilter('completed')}
+                className={`
+      relative z-10 w-1/2 h-full text-[11px] font-black uppercase
+      ${statusFilter === 'completed'
+                    ? 'text-black'
+                    : 'text-zinc-500 group-hover:text-zinc-300'
+                  }
+      `}
+              >
+                Complete
+              </button>
+            </div>
+
+            {/* CLEAR BUTTON */}
+            {statusFilter && (
+              <button
+                onClick={() => setStatusFilter(null)}
+                className="
+      px-3 h-[38px]
+      rounded-full
+      border border-zinc-700
+      text-zinc-400
+      text-[11px] font-bold uppercase
+      hover:border-[#6EDD4D]
+      hover:text-[#6EDD4D]
+      transition-all
+      "
+              >
+                Clear
+              </button>
+            )}
+
+          </div>
+        </div>
+
         {loading ? (
           <div className="text-center py-20 text-zinc-400">Loading projects...</div>
         ) : (
@@ -312,7 +450,7 @@ export default function Projects() {
                 <MobileBatchRow key={idx} projects={chunk} />
               ))}
             </div>
-            
+
             <SyncingIndicator />
 
             {projects.length === 0 && (
