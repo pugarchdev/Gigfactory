@@ -317,9 +317,9 @@ export default function Projects() {
       </header>
 
       <div className="container mx-auto max-w-7xl px-6">
+        {/* 
         <div className="mb-14 flex flex-col md:flex-row gap-5 justify-center items-center">
 
-          {/* Search Bar */}
           <div className="relative w-full md:w-[650px] group">
             <Search
               size={18}
@@ -350,7 +350,6 @@ export default function Projects() {
 
           <div className="flex items-center gap-2">
 
-            {/* TOGGLE */}
             <div
               className="
     relative w-[180px] h-[38px]
@@ -366,7 +365,6 @@ export default function Projects() {
     "
             >
 
-              {/* Active Slider */}
               {statusFilter && (
                 <div
                   className={`
@@ -384,7 +382,6 @@ export default function Projects() {
                 />
               )}
 
-              {/* Ongoing */}
               <button
                 onClick={() => setStatusFilter('ongoing')}
                 className={`
@@ -398,7 +395,6 @@ export default function Projects() {
                 Ongoing
               </button>
 
-              {/* Complete */}
               <button
                 onClick={() => setStatusFilter('completed')}
                 className={`
@@ -413,7 +409,6 @@ export default function Projects() {
               </button>
             </div>
 
-            {/* CLEAR BUTTON */}
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter(null)}
@@ -434,6 +429,7 @@ export default function Projects() {
 
           </div>
         </div>
+        */}
 
         {loading ? (
           <div className="text-center py-20 text-zinc-400">Loading projects...</div>
