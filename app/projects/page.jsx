@@ -317,9 +317,10 @@ export default function Projects() {
       </header>
 
       <div className="container mx-auto max-w-7xl px-6">
-        {/* 
-        <div className="mb-14 flex flex-col md:flex-row gap-5 justify-center items-center">
+        <div className="mb-14 flex flex-col md:flex-row gap-5 justify-end items-center">
 
+          {/* Search Bar */}
+          {/* 
           <div className="relative w-full md:w-[650px] group">
             <Search
               size={18}
@@ -347,6 +348,7 @@ export default function Projects() {
       "
             />
           </div>
+          */}
 
           <div className="flex items-center gap-2">
 
@@ -429,7 +431,6 @@ export default function Projects() {
 
           </div>
         </div>
-        */}
 
         {loading ? (
           <div className="text-center py-20 text-zinc-400">Loading projects...</div>
