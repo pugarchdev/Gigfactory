@@ -58,7 +58,7 @@ const CardCarousel = ({ images }) => {
   }
 
   return (
-    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950 group/carousel">
+    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-200 dark:bg-zinc-950 group/carousel">
       {images.filter(img => img && img.trim() !== "").map((img, i) => (
         <img
           key={i}
@@ -89,14 +89,14 @@ const CardCarousel = ({ images }) => {
 
 // --- INDIVIDUAL PROJECT CARD ---
 const ProjectCard = ({ project }) => (
-  <div className="group h-full w-full flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(110,221,77,0.05)]">
+  <div className="group h-full w-full flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01] hover:shadow-[0_0_30px_rgba(110,221,77,0.05)]">
 
     <CardCarousel images={project.images} />
 
     <div className="p-6 flex flex-col flex-grow">
       {/* 1. Header Row */}
       <div className="flex justify-between items-start mb-4">
-        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-200">
+        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">
           {project.category}
         </span>
         <span className={`text-[10px] font-bold uppercase tracking-widest ${project.status?.toLowerCase() === 'completed' ? 'text-[#6EDD4D]' : 'text-amber-400'
@@ -107,34 +107,34 @@ const ProjectCard = ({ project }) => (
 
       {/* 2. Title Section */}
       <div className="h-[48px] mb-2">
-        <h3 className="text-lg font-bold text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
+        <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
           {project.name}
         </h3>
       </div>
 
       {/* 3. Description */}
       <div className="h-[40px] mb-5 overflow-hidden group-hover:h-auto">
-        <p className="text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2 group-hover:line-clamp-none group-hover:max-h-32 group-hover:overflow-y-auto">
+        <p className="text-zinc-600 dark:text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2 group-hover:line-clamp-none group-hover:max-h-32 group-hover:overflow-y-auto">
           {project.description}
         </p>
       </div>
 
       {/* 4. Scope Box */}
-      <div className="mb-6 p-4 rounded-xl bg-zinc-800/50 border border-zinc-700/50 h-[90px] flex flex-col justify-center mt-auto overflow-hidden group-hover:h-auto">        <div className="flex items-center gap-2 mb-1.5 text-[#6EDD4D]">
+      <div className="mb-6 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 h-[90px] flex flex-col justify-center mt-auto overflow-hidden group-hover:h-auto">        <div className="flex items-center gap-2 mb-1.5 text-[#6EDD4D]">
         <Zap size={12} fill="currentColor" />
         <span className="text-[10px] font-bold uppercase tracking-widest">Scope</span>
       </div>
-        <p className="text-zinc-200 text-xs font-semibold leading-relaxed line-clamp-2 group-hover:line-clamp-none group-hover:max-h-32 group-hover:overflow-y-auto">          {project.scope}
+        <p className="text-zinc-700 dark:text-zinc-200 text-xs font-semibold leading-relaxed line-clamp-2 group-hover:line-clamp-none group-hover:max-h-32 group-hover:overflow-y-auto">          {project.scope}
         </p>
       </div>
 
       {/* 5. Footer Row */}
-      <div className="pt-4 border-t border-zinc-800/50 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-white">
+      <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800/50 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-zinc-900 dark:text-white">
           <Maximize2 size={14} className="text-[#6EDD4D]" />
           <span className="text-xs font-bold">{project.area}</span>
         </div>
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-zinc-900 dark:text-white">
           <span className="text-xs font-bold">{project.location}</span>
           <MapPin size={14} className="text-zinc-500" />
         </div>
@@ -146,7 +146,7 @@ const ProjectCard = ({ project }) => (
 // --- SYNCING INDICATOR ---
 const SyncingIndicator = () => (
   <div className="flex justify-center py-20">
-    <div className="flex items-center text-zinc-500 font-bold tracking-[0.2em] text-xs uppercase">
+    <div className="flex items-center text-zinc-600 dark:text-zinc-500 font-bold tracking-[0.2em] text-xs uppercase">
       <span>Loading Projects</span>
       <span className="flex gap-1 ml-2">
         <span className="animate-bounce [animation-delay:-0.3s]">.</span>
@@ -239,7 +239,7 @@ const MobileBatchRow = ({ projects }) => {
 
       {/* MOBILE SLIDER INDICATOR */}
       <div className="flex justify-center items-center mt-2">
-        <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+        <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
           <div
             className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
             style={{ transform: `translateX(${scrollProgress * 2}%)` }}
@@ -294,7 +294,7 @@ export default function Projects() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-22 overflow-x-hidden relative">
+    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-22 overflow-x-hidden relative">
 
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -302,14 +302,14 @@ export default function Projects() {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      <header className="py-14 px-6 text-center border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-md mb-8 relative z-10">        <div className="container mx-auto">
+      <header className="py-14 px-6 text-center border-b border-zinc-200 dark:border-zinc-900 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-md mb-8 relative z-10">        <div className="container mx-auto">
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+          <h1 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
             Project <span className="text-[#6EDD4D]">Portfolio</span>
           </h1>
         </AnimatedSection>
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-          <p className="max-w-2xl mx-auto text-zinc-400 text-lg">
+          <p className="max-w-2xl mx-auto text-zinc-600 dark:text-zinc-400 text-lg">
             Delivered across 10+ million sq.ft of construction projects worldwide.
           </p>
         </AnimatedSection>
@@ -356,7 +356,7 @@ export default function Projects() {
               className="
     relative w-[180px] h-[38px]
     rounded-full
-    bg-zinc-950/30
+    bg-white/90 dark:bg-zinc-950/30
     border border-[#6EDD4D]/20
     overflow-hidden
     backdrop-blur-xl
@@ -390,7 +390,7 @@ export default function Projects() {
       relative z-10 w-1/2 h-full text-[11px] font-black uppercase
       ${statusFilter === 'ongoing'
                     ? 'text-black'
-                    : 'text-zinc-500 group-hover:text-zinc-300'
+                    : 'text-zinc-600 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-300'
                   }
       `}
               >
@@ -403,7 +403,7 @@ export default function Projects() {
       relative z-10 w-1/2 h-full text-[11px] font-black uppercase
       ${statusFilter === 'completed'
                     ? 'text-black'
-                    : 'text-zinc-500 group-hover:text-zinc-300'
+                    : 'text-zinc-600 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-300'
                   }
       `}
               >
@@ -417,8 +417,8 @@ export default function Projects() {
                 className="
       px-3 h-[38px]
       rounded-full
-      border border-zinc-700
-      text-zinc-400
+      border border-zinc-300 dark:border-zinc-700
+      text-zinc-600 dark:text-zinc-400
       text-[11px] font-bold uppercase
       hover:border-[#6EDD4D]
       hover:text-[#6EDD4D]
@@ -433,7 +433,7 @@ export default function Projects() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20 text-zinc-400">Loading projects...</div>
+          <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">Loading projects...</div>
         ) : (
           <>
             {/* DESKTOP VIEW */}
@@ -451,7 +451,7 @@ export default function Projects() {
             <SyncingIndicator />
 
             {projects.length === 0 && (
-              <div className="text-center py-20 text-zinc-400">No projects found.</div>
+              <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">No projects found.</div>
             )}
           </>
         )}

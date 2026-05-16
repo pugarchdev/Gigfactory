@@ -59,17 +59,14 @@ export default function AboutPage() {
   }
 
   return (
-    <main ref={containerRef} className="min-h-screen bg-[#030303] text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px] overflow-hidden relative">
+    <main ref={containerRef} className="min-h-screen bg-zinc-100 dark:bg-[#030303] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-24 mt-[-60px] md:mt-[-60px] overflow-hidden relative">
 
       {/* --- ADVANCED BACKGROUND SYSTEM --- */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* 1. The Blueprint Grid */}
-        <div className="absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }}>
-        </div>
+        <div
+          className="absolute inset-0 opacity-[0.08] dark:opacity-[0.15] [background-size:40px_40px] [background-image:linear-gradient(#d4d4d8_1px,transparent_1px),linear-gradient(90deg,#d4d4d8_1px,transparent_1px)] dark:[background-image:linear-gradient(#1e1e1e_1px,transparent_1px),linear-gradient(90deg,#1e1e1e_1px,transparent_1px)]"
+        />
 
         {/* 2. Moving Laser Beams */}
         <motion.div
@@ -87,12 +84,12 @@ export default function AboutPage() {
         <motion.div
           animate={{ y: [0, -60, 0], opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-1/4 w-[700px] h-[700px] bg-[#6EDD4D]/10 blur-[180px] rounded-full"
+          className="hidden dark:block absolute top-[-10%] left-1/4 w-[700px] h-[700px] bg-[#6EDD4D]/10 blur-[180px] rounded-full"
         />
         <motion.div
           animate={{ x: [0, 80, 0], opacity: [0.1, 0.4, 0.1] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          className="absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 blur-[150px] rounded-full"
+          className="hidden dark:block absolute bottom-[10%] right-[-5%] w-[600px] h-[600px] bg-emerald-500/5 blur-[150px] rounded-full"
         />
       </div>
 
@@ -105,12 +102,12 @@ export default function AboutPage() {
             </span>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl font-black text-white mb-8 tracking-tighter leading-[1.2]">
+          <motion.h1 variants={fadeUp} className="text-5xl md:text-6xl font-black text-zinc-900 dark:text-white mb-8 tracking-tighter leading-[1.2]">
             Integrated Construction <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6EDD4D] via-emerald-300 to-[#6EDD4D] bg-[length:200%_auto] animate-text-gradient">Technology Platform</span>
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium">
+          <motion.p variants={fadeUp} className="text-zinc-600 dark:text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-16 leading-relaxed font-medium">
             Building Intelligence. Growing Together. At Gigfactory, culture is not just about where we work — it&apos;s about how we think, collaborate, and build.
           </motion.p>
         </motion.div>
@@ -151,7 +148,7 @@ export default function AboutPage() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
             variants={fadeUp}
-            className="relative z-10 rounded-[calc(2.5rem-4px)] bg-zinc-900/40 backdrop-blur-2xl border border-white/10 p-10 md:p-14 flex flex-wrap justify-around gap-12 shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden group"
+            className="relative z-10 rounded-[calc(2.5rem-4px)] bg-white dark:bg-black border border-zinc-200 dark:border-white/10 p-10 md:p-14 flex flex-wrap justify-around gap-12 shadow-md dark:shadow-[0_30px_60px_rgba(0,0,0,0.5)] overflow-hidden group"
           >
 
             <div className="absolute inset-0 bg-gradient-to-br from-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
@@ -160,25 +157,25 @@ export default function AboutPage() {
               <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
                 <AnimatedNumber value="10M+" />
               </h3>
-              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">SqFt Delivered</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-[0.3em] font-black">SqFt Delivered</p>
             </div>
 
-            <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+            <div className="w-px h-16 bg-zinc-300 dark:bg-zinc-800 hidden md:block self-center"></div>
 
             <div className="text-center relative z-10">
               <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
                 <AnimatedNumber value="100+" />
               </h3>
-              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Global Clients</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-[0.3em] font-black">Global Clients</p>
             </div>
 
-            <div className="w-px h-16 bg-zinc-800 hidden md:block self-center"></div>
+            <div className="w-px h-16 bg-zinc-300 dark:bg-zinc-800 hidden md:block self-center"></div>
 
             <div className="text-center relative z-10">
               <h3 className="text-5xl md:text-7xl font-black text-[#6EDD4D] mb-2 tracking-tighter">
                 <AnimatedNumber value="250+" />
               </h3>
-              <p className="text-xs text-zinc-500 uppercase tracking-[0.3em] font-black">Projects Done</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-500 uppercase tracking-[0.3em] font-black">Projects Done</p>
             </div>
 
           </motion.div>
@@ -190,11 +187,11 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}>
-              <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-black text-white mb-10 tracking-tighter leading-none">
+              <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-10 tracking-tighter leading-none">
                 What Drives Us <br />
                 <span className="text-[#6EDD4D]">Forward</span>
               </motion.h2>
-              <motion.div variants={fadeUp} className="space-y-8 text-zinc-400 leading-relaxed text-lg font-medium">
+              <motion.div variants={fadeUp} className="space-y-8 text-zinc-600 dark:text-zinc-400 leading-relaxed text-lg font-medium">
                 <p className="border-l-2 border-[#6EDD4D]/30 pl-6">
                   Gigfactory Private Limited revolutionizes the construction industry by providing an integrated, technology-powered, one-stop solution for all your project needs.
                 </p>
@@ -210,7 +207,7 @@ export default function AboutPage() {
               transition={{ duration: 1, ease: "easeOut" }}
               className="relative group"
             >
-              <div className="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 bg-zinc-900 shadow-2xl relative">
+              <div className="aspect-[4/5] rounded-[3rem] overflow-hidden border border-zinc-200 dark:border-white/10 bg-zinc-200 dark:bg-zinc-900 shadow-2xl relative">
                 <div className="absolute inset-0 bg-[#6EDD4D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-10 mix-blend-overlay"></div>
                 <img
                   src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop"
@@ -235,13 +232,13 @@ export default function AboutPage() {
             <motion.div
               variants={fadeUp}
               whileHover={{ y: -15 }}
-              className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
+              className="p-12 rounded-[3rem] bg-white dark:bg-black border border-zinc-200 dark:border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
             >
-              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
+              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
                 <Target className="text-[#6EDD4D] group-hover:text-black transition-colors" size={36} />
               </div>
-              <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Our Mission</h3>
-              <p className="text-zinc-400 text-lg leading-relaxed font-medium">
+              <h3 className="text-4xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">Our Mission</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed font-medium">
                 To deliver exceptional construction technology services that enhance project outcomes, reduce costs, and promote sustainability through innovative digital solutions.
               </p>
             </motion.div>
@@ -249,13 +246,13 @@ export default function AboutPage() {
             <motion.div
               variants={fadeUp}
               whileHover={{ y: -15 }}
-              className="p-12 rounded-[3rem] bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 backdrop-blur-2xl border border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
+              className="p-12 rounded-[3rem] bg-white dark:bg-black border border-zinc-200 dark:border-white/5 hover:border-[#6EDD4D]/40 transition-all duration-500 group"
             >
-              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-950 border border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
+              <div className="w-20 h-20 rounded-[1.5rem] bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 flex items-center justify-center mb-10 group-hover:bg-[#6EDD4D] transition-colors duration-500">
                 <Lightbulb className="text-[#6EDD4D] group-hover:text-black transition-colors" size={36} />
               </div>
-              <h3 className="text-4xl font-black text-white mb-6 tracking-tighter">Our Vision</h3>
-              <p className="text-zinc-400 text-lg leading-relaxed font-medium">
+              <h3 className="text-4xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">Our Vision</h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed font-medium">
                 To become the global leader in construction technology solutions, transforming building lifecycle management through digital innovation.
               </p>
             </motion.div>
@@ -267,10 +264,10 @@ export default function AboutPage() {
       <section className="py-40 px-6 relative z-10">
         <div className="container mx-auto max-w-6xl text-center mb-20">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
-            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
+            <h2 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
               Our <span className="text-[#6EDD4D]">Values</span>
             </h2>
-            <p className="text-zinc-500 text-xl max-w-2xl mx-auto font-medium">
+            <p className="text-zinc-600 dark:text-zinc-500 text-xl max-w-2xl mx-auto font-medium">
               The core principles that guide every pixel and every project we build.
             </p>
           </motion.div>
@@ -281,14 +278,14 @@ export default function AboutPage() {
             <motion.div
               key={index}
               initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(110, 221, 77, 0.05)" }}
-              className="p-10 rounded-[2.5rem] bg-zinc-900/20 backdrop-blur-md border border-white/5 hover:border-[#6EDD4D]/30 transition-all duration-500 text-center flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+              className="p-10 rounded-[2.5rem] !bg-white dark:!bg-black border border-zinc-200 dark:border-white/5 hover:border-[#6EDD4D]/30 transition-all duration-500 text-center flex flex-col items-center"
             >
-              <div className="w-16 h-16 rounded-full bg-zinc-950 border border-[#6EDD4D]/20 flex items-center justify-center text-[#6EDD4D] mb-8 shadow-[0_0_30px_rgba(110,221,77,0.1)]">
+              <div className="w-16 h-16 rounded-full bg-transparent border border-[#6EDD4D]/20 flex items-center justify-center text-[#6EDD4D] mb-8 shadow-[0_0_30px_rgba(110,221,77,0.1)]">
                 {pillar.icon}
               </div>
-              <h4 className="text-xl font-bold text-white mb-4 tracking-tight">{pillar.title}</h4>
-              <p className="text-sm text-zinc-500 leading-relaxed font-medium">{pillar.description}</p>
+              <h4 className="text-xl font-bold text-zinc-900 dark:text-white mb-4 tracking-tight">{pillar.title}</h4>
+              <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed font-medium">{pillar.description}</p>
             </motion.div>
           ))}
         </div>
@@ -298,7 +295,7 @@ export default function AboutPage() {
       <section className="pt-10 pb-20 px-6 text-center relative z-10">
         <motion.div
           initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-          className="relative max-w-5xl mx-auto bg-zinc-900/30 backdrop-blur-3xl border border-white/10 rounded-[4rem] p-16 md:p-24 overflow-hidden"
+          className="relative max-w-5xl mx-auto bg-white dark:bg-black border border-zinc-200 dark:border-white/10 rounded-[4rem] p-16 md:p-24 overflow-hidden"
         >
           <motion.div
             animate={{ scale: [1, 1.4, 1], opacity: [0.1, 0.2, 0.1] }}
@@ -306,7 +303,7 @@ export default function AboutPage() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#6EDD4D] blur-[150px] rounded-full pointer-events-none"
           />
 
-          <h2 className="relative z-10 text-5xl md:text-7xl font-black text-white mb-10 tracking-tighter leading-tight">
+          <h2 className="relative z-10 text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-10 tracking-tighter leading-tight">
             Ready To Simplify Your <br />
             <span className="text-[#6EDD4D]">Project Management?</span>
           </h2>

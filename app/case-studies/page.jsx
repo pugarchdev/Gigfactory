@@ -57,9 +57,9 @@ const getIconForCategory = (category) => {
 
 // --- INDIVIDUAL CARD COMPONENT ---
 const CaseStudyCard = ({ study, onDownload }) => (
-  <div className="group h-full w-full flex flex-col rounded-[1.5rem] border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01]">
+  <div className="group h-full w-full flex flex-col rounded-[1.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/30 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-[#6EDD4D]/40 hover:scale-[1.01]">
     {/* Image */}
-    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-950">
+    <div className="relative aspect-[16/10] overflow-hidden bg-zinc-200 dark:bg-zinc-950">
       <img
         src={study.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800'}
         alt={study.name}
@@ -76,13 +76,13 @@ const CaseStudyCard = ({ study, onDownload }) => (
     {/* Content */}
     <div className="p-6 flex flex-col flex-grow">
       <div className="h-[52px] mb-2">
-        <h3 className="text-lg font-bold text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
+        <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-[#6EDD4D] transition-colors leading-snug line-clamp-2">
           {study.name}
         </h3>
       </div>
 
       <div className="h-[40px] mb-5">
-        <p className="text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2">
+        <p className="text-zinc-600 dark:text-zinc-300 text-sm font-semibold leading-relaxed line-clamp-2">
           {study.features}
         </p>
       </div>
@@ -99,7 +99,7 @@ const CaseStudyCard = ({ study, onDownload }) => (
       {/* Download Button */}
       <button
         onClick={() => onDownload(study)}
-        className="mt-auto w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-800 text-white text-xs font-bold uppercase tracking-widest transition-all group-hover:bg-[#6EDD4D] group-hover:text-black"
+        className="mt-auto w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-bold uppercase tracking-widest transition-all group-hover:bg-[#6EDD4D] group-hover:text-black"
       >
         Download Case Study
         <i className="fa-solid fa-download text-sm group-hover:-translate-y-0.5 transition-transform"></i>
@@ -253,16 +253,16 @@ const CaseStudiesListing = () => {
   }
 
   return (
-    <section className="py-14 px-6 bg-zinc-950 relative overflow-hidden">
+    <section className="py-14 px-6 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden">
       <div className="container mx-auto max-w-7xl relative z-10">
 
         {/* Header */}
         <div className="text-center mb-16">
           <AnimatedSection animationClass="opacity-0 -translate-y-10">
-            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-              Case <span className="text-[#6EDD4D]">Studies</span>
+            <h2 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
+              White<span className="text-[#6EDD4D]">papers</span>
             </h2>
-            <p className="max-w-2xl mx-auto text-zinc-400 text-lg font-semibold leading-relaxed">
+            <p className="max-w-2xl mx-auto text-zinc-600 dark:text-zinc-400 text-lg font-semibold leading-relaxed">
               Real construction projects delivered with quality, precision, and efficiency.
             </p>
           </AnimatedSection>
@@ -305,7 +305,7 @@ const CaseStudiesListing = () => {
 
           {/* CUSTOM MOBILE SLIDER INDICATOR */}
           <div className="flex justify-center items-center mt-2">
-            <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+            <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
               <div
                 className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
                 style={{ transform: `translateX(${scrollProgress * 2}%)` }}
@@ -317,10 +317,10 @@ const CaseStudiesListing = () => {
         {/* CTA SECTION */}
         <div className="mt-20 mb-6 px-4">
           <AnimatedSection animationClass="opacity-0 scale-95" delay={200}>
-            <div className="relative overflow-hidden bg-[#0a0a0a]/80 backdrop-blur-xl border border-zinc-900 rounded-[3rem] py-12 px-6 text-center group max-w-3xl mx-auto">
+            <div className="relative overflow-hidden bg-white/90 dark:bg-[#0a0a0a]/80 backdrop-blur-xl border border-zinc-200 dark:border-zinc-900 rounded-[3rem] py-12 px-6 text-center group max-w-3xl mx-auto">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50%] h-[50%] bg-[#6EDD4D]/5 blur-[80px] pointer-events-none rounded-full" />
 
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-8 tracking-tight relative z-10">
+              <h3 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white mb-8 tracking-tight relative z-10">
                 Ready to move your project forward?
               </h3>
 
@@ -348,20 +348,20 @@ const CaseStudiesListing = () => {
           ></div>
 
           {/* Modal Content */}
-          <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
+          <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
 
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
             >
               <i className="fa-solid fa-xmark text-xl"></i>
             </button>
 
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-white mb-2">
+              <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
                 {isSuccess ? "Download Completed" : "Get the Case Study"}
               </h3>
-              <p className="text-zinc-400 text-sm">
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                 {isSuccess
                   ? "Your case study has been downloaded successfully."
                   : `Enter your details to download the full study for "${selectedStudy?.name}".`}
@@ -378,7 +378,7 @@ const CaseStudiesListing = () => {
                     placeholder="Full Name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
                   />
                 </div>
                 <div>
@@ -389,7 +389,7 @@ const CaseStudiesListing = () => {
                     placeholder="Email Address"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
                   />
                 </div>
                 <div>
@@ -401,7 +401,7 @@ const CaseStudiesListing = () => {
                     maxLength={10}
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:outline-none focus:border-[#6EDD4D] transition-colors"
                   />
                 </div>
 

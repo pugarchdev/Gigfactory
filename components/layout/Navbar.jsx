@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,11 +23,7 @@ export default function Navbar() {
   const isActive = (path) => pathname === path;
 
   return (
-    <nav
-      className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-[#0a0a0a]/90 shadow-[0_4px_30px_rgba(0,0,0,0.5)]' : 'glass'
-        }`}
-      id="navbar"
-    >
+    <nav className="fixed w-full z-50 transition-all duration-300 bg-white/80 dark:bg-black/80 backdrop-blur-md shadow-md dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)]" id="navbar">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -35,16 +32,29 @@ export default function Navbar() {
           onClick={() => setIsOpen(false)}
         >
           <div className="flex items-center gap-2">
-
-            {/* Logo Image */}
-            <img
-              src="/assets/GIG.png" /* Replace with your actual logo path */
-              alt="Gigfactory Logo"
-              className="h-8 md:h-10 w-auto object-contain group-hover:scale-[1.02] transition-transform origin-left"
-            />
-
-            {/* SVG Flags Container */}
-           
+            {/* Light: black Factory; Gig = same PNG as dark (color strip) over white plate so edges don’t sit on black. Dark: single image. */}
+            <div className="group-hover:scale-[1.02] transition-transform origin-left relative dark:hidden isolate h-8 md:h-10 w-auto inline-block">
+              {/* Black "factory" part */}
+              <img
+                src="/assets/GIG.png"
+                alt="Gigfactory Logo"
+                className="relative z-0 block h-full w-auto object-contain object-left [filter:grayscale(1)_contrast(1.45)_brightness(0)] [clip-path:inset(0_0_0_31%)]"
+              />
+              {/* Green "Gig" part */}
+              <img
+                src="/assets/GIG.png"
+                alt=""
+                aria-hidden="true"
+                className="absolute left-0 top-0 h-full w-auto object-contain object-left [clip-path:inset(0_69%_0_0)]"
+              />
+            </div>
+            <div className="group-hover:scale-[1.02] transition-transform origin-left hidden dark:block">
+              <img
+                src="/assets/GIG.png"
+                alt="Gigfactory Logo"
+                className="h-8 md:h-10 w-auto object-contain"
+              />
+            </div>
           </div>
 
           {/* Subtitle */}
@@ -57,30 +67,30 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/"
-            className={`text-sm font-semibold transition-colors ${isActive('/') ? 'text-neon-green' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-semibold transition-colors ${isActive('/') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
           >
             Home
           </Link>
           <Link
             href="/expertise"
-            className={`text-sm font-semibold transition-colors ${isActive('/expertise') ? 'text-neon-green' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-semibold transition-colors ${isActive('/expertise') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
           >
             Our Expertise
           </Link>
           <Link
             href="/projects"
-            className={`text-sm font-semibold transition-colors ${isActive('/projects') ? 'text-neon-green' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-semibold transition-colors ${isActive('/projects') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
           >
             Projects
           </Link>
           <Link
             href="/case-studies"
-            className={`text-sm font-semibold transition-colors ${isActive('/case-studies') ? 'text-neon-green' : 'text-gray-400 hover:text-white'}`}
+            className={`text-sm font-semibold transition-colors ${isActive('/case-studies') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
           >
             Case Studies
           </Link>
 
-          <div className="w-px h-6 bg-dark-border mx-2"></div>
+          <div className="w-px h-6 bg-zinc-200 dark:bg-dark-border mx-2"></div>
 
           <Link
             href="/login"
@@ -88,52 +98,57 @@ export default function Navbar() {
           >
             Login
           </Link>
+
+          <ThemeToggle />
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-gray-300 hover:text-white"
+          className="md:hidden text-zinc-600 dark:text-gray-300 hover:text-zinc-900 dark:hover:text-white"
           onClick={() => setIsOpen(!isOpen)}
         >
           <i className={`fa-solid ${isOpen ? 'fa-xmark' : 'fa-bars'} text-2xl`}></i>
         </button>
       </div>
-
       {/* Mobile Nav Dropdown */}
       {isOpen && (
-        <div className="md:hidden absolute top-20 left-0 w-full glass border-b border-dark-border p-6 flex flex-col gap-4 shadow-2xl">
+        <div className="md:hidden absolute top-20 left-0 w-full bg-white dark:bg-black border-b border-zinc-200 dark:border-dark-border p-6 flex flex-col gap-4 shadow-2xl">
           <Link
             href="/"
             onClick={() => setIsOpen(false)}
-            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/') ? 'bg-dark-surface text-neon-green' : 'text-gray-300'}`}
+            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
           >
             Home
           </Link>
           <Link
             href="/expertise"
             onClick={() => setIsOpen(false)}
-            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/expertise') ? 'bg-dark-surface text-neon-green' : 'text-gray-300'}`}
+            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/expertise') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
           >
             Our Expertise
           </Link>
           <Link
             href="/projects"
             onClick={() => setIsOpen(false)}
-            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/projects') ? 'bg-dark-surface text-neon-green' : 'text-gray-300'}`}
+            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/projects') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
           >
             Projects
           </Link>
           <Link
             href="/case-studies"
             onClick={() => setIsOpen(false)}
-            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/case-studies') ? 'bg-dark-surface text-neon-green' : 'text-gray-300'}`}
+            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/case-studies') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
           >
             Case Studies
           </Link>
+          <div className="flex items-center justify-between p-3 mt-2">
+            <span className="text-zinc-600 dark:text-gray-300 font-medium">Theme</span>
+            <ThemeToggle />
+          </div>
           <Link
             href="/login"
             onClick={() => setIsOpen(false)}
-            className="mt-4 bg-neon-green text-dark-base font-bold p-3 rounded-xl text-center w-full shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+            className="mt-2 bg-neon-green text-dark-base font-bold p-3 rounded-xl text-center w-full shadow-[0_0_15px_rgba(16,185,129,0.4)]"
           >
             Login
           </Link>

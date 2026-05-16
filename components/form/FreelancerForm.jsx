@@ -101,8 +101,8 @@ const FreelancerForm = ({ onClose }) => {
     }
 
     // Reusable Tailwind classes
-    const inputBaseStyle = "w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] transition-all placeholder:text-zinc-600"
-    const labelStyle = "block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2"
+    const inputBaseStyle = "w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white focus:outline-none focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] transition-all placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
+    const labelStyle = "block text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-2"
 
     // Helper component for Section Headers
     const SectionHeader = ({ number, title }) => (
@@ -111,23 +111,23 @@ const FreelancerForm = ({ onClose }) => {
                 {number}
             </span>
             {title}
-            <div className="h-px bg-zinc-800 flex-grow"></div>
+            <div className="h-px bg-zinc-300 dark:bg-zinc-800 flex-grow"></div>
         </h3>
     )
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 overflow-y-auto bg-zinc-950/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 overflow-y-auto bg-zinc-900/50 dark:bg-zinc-950/80 backdrop-blur-md">
             <div
-                className="relative w-full max-w-4xl bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 md:p-12 shadow-2xl my-8 overflow-hidden"
+                className="relative w-full max-w-4xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 md:p-12 shadow-2xl my-8 overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-800">
+                <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
                     <div>
-                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Apply as a Freelancer / Individual</h2>
-                        <p className="text-zinc-400 mt-2">Join the Gigfactory network as an independent expert.</p>
+                        <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Apply as a Freelancer / Individual</h2>
+                        <p className="text-zinc-600 dark:text-zinc-400 mt-2">Join the Gigfactory network as an independent expert.</p>
                     </div>
-                    <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors p-2 text-3xl leading-none">
+                    <button onClick={onClose} className="text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors p-2 text-3xl leading-none">
                         &times;
                     </button>
                 </div>
@@ -175,7 +175,7 @@ const FreelancerForm = ({ onClose }) => {
                     {/* Section 3: Service  */}
                     <div>
                         <SectionHeader number="3" title="Service" />
-                        <p className="text-zinc-400 text-sm mb-4">Select services you personally offer (check all applicable)</p>
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">Select services you personally offer (check all applicable)</p>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                             {[
@@ -191,11 +191,11 @@ const FreelancerForm = ({ onClose }) => {
                                         key={service.id}
                                         onClick={() => handleServiceToggle(service.id)}
                                         className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center text-center gap-2 transition-all ${isActive
-                                            ? 'border-[#6EDD4D] bg-[#6EDD4D]/10 text-white shadow-[0_0_15px_rgba(110,221,77,0.1)]'
-                                            : 'border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-600'
+                                            ? 'border-[#6EDD4D] bg-[#6EDD4D]/10 text-zinc-900 dark:text-white shadow-[0_0_15px_rgba(110,221,77,0.1)]'
+                                            : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-600'
                                             }`}
                                     >
-                                        <div className={`w-5 h-5 rounded flex items-center justify-center border ${isActive ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'border-zinc-600 bg-zinc-900'}`}>
+                                        <div className={`w-5 h-5 rounded flex items-center justify-center border ${isActive ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'border-zinc-400 bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-900'}`}>
                                             {isActive && <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg>}
                                         </div>
                                         <span className="font-bold text-sm">{service.label}</span>
@@ -209,15 +209,15 @@ const FreelancerForm = ({ onClose }) => {
 
                             {/* BIM Details */}
                             {formData.selectedServices.includes('BIM') && (
-                                <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
-                                    <h4 className="text-white font-bold mb-4">BIM & 2D Drafting Details</h4>
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">BIM & 2D Drafting Details</h4>
                                     <div className="mb-6">
                                         <label className={labelStyle}>Software Stack</label>
                                         <div className="flex flex-wrap gap-3">
                                             {['Revit', 'AutoCAD', 'Navisworks', 'Tekla', 'Civil 3D'].map(sw => {
                                                 const isSelected = formData.bimDetails.softwareStack.includes(sw);
                                                 return (
-                                                    <label key={sw} className={`cursor-pointer px-4 py-2 rounded-full text-sm font-bold border transition-all ${isSelected ? 'bg-[#6EDD4D] text-zinc-950 border-[#6EDD4D]' : 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-zinc-500'}`}>
+                                                    <label key={sw} className={`cursor-pointer px-4 py-2 rounded-full text-sm font-bold border transition-all ${isSelected ? 'bg-[#6EDD4D] text-zinc-950 border-[#6EDD4D]' : 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:border-zinc-400 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500'}`}>
                                                         <input type="checkbox" className="hidden" checked={isSelected} onChange={() => handleSoftwareToggle(sw)} />
                                                         {sw}
                                                     </label>
@@ -228,7 +228,7 @@ const FreelancerForm = ({ onClose }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className={labelStyle}>Max LOD Capability</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.bimDetails.maxLod} onChange={(e) => handleNestedChange('bimDetails', 'maxLod', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.bimDetails.maxLod} onChange={(e) => handleNestedChange('bimDetails', 'maxLod', e.target.value)}>
                                                 <option value="">Select option</option>
                                                 <option value="LOD 300">LOD 300</option>
                                                 <option value="LOD 350">LOD 350</option>
@@ -246,8 +246,8 @@ const FreelancerForm = ({ onClose }) => {
 
                             {/* As-Built Audit Details */}
                             {formData.selectedServices.includes('Audit') && (
-                                <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
-                                    <h4 className="text-white font-bold mb-4">As-Built Audit Details</h4>
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">As-Built Audit Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className={labelStyle}>Equipment Owned</label>
@@ -255,7 +255,7 @@ const FreelancerForm = ({ onClose }) => {
                                         </div>
                                         <div>
                                             <label className={labelStyle}>Service Radius</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.auditDetails.serviceRadius} onChange={(e) => handleNestedChange('auditDetails', 'serviceRadius', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.auditDetails.serviceRadius} onChange={(e) => handleNestedChange('auditDetails', 'serviceRadius', e.target.value)}>
                                                 <option value="">Select option</option>
                                                 <option value="City-wide">City-wide</option>
                                                 <option value="State-wide">State-wide</option>
@@ -268,8 +268,8 @@ const FreelancerForm = ({ onClose }) => {
 
                             {/* Peer Review Details */}
                             {formData.selectedServices.includes('Peer') && (
-                                <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
-                                    <h4 className="text-white font-bold mb-4">Peer Review Details</h4>
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Peer Review Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className={labelStyle}>Total Years of Experience *</label>
@@ -277,7 +277,7 @@ const FreelancerForm = ({ onClose }) => {
                                         </div>
                                         <div>
                                             <label className={labelStyle}>Specialisation</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.peerReviewDetails.specialisation} onChange={(e) => handleNestedChange('peerReviewDetails', 'specialisation', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.peerReviewDetails.specialisation} onChange={(e) => handleNestedChange('peerReviewDetails', 'specialisation', e.target.value)}>
                                                 <option value="">Select option</option>
                                                 <option value="Structural">Structural</option>
                                                 <option value="MEP">MEP</option>
@@ -291,12 +291,12 @@ const FreelancerForm = ({ onClose }) => {
 
                             {/* BOQ Details */}
                             {formData.selectedServices.includes('BOQ') && (
-                                <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
-                                    <h4 className="text-white font-bold mb-4">BOQ (Bill of Quantities) Creation Details</h4>
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">BOQ (Bill of Quantities) Creation Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className={labelStyle}>Preferred Measurement Standards</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.boqDetails.measurementStandards} onChange={(e) => handleNestedChange('boqDetails', 'measurementStandards', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.boqDetails.measurementStandards} onChange={(e) => handleNestedChange('boqDetails', 'measurementStandards', e.target.value)}>
                                                 <option value="">Select option</option>
                                                 <option value="IS 1200">IS 1200</option>
                                                 <option value="RICS">RICS</option>
@@ -314,8 +314,8 @@ const FreelancerForm = ({ onClose }) => {
 
                             {/* 3D Visualisation Details */}
                             {formData.selectedServices.includes('Viz') && (
-                                <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6">
-                                    <h4 className="text-white font-bold mb-4">3D Visualisation & Rendering Details</h4>
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">3D Visualisation & Rendering Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="md:col-span-2">
                                             <label className={labelStyle}>Rendering Engine(s)</label>
@@ -323,7 +323,7 @@ const FreelancerForm = ({ onClose }) => {
                                         </div>
                                         <div>
                                             <label className={labelStyle}>Hardware Capacity</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.vizDetails.hardwareCapacity} onChange={(e) => handleNestedChange('vizDetails', 'hardwareCapacity', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.vizDetails.hardwareCapacity} onChange={(e) => handleNestedChange('vizDetails', 'hardwareCapacity', e.target.value)}>
                                                 <option value="">Select option</option>
                                                 <option value="Dedicated Render Farm / High-end GPU">Dedicated Render Farm / High-end GPU</option>
                                                 <option value="Cloud Rendering">Cloud Rendering</option>
@@ -332,7 +332,7 @@ const FreelancerForm = ({ onClose }) => {
                                         </div>
                                         <div>
                                             <label className={labelStyle}>Animation Capability</label>
-                                            <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} value={formData.vizDetails.animationCapability} onChange={(e) => handleNestedChange('vizDetails', 'animationCapability', e.target.value)}>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.vizDetails.animationCapability} onChange={(e) => handleNestedChange('vizDetails', 'animationCapability', e.target.value)}>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
                                             </select>
@@ -387,9 +387,9 @@ const FreelancerForm = ({ onClose }) => {
 
                                 {/* FILE NAME + REMOVE */}
                                 {formData.portfolioFile && (
-                                    <div className="flex items-center justify-between mt-3 bg-zinc-900/60 border border-zinc-800 rounded-lg px-3 py-2">
+                                    <div className="flex items-center justify-between mt-3 bg-zinc-200/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2">
 
-                                        <p className="text-sm text-zinc-300 truncate max-w-[85%]">
+                                        <p className="text-sm text-zinc-800 dark:text-zinc-300 truncate max-w-[85%]">
                                             {formData.portfolioFile.name}
                                         </p>
 
@@ -416,7 +416,7 @@ const FreelancerForm = ({ onClose }) => {
                             </div>
                             <div>
                                 <label className={labelStyle}>Standard Commercial Basis</label>
-                                <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} name="commercialBasis" value={formData.commercialBasis} onChange={handleInputChange}>
+                                <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} name="commercialBasis" value={formData.commercialBasis} onChange={handleInputChange}>
                                     <option value="">Select option</option>
                                     <option value="Hourly Rate">Hourly Rate</option>
                                     <option value="Per Sq. Ft.">Per Sq. Ft.</option>
@@ -430,7 +430,7 @@ const FreelancerForm = ({ onClose }) => {
                             </div>
                             <div>
                                 <label className={labelStyle}>Notice Period / Lead Time</label>
-                                <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} name="noticePeriod" value={formData.noticePeriod} onChange={handleInputChange}>
+                                <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} name="noticePeriod" value={formData.noticePeriod} onChange={handleInputChange}>
                                     <option value="">Select option</option>
                                     <option value="Immediate">Immediate</option>
                                     <option value="1 Week">1 Week</option>
@@ -439,7 +439,7 @@ const FreelancerForm = ({ onClose }) => {
                             </div>
                             <div>
                                 <label className={labelStyle}>Availability</label>
-                                <select className={`${inputBaseStyle} [&>option]:bg-zinc-900`} name="availability" value={formData.availability} onChange={handleInputChange}>
+                                <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} name="availability" value={formData.availability} onChange={handleInputChange}>
                                     <option value="">Select option</option>
                                     <option value="Full-time">Full-time</option>
                                     <option value="Part-time">Part-time</option>
@@ -459,9 +459,9 @@ const FreelancerForm = ({ onClose }) => {
                                 name="declarationAccepted"
                                 checked={formData.declarationAccepted}
                                 onChange={handleInputChange}
-                                className="mt-1 w-5 h-5 accent-[#6EDD4D] bg-zinc-900 border-zinc-700 rounded cursor-pointer"
+                                className="mt-1 w-5 h-5 accent-[#6EDD4D] bg-zinc-100 dark:bg-zinc-900 border border-zinc-400 dark:border-zinc-700 rounded cursor-pointer"
                             />
-                            <label onClick={() => handleInputChange({ target: { name: 'declarationAccepted', type: 'checkbox', checked: !formData.declarationAccepted } })} className="text-zinc-300 text-sm md:text-base leading-relaxed cursor-pointer select-none">
+                            <label onClick={() => handleInputChange({ target: { name: 'declarationAccepted', type: 'checkbox', checked: !formData.declarationAccepted } })} className="text-zinc-700 dark:text-zinc-300 text-sm md:text-base leading-relaxed cursor-pointer select-none">
                                 I hereby certify that all PAN details provided are authentic. I understand that onboarding is subject to a technical audit of my previous work.
                             </label>
                         </div>
@@ -469,18 +469,18 @@ const FreelancerForm = ({ onClose }) => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className={labelStyle}>Signature *</label>
-                                <input type="text" name="signatureName" required value={formData.signatureName} onChange={handleInputChange} placeholder="Type your full name as signature" className={`${inputBaseStyle} bg-zinc-950/50`} />
+                                <input type="text" name="signatureName" required value={formData.signatureName} onChange={handleInputChange} placeholder="Type your full name as signature" className={`${inputBaseStyle} bg-zinc-100/80 dark:bg-zinc-950/50`} />
                             </div>
                             <div>
                                 <label className={labelStyle}>Date</label>
-                                <input type="date" name="submissionDate" value={formData.submissionDate} readOnly className={`${inputBaseStyle} bg-zinc-950/50 [color-scheme:dark]`} />
+                                <input type="date" name="submissionDate" value={formData.submissionDate} readOnly className={`${inputBaseStyle} bg-zinc-100/80 dark:bg-zinc-950/50 [color-scheme:light] dark:[color-scheme:dark]`} />
                             </div>
                         </div>
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="flex justify-end gap-4 pt-8 border-t border-zinc-800">
-                        <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                    <div className="flex justify-end gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+                        <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
                             Cancel
                         </button>
                         <button type="submit" className="px-8 py-3 rounded-xl font-bold bg-[#6EDD4D] text-zinc-950 hover:bg-[#5bc43f] hover:shadow-[0_0_20px_rgba(110,221,77,0.3)] transition-all">

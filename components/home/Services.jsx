@@ -156,12 +156,12 @@ export default function Services({ onContactClick }) {
       {/* Header */}
       <div className="text-center mb-16 md:mb-20 relative z-10">
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 -mt-12 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-6 -mt-12 tracking-tight">
             Services We <span className="text-[#6EDD4D]">Deliver</span>
           </h2>
         </AnimatedSection>
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto leading-relaxed">
             Expertise across the construction lifecycle, enabled by cutting-edge technology.
           </p>
         </AnimatedSection>
@@ -187,12 +187,12 @@ export default function Services({ onContactClick }) {
                 // Dynamic width: 85vw on mobile lets the next card peek in. Snap-center snaps it into place.
                 className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto h-full flex-shrink-0 md:flex-shrink snap-center"
               >
-                <div className="relative overflow-hidden bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 p-8 rounded-[2.5rem] transition-all duration-500 ease-out hover:-translate-y-3 hover:border-[#6EDD4D]/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6),0_0_20px_rgba(110,221,77,0.1)] group flex flex-col items-center text-center h-full">
+                <div className="relative overflow-hidden bg-white dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-8 rounded-[2.5rem] transition-all duration-500 ease-out hover:-translate-y-3 hover:border-[#6EDD4D]/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1),0_0_20px_rgba(110,221,77,0.1)] group flex flex-col items-center text-center h-full">
 
                   <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#6EDD4D]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   {/* ICON CONTAINER */}
-                  <div className="w-24 h-24 rounded-3xl bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-8 relative z-10 group-hover:bg-[#6EDD4D] group-hover:rotate-[10deg] transition-all duration-500 overflow-hidden shadow-xl">
+                  <div className="w-24 h-24 rounded-3xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-8 relative z-10 group-hover:bg-[#6EDD4D] group-hover:rotate-[10deg] transition-all duration-500 overflow-hidden shadow-xl">
                     {service.iconPath ? (
                       <img
                         src={service.iconPath}
@@ -204,10 +204,10 @@ export default function Services({ onContactClick }) {
                     )}
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white mb-4 relative z-10 group-hover:text-[#6EDD4D] transition-colors duration-300">{service.title}</h3>
-                  <div className="relative bg-zinc-950/50 p-5 rounded-2xl flex-grow mb-8 text-sm text-zinc-400 leading-relaxed text-left w-full border-l-2 border-zinc-800 group-hover:border-[#6EDD4D] transition-all duration-500">{service.desc}</div>
+                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 relative z-10 group-hover:text-[#6EDD4D] transition-colors duration-300">{service.title}</h3>
+                  <div className="relative bg-zinc-50 dark:bg-zinc-950/50 p-5 rounded-2xl flex-grow mb-8 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-left w-full border-l-2 border-zinc-200 dark:border-zinc-800 group-hover:border-[#6EDD4D] transition-all duration-500">{service.desc}</div>
 
-                  <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-700 text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn mt-auto">
+                  <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn mt-auto">
                     <span className="relative z-10 flex items-center gap-2">Know More <i className="fa-solid fa-arrow-right text-xs group-hover/btn:translate-x-2 transition-transform duration-300"></i></span>
                     <div className="absolute inset-0 bg-[#6EDD4D] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                   </Link>
@@ -252,9 +252,9 @@ export default function Services({ onContactClick }) {
       {/* CTA SECTION */}
       <div className="relative z-10 text-center pt-0 pb-10">
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={100} className="md:-mt-12">
-          <h2 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+          <h2 className="text-5xl md:text-7xl font-bold text-zinc-900 dark:text-white mb-6 tracking-tight leading-tight">
             Have a project <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">in mind?</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-900 to-zinc-500 dark:from-white dark:to-zinc-500">in mind?</span>
           </h2>
         </AnimatedSection>
 

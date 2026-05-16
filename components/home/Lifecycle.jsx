@@ -107,10 +107,10 @@ export default function Lifecycle({ onContactClick }) {
       {/* Header */}
       <div className="text-center mb-12">
         <AnimatedSection animationClass="opacity-0 translate-y-10">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-6 tracking-tight">
             End-to-End <span className="text-[#6EDD4D]">Lifecycle</span>
           </h2>
-          <p className="text-zinc-500 text-lg font-medium max-w-2xl mx-auto">
+          <p className="text-zinc-600 dark:text-zinc-500 text-lg font-medium max-w-2xl mx-auto">
             Comprehensive project management from conceptualization to final asset handover.
           </p>
         </AnimatedSection>
@@ -141,8 +141,8 @@ export default function Lifecycle({ onContactClick }) {
                     onMouseEnter={() => { if (window.innerWidth > 1024) setActiveStage(stage.id) }}
                     onMouseLeave={() => { if (window.innerWidth > 1024) setActiveStage(null) }}
                     className={`relative flex flex-col items-center text-center p-8 rounded-[2.5rem] transition-all duration-700 cursor-pointer border ${isActive
-                      ? 'bg-zinc-900/80 border-[#6EDD4D]/40 shadow-[0_0_40px_rgba(110,221,77,0.1)]'
-                      : 'bg-zinc-900/20 border-white/5 hover:border-white/10'
+                      ? 'bg-zinc-100 dark:bg-zinc-900/80 border-[#6EDD4D]/40 shadow-[0_0_40px_rgba(110,221,77,0.1)]'
+                      : 'bg-zinc-100/70 dark:bg-zinc-900/20 border-zinc-300/60 dark:border-white/5 hover:border-zinc-400 dark:hover:border-white/10'
                       }`}
                   >
                     {/* Image Container */}
@@ -150,30 +150,30 @@ export default function Lifecycle({ onContactClick }) {
                       <img src={stage.image} alt={stage.name} className="max-h-full object-contain" />
                     </div>
 
-                    <div className={`mb-4 px-3 py-1 rounded-full text-[10px] uppercase font-bold transition-all ${isActive ? 'bg-[#6EDD4D] text-black' : 'bg-zinc-800 text-zinc-500'}`}>
+                    <div className={`mb-4 px-3 py-1 rounded-full text-[10px] uppercase font-bold transition-all ${isActive ? 'bg-[#6EDD4D] text-black' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-500'}`}>
                       Stage 0{stage.id}
                     </div>
 
-                    <h3 className={`font-black uppercase tracking-tighter transition-all ${isActive ? 'text-xl text-white mb-4' : 'text-base text-zinc-500'}`}>
+                    <h3 className={`font-black uppercase tracking-tighter transition-all ${isActive ? 'text-xl text-zinc-950 dark:text-white mb-4' : 'text-base text-zinc-700 dark:text-zinc-500'}`}>
                       {stage.name}
                     </h3>
 
-                    <div className={`text-3xl mb-6 transition-all ${isActive ? 'text-[#6EDD4D]' : 'text-zinc-700'}`}>
+                    <div className={`text-3xl mb-6 transition-all ${isActive ? 'text-[#6EDD4D]' : 'text-zinc-600 dark:text-zinc-700'}`}>
                       <i className={`fa-solid ${stage.icon}`}></i>
                     </div>
 
-                    <p className={`text-sm transition-colors ${isActive ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                    <p className={`text-sm transition-colors ${isActive ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-600 dark:text-zinc-600'}`}>
                       {stage.description}
                     </p>
 
                     {/* Expandable Content */}
                     <div className={`w-full overflow-hidden transition-all duration-700 ease-in-out ${isActive ? 'max-h-[500px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
-                      <div className="w-full h-[1px] bg-zinc-800 mb-6"></div>
+                      <div className="w-full h-[1px] bg-zinc-300 dark:bg-zinc-800 mb-6"></div>
                       <ul className="space-y-4 text-left">
                         {stage.outputs.map((out, i) => (
                           <li key={i} className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#6EDD4D]"></div>
-                            <span className="text-[11px] font-bold text-zinc-400 uppercase">{out}</span>
+                            <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-400 uppercase">{out}</span>
                           </li>
                         ))}
                       </ul>
@@ -187,7 +187,7 @@ export default function Lifecycle({ onContactClick }) {
 
         {/* NEW: MOBILE SLIDER INDICATOR (Hidden on lg screens) */}
         <div className="lg:hidden flex justify-center items-center -mt-4 mb-4">
-          <div className="w-24 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+          <div className="w-24 h-1.5 bg-zinc-300 dark:bg-zinc-800 rounded-full relative overflow-hidden">
             <div
               className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
               style={{ transform: `translateX(${scrollProgress * 2}%)` }}
@@ -200,7 +200,7 @@ export default function Lifecycle({ onContactClick }) {
       {/* Static Contact Button */}
       <div className="flex flex-col items-center pt-4 md:pt-8">
         <AnimatedSection animationClass="opacity-0 translate-y-4" className="text-center">
-          <h3 className="text-3xl md:text-4xl font-bold text-white mb-10 md:-mt-16 tracking-tight">
+          <h3 className="text-3xl md:text-4xl font-bold text-zinc-900 dark:text-white mb-10 md:-mt-16 tracking-tight">
             Got a challenge or idea?
           </h3>
         </AnimatedSection>

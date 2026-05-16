@@ -56,7 +56,7 @@ export default function Hero({ onContactClick }) {
   }, [media.length])
 
   return (
-    <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden py-20 md:py-32 bg-zinc-950 text-white">
+    <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center overflow-hidden py-20 md:py-32 bg-zinc-950 text-white transition-colors duration-500">
 
       {/* --- CUSTOM CSS FOR ANIMATIONS --- */}
       <style dangerouslySetInnerHTML={{
@@ -103,14 +103,14 @@ export default function Hero({ onContactClick }) {
           </div>
         ))}
 
-        {/* Adjusted Gradient: Keeping edges dark for text readability, but clearing the center */}
+        {/* Adjusted Gradient: Keeping edges theme-aware for text readability, but clearing the center */}
         <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/90 via-zinc-950/10 to-zinc-950/90" />
-        <div className="absolute inset-0 bg-zinc-950/20" /> {/* Overall subtle dark wash */}
+        <div className="absolute inset-0 bg-zinc-950/20" /> {/* Overall subtle wash */}
       </div>
 
       {/* --- TECH GRID & GLOW LAYER --- */}
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full opacity-20 blur-[120px]">
           <div className="absolute top-[10%] left-[20%] w-72 h-72 bg-[#6EDD4D] rounded-full mix-blend-screen filter animate-blob"></div>
           <div className="absolute bottom-[10%] left-[40%] w-72 h-72 bg-[#22c55e] rounded-full mix-blend-screen filter animate-blob" style={{ animationDelay: '4s' }}></div>
@@ -138,7 +138,7 @@ export default function Hero({ onContactClick }) {
 
         {/* Paragraph - Increased contrast */}
         <AnimatedSection animationClass="opacity-0 translate-y-12" delay={400}>
-          <p className="text-lg md:text-xl text-white max-w-3xl mx-auto mb-12 leading-relaxed drop-shadow-md font-medium">
+          <p className="text-lg md:text-xl text-zinc-200 max-w-3xl mx-auto mb-12 leading-relaxed drop-shadow-sm font-medium">
             Technology-enabled platform for integrated BIM planning, designing & engineering. Projects delivered across 10+ Million Sqft.          </p>
         </AnimatedSection>
 

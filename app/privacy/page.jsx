@@ -37,13 +37,13 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
 const PolicyBlock = ({ title, id, children }) => (
     <section id={id} className="scroll-mt-32 mb-16">
         <AnimatedSection animationClass="opacity-0 translate-y-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-3">
                 <span className="text-[#6EDD4D] text-xl opacity-50">#</span> {title}
             </h2>
-            <div className="text-zinc-400 text-lg leading-relaxed space-y-6">
+            <div className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed space-y-6">
                 {children}
             </div>
-            <div className="w-full h-px bg-zinc-800/50 mt-16"></div>
+            <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800/50 mt-16"></div>
         </AnimatedSection>
     </section>
 )
@@ -73,12 +73,12 @@ export default function PrivacyPolicy() {
     ]
 
     return (
-        <main className="min-h-screen mt-[-40px] text-zinc-100 selection:bg-[#6EDD4D]/30 pb-12 md:mt-[-70px]">
+        <main className="min-h-screen mt-[-40px] text-zinc-900 dark:text-zinc-100 selection:bg-[#6EDD4D]/30 pb-12 md:mt-[-70px]">
 
             {/* Background Branding Elements */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
                 <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#6EDD4D]/5 rounded-full blur-[150px]"></div>
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(9,9,11,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(9,9,11,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:60px_60px]"></div>
             </div>
 
             <div className="relative z-10 container mx-auto px-6 pt-24 md:pt-32">
@@ -89,10 +89,10 @@ export default function PrivacyPolicy() {
                         <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
                             Legal & Compliance
                         </span>
-                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-4">
+                        <h1 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white tracking-tight mb-4">
                             Privacy & <span className="text-[#6EDD4D]">Advertisement</span> Policy
                         </h1>
-                        <p className="text-zinc-500 font-bold flex items-center gap-2">
+                        <p className="text-zinc-600 dark:text-zinc-500 font-bold flex items-center gap-2">
                             <i className="fa-solid fa-calendar-check text-[#6EDD4D]"></i>
                             Updated: 22nd March 2023
                         </p>
@@ -109,8 +109,8 @@ export default function PrivacyPolicy() {
                             // Move the sticky logic here so it stays relative to the tall 'aside' container
                             className="sticky top-32"
                         >
-                            <div className="bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 rounded-[2rem] p-8 shadow-2xl">
-                                <h3 className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 px-4">Policy Contents</h3>
+                            <div className="bg-white/90 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 shadow-2xl">
+                                <h3 className="text-zinc-600 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6 px-4">Policy Contents</h3>
 
                                 {/* Scrollable Container for the links */}
                                 <nav className="flex flex-col gap-1 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar">
@@ -121,7 +121,7 @@ export default function PrivacyPolicy() {
                                             onClick={() => setActiveSection(item.id)}
                                             className={`text-left px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${activeSection === item.id
                                                 ? 'bg-[#6EDD4D]/10 text-[#6EDD4D] border border-[#6EDD4D]/20'
-                                                : 'text-zinc-500 hover:text-zinc-300'
+                                                : 'text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
                                                 }`}
                                         >
                                             {item.label}
@@ -138,8 +138,11 @@ export default function PrivacyPolicy() {
                     background: transparent;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #27272a; 
+                    background: #d4d4d8; 
                     border-radius: 10px;
+                }
+                :global(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #27272a;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #6EDD4D;
@@ -161,15 +164,15 @@ export default function PrivacyPolicy() {
                         <PolicyBlock title="1. Scope" id="scope">
                             <p>Protecting your personal information is our priority. This Privacy Policy explains how Gigfactory processes and protects personal information about:</p>
                             <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-                                <li className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Registered Users</li>
-                                <li className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Prospective Candidates</li>
-                                <li className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Website Users</li>
+                                <li className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Registered Users</li>
+                                <li className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Prospective Candidates</li>
+                                <li className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-4 rounded-xl text-center font-bold text-[#6EDD4D]">Website Users</li>
                             </ul>
                             <p>This Privacy Policy applies to Information, data / any hard copy/ electronic record that may be collected /shared/ analysed and/or stored by Us. This Privacy Policy shall also be applicable irrespective of whether Our platform has been accessed/availed through a Third-Party source or directly.</p>
-                            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 mt-6">
-                                <h4 className="text-white font-bold mb-4">Permitted Disclosure:</h4>
-                                <p className="text-sm text-zinc-500 mb-4">User/s agree and consents that We may, in order to comply with Applicable Laws, share Your Personally Identifiable Information/PII with government authorities in the following cases:</p>
-                                <ol className="list-decimal pl-5 space-y-3 text-sm text-zinc-500">
+                            <div className="bg-zinc-100/90 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 mt-6">
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Permitted Disclosure:</h4>
+                                <p className="text-sm text-zinc-600 dark:text-zinc-500 mb-4">User/s agree and consents that We may, in order to comply with Applicable Laws, share Your Personally Identifiable Information/PII with government authorities in the following cases:</p>
+                                <ol className="list-decimal pl-5 space-y-3 text-sm text-zinc-600 dark:text-zinc-500">
                                     <li>If a government authority requests for Information and We think disclosure is required or appropriate in order to comply with Applicable Laws, regulations, or a legal process;</li>
                                     <li>To comply with a legal requirement or process, including but not limited to, civil and criminal subpoenas, court orders or other compulsory disclosures;</li>
                                 </ol>
@@ -191,33 +194,33 @@ export default function PrivacyPolicy() {
                                     { t: "Mechanical Collection", d: "Data collected mechanically, like apps or other data is beyond company’s control, still its treated as personal information for security and avoiding cyber-crimes." },
                                     { t: "Usage Engagement", d: "IP address and other information about your device which we need to provide our online content to you. We also collect information about your engagement with our website or apps such as the pages you view. We use cookies and similar technologies to collect a lot of this information." }
                                 ].map((item, i) => (
-                                    <div key={i} className="group p-6 rounded-2xl bg-zinc-900/30 border border-zinc-800 hover:border-[#6EDD4D]/30 transition-all">
-                                        <h5 className="text-white font-bold mb-2 flex items-center gap-3">
+                                    <div key={i} className="group p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 hover:border-[#6EDD4D]/30 transition-all">
+                                        <h5 className="text-zinc-900 dark:text-white font-bold mb-2 flex items-center gap-3">
                                             <span className="w-1.5 h-1.5 rounded-full bg-[#6EDD4D]"></span>
                                             {item.t}
                                         </h5>
-                                        <p className="text-sm text-zinc-500 leading-relaxed">{item.d}</p>
+                                        <p className="text-sm text-zinc-600 dark:text-zinc-500 leading-relaxed">{item.d}</p>
                                     </div>
                                 ))}
                             </div>
 
-                            <h4 className="text-white font-bold mb-4">Device Information Detail</h4>
+                            <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Device Information Detail</h4>
                             <p>We collect information from and about the computers, phones, connected TVs and other web-connected devices you use that integrate with our Services, and we combine this information across different devices you use. Information we obtain from these devices includes: Device attributes, Device operations, Device signals, Data from device settings, Network and connections, and Cookie data. Learn more about how we use cookies in the Gigfactory Cookies Policy.</p>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                                <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
-                                    <h5 className="font-bold text-white mb-2">Payment Information</h5>
-                                    <p className="text-sm text-zinc-500">If you use the Service to make or receive payments, we will also collect certain payment information, such as credit card or other financial account information, and billing address.</p>
+                                <div className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
+                                    <h5 className="font-bold text-zinc-900 dark:text-white mb-2">Payment Information</h5>
+                                    <p className="text-sm text-zinc-600 dark:text-zinc-500">If you use the Service to make or receive payments, we will also collect certain payment information, such as credit card or other financial account information, and billing address.</p>
                                 </div>
-                                <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
-                                    <h5 className="font-bold text-white mb-2">Service Announcements</h5>
-                                    <p className="text-sm text-zinc-500">On rare occasions it is necessary to send out a strictly service related announcement. For instance, if our service is temporarily suspended for maintenance. Generally, users cannot opt-out of these communications.</p>
+                                <div className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
+                                    <h5 className="font-bold text-zinc-900 dark:text-white mb-2">Service Announcements</h5>
+                                    <p className="text-sm text-zinc-600 dark:text-zinc-500">On rare occasions it is necessary to send out a strictly service related announcement. For instance, if our service is temporarily suspended for maintenance. Generally, users cannot opt-out of these communications.</p>
                                 </div>
                             </div>
                         </PolicyBlock>
 
                         <PolicyBlock title="3. How We Use Your Information" id="usage">
-                            <ul className="space-y-4">
+                            <ul className="space-y-4 text-zinc-700 dark:text-zinc-300">
                                 {[
                                     "To provide the services you requested.",
                                     "To notify you about changes to our Site or any services we offer or provide through it.",
@@ -247,9 +250,9 @@ export default function PrivacyPolicy() {
                         </PolicyBlock>
 
                         <PolicyBlock title="5. Disclosure of Your Information" id="disclosure">
-                            <p className="font-black text-white text-xl border-b border-[#6EDD4D]/30 pb-2 mb-6 inline-block">We do not sell your personal data.</p>
+                            <p className="font-black text-zinc-900 dark:text-white text-xl border-b border-[#6EDD4D]/30 pb-2 mb-6 inline-block">We do not sell your personal data.</p>
                             <p>However, we may share data with trusted partners, service providers, or in case of business transfers:</p>
-                            <ul className="space-y-3 pl-4 border-l-2 border-zinc-800">
+                            <ul className="space-y-3 pl-4 border-l-2 border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300">
                                 <li>To fulfill the purpose for which you provide it.</li>
                                 <li>To contractors, service providers and other third parties we use to support our business.</li>
                                 <li>To a buyer or other successor in the event of a merger, divestiture, restructuring, or reorganization.</li>
@@ -261,26 +264,26 @@ export default function PrivacyPolicy() {
 
                         <PolicyBlock title="6. Your Choices and Obligation" id="choices">
                             <div className="bg-zinc-900/50 p-8 rounded-3xl border border-zinc-800">
-                                <h4 className="text-white font-bold mb-4">Personal Information Rights</h4>
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Personal Information Rights</h4>
                                 <p className="text-sm mb-6">According to applicable law, you have several rights under the Regulations and other relevant laws. These include the right to ask us for a copy of your personal information, to correct, delete or restrict processing; to obtain the information in a structured, machine-readable format, and to ask us to share (port) this to another controller.</p>
-                                <h4 className="text-white font-bold mb-4">Data Retention</h4>
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Data Retention</h4>
                                 <p className="text-sm">We generally retain your personal data as long as you keep your account open or as needed to provide you Services. Even if you only use our Services every few years, we will retain your information and keep your profile open, unless you close your account.</p>
                             </div>
                         </PolicyBlock>
 
                         <PolicyBlock title="7. Security" id="security">
                             <div className="bg-zinc-900/50 p-8 rounded-3xl border border-zinc-800">
-                                <h4 className="text-white font-bold mb-4">Data Protection Measures</h4>
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Data Protection Measures</h4>
                                 <p className="text-sm mb-6">
                                     We take appropriate measures to ensure that all personal data is kept secure including security measures to prevent personal data from being accidentally lost, or used or accessed in an unauthorised way. We also have procedures in place to deal with any suspected data security breach. We will notify you and any applicable regulator of a suspected data security breach where We are legally required to do so.
                                 </p>
 
-                                <h4 className="text-white font-bold mb-4">Access Control</h4>
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Access Control</h4>
                                 <p className="text-sm mb-6">
                                     We limit access to your personal data to those who have a genuine business need to know it. Those processing your information will do so only in an authorised manner and are subject to a duty of confidentiality.
                                 </p>
 
-                                <h4 className="text-white font-bold mb-4">Transmission Risk</h4>
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Transmission Risk</h4>
                                 <p className="text-sm">
                                     Unfortunately, the transmission of information via the internet is not completely secure. Although We will do Our best to protect your personal data, We cannot guarantee the security of your data transmitted through any online means, therefore any transmission remains at your own risk.
                                 </p>
@@ -298,16 +301,16 @@ export default function PrivacyPolicy() {
                                     { t: "Analytics and Research", d: "Cookies help us learn more about how well our Services and plugins perform in different locations and measure ad performance." },
                                     { t: "Advertising and measurement", d: "We use cookies to help us show ads and to make recommendations for businesses to people who may be interested." }
                                 ].map((cookie, i) => (
-                                    <div key={i} className="p-6 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                                    <div key={i} className="p-6 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
                                         <h5 className="font-bold text-[#6EDD4D] mb-2">{cookie.t}</h5>
-                                        <p className="text-sm text-zinc-400">{cookie.d}</p>
+                                        <p className="text-sm text-zinc-600 dark:text-zinc-400">{cookie.d}</p>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-12 bg-zinc-950 p-8 rounded-[2rem] border border-zinc-800">
-                                <h4 className="text-white font-bold mb-4 uppercase text-xs tracking-widest">The Cookies We Set:</h4>
-                                <ul className="space-y-4 text-sm text-zinc-500">
+                            <div className="mt-12 bg-zinc-50 dark:bg-zinc-950 p-8 rounded-[2rem] border border-zinc-200 dark:border-zinc-800">
+                                <h4 className="text-zinc-900 dark:text-white font-bold mb-4 uppercase text-xs tracking-widest">The Cookies We Set:</h4>
+                                <ul className="space-y-4 text-sm text-zinc-600 dark:text-zinc-500">
                                     <li><strong>Account related:</strong> Used for management of the signup process and general administration.</li>
                                     <li><strong>Login related:</strong> Prevents you from having to log in every single time you visit a new page.</li>
                                     <li><strong>Orders processing:</strong> Essential to ensure that your order is remembered between pages.</li>
@@ -318,7 +321,7 @@ export default function PrivacyPolicy() {
                         </PolicyBlock>
 
                         <PolicyBlock title="9. No Liability" id="liability">
-                            <p className="italic bg-[#6EDD4D]/5 p-8 rounded-3xl border border-[#6EDD4D]/20 text-white">
+                            <p className="italic bg-[#6EDD4D]/5 p-8 rounded-3xl border border-[#6EDD4D]/20 text-zinc-900 dark:text-white">
                                 &quot;User acknowledges and agrees that We take every measure for having in place the appropriate privacy and security measures for securing Your PII. By providing Personally Identifiable Information/PII to Us, You agree and understand that neither Gigfactory, nor its administrators, sister concerns, subsidiaries, representatives, associates, affiliates or assigns shall be held liable for any loss/damage/harm/ injury caused to You or any Third Party due to sharing of the aforesaid Information or due to any breach or other perils such as hacking, phishing.&quot;
                             </p>
                         </PolicyBlock>
@@ -333,11 +336,11 @@ export default function PrivacyPolicy() {
 
                         <PolicyBlock title="12. Advertising Policy" id="advertising">
                             <p>Advertising keeps Gigfactory free of charge. We work hard to make sure that ads are safe, unobtrusive, and as relevant as possible. We terminate the accounts of hundreds of thousands of publishers and advertisers that violate our policies each year.</p>
-                            <h4 className="text-white font-bold mt-8 mb-4">How Gigfactory uses cookies in advertising</h4>
+                            <h4 className="text-zinc-900 dark:text-white font-bold mt-8 mb-4">How Gigfactory uses cookies in advertising</h4>
                             <p>Cookies help to make advertising more effective. Without cookies, it’s harder for an advertiser to reach its audience. We store a record of the ads we serve in our logs. These server logs typically include your web request, IP address, browser type, and one or more cookies. We anonymize this log data by removing part of the IP address (after 9 months) and cookie information (after 18 months).</p>
-                            <h4 className="text-white font-bold mt-8 mb-4">Our advertising cookies</h4>
+                            <h4 className="text-zinc-900 dark:text-white font-bold mt-8 mb-4">Our advertising cookies</h4>
                             <p>To help our partners manage their advertising, we offer products including AdSense, AdWords, Gigfactory Analytics, and DoubleClick-branded services. When you visit a page or see an ad that uses one of these products, various cookies may be sent to your browser from domains including Gigfactory.com, doubleclick.net, Gigfactorysyndication.com, or Gigfactoryadservices.com.</p>
-                            <h4 className="text-white font-bold mt-8 mb-4">What determines the ads by Gigfactory that I see?</h4>
+                            <h4 className="text-zinc-900 dark:text-white font-bold mt-8 mb-4">What determines the ads by Gigfactory that I see?</h4>
                             <p>Many decisions are made to determine which ad you see. Sometimes the ad you see is based on your current or past location. Your IP address is usually a good indication of your approximate location. Sometimes you might also see an ad that’s based on your app activity or activity on Gigfactory services; an in-app ad that’s based on your web activity; or an ad based on your activity on another device.</p>
                         </PolicyBlock>
 
@@ -356,7 +359,7 @@ export default function PrivacyPolicy() {
 
                         <PolicyBlock title="14. SECURITY" id="security-14b">
                             <p>You can contact our Privacy Officer by writing to us at our email address or postal address below, if you wish to request for access to your personal information held by us, request that your personal information be updated or corrected, or withdraw your consent to the processing of your personal information by us. If you would like to have any further information, or if you have any comments about this Privacy Policy or any questions or complaints on any privacy issue, this should also be communicated to us in the same manner.</p>
-                            <ul className="list-disc pl-6 space-y-4">
+                            <ul className="list-disc pl-6 space-y-4 text-zinc-700 dark:text-zinc-300">
                                 <li>Contact Details: 8349333524</li>
                                 <li>contact@gigfactory.com</li>
                             </ul>
@@ -393,24 +396,24 @@ export default function PrivacyPolicy() {
                             <p>We use cookies if you are registered as an User in GIGFACTORY, or you use GIGFACTORY’s services, including our website and apps. Cookies helps to understand the information we receive about you, including information about your use of other websites and apps, whether or not you are registered or logged in.</p>
                             <p>This policy explains how we use cookies and the choices you have. Except as otherwise stated in this policy, the Data Policy will apply to our processing of the data that we collect via cookies.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Why do we use cookies?</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Why do we use cookies?</h3>
                             <p>Cookies help us provide, protect and improve the website services, such as by personalising content, tailoring and measuring ads, and providing a safer experience. While the cookies that we use may change from time to time as we improve and update the GIGFACTORY website, we use them for the following purposes:</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Authentication</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Authentication</h3>
                             <p>We use cookies to verify your account and determine when you&apos;re logged in so we can make it easier for you to access GIGFACTORY and show you the appropriate experience and features.</p>
                             <p>For example: We use cookies to keep you logged in as you navigate the GIGFACTORY platform. Cookies also help us remember your browser so you do not have to keep logging in to GIGFACTORY and so you can more easily log in via third-party apps and websites.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Security, site and product integrity</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Security, site and product integrity</h3>
                             <p>We use cookies to help us keep your account, data and surfing safe and secure.</p>
                             <p>For example: Cookies can help us identify and impose additional security measures when someone may be attempting to access any GIGFACTORY account without authorisation, for instance, by rapidly guessing different passwords. We also use cookies to store information that allows us to recover your account in the event that you forget your password or to require additional authentication if you tell us that your account has been hacked.</p>
                             <p>We also use cookies to combat activity that violates our policies or otherwise degrades our ability to provide our website services.</p>
                             <p>For example: Cookies help us fight spam and phishing attacks by enabling us to identify computers that are used to create large numbers of fake accounts. We also use cookies to detect computers infected with malware and to take steps to prevent them from causing further harm.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Preferences, features and services</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Preferences, features and services</h3>
                             <p>We use cookies and similar technologies to enable the functionality of our Services, such as helping you to fill out forms on our Services more easily and providing you with features, insights and customized content in conjunction with our plugins. We also use these technologies to remember information about your browser and your preferences.</p>
                             <p>For example, cookies can tell us which language you prefer and what your communications preferences are. We may also use local storage to speed up site functionality.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">The Cookies We Set</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">The Cookies We Set</h3>
                             <p>·       Account related cookies<br/><br/>
                                 If you create an account with us then we will use cookies for the management of the signup process and general administration. These cookies will usually be deleted when you log out however in some cases they may remain afterwards to remember your site preferences when logged out.<br/><br/>
                                 ·       Login related cookies<br/><br/>
@@ -423,47 +426,47 @@ export default function PrivacyPolicy() {
                                 In order to provide you with a great experience on this site we provide the functionality to set your preferences for how this site runs when you use it. In order to remember your preferences, we need to set cookies so that this information can be called whenever you interact with a page is affected by your preferences.
                             </p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Customized Content</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Customized Content</h3>
                             <p>We use cookies and similar technologies to customize your experience on our Services. For example, we may use cookies to remember previous searches so that when you return to our services, we can offer additional information that relates to your previous search.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Analytics and Research</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Analytics and Research</h3>
                             <p>Cookies and similar technologies help us learn more about how well our Services and plugins perform in different locations. We or our service providers use these technologies to understand, improve, and research products, features and services, including as you navigate through our sites or when you access GIGFACTORY from other sites, applications or devices. We or our service providers, use these technologies to determine and measure the performance of ads or posts on and off and to learn whether you have interacted with our websites, content or emails and provide analytics based on those interactions.</p>
                             <p>We also use these technologies to provide aggregated information to our customers and partners as part of our Services. If you are a GIGFACTORY user but logged out of your account on a browser, GIGFACTORY may still continue to log your interaction with our Services on that browser until the expiration of the cookie in order to generate usage analytics for our Services. We may share these analytics in aggregate form with our customers.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Advertising, recommendations, insights and measurement</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Advertising, recommendations, insights and measurement</h3>
                             <p>We use cookies to help us show ads and to make recommendations for businesses and other organisations to people who may be interested in the products, services or causes they promote.</p>
                             <p>Cookies help us serve and measure ads across different browsers and devices used by the same person.</p>
                             <p>We may also work with our customers and partners to show you an ad on or off GIGFACTORY, such as after you’ve visited a customer’s or partner’s site or application. These technologies help us provide aggregated information to our customers and partners.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Site features and services</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Site features and services</h3>
                             <p>We use cookies to enable the functionality that helps us provide the GIGFACTORY services.</p>
                             <p>For example: Cookies help us store preferences, know when you&apos;ve seen or interacted with any member of GIGFACTORY and provide you with customised content and experiences. For instance, cookies allow us to make suggestions to you and others, and to customise content on third-party sites that integrate our social plugins.</p>
                             <p>We also use cookies to help provide you with content relevant to your locale.</p>
                             <p>For example: We store information in a cookie that is placed on your browser or device so that you will see the site in your preferred language.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Performance</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Performance</h3>
                             <p>We use cookies to provide you with the best experience possible.</p>
                             <p>For example: Cookies help us route traffic between servers and understand how quickly website load for different people. Cookies also help us record the ratio and dimensions of your screen and windows and know whether you&apos;ve enabled high-contrast mode, so that we can render our sites and apps correctly.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Analytics and research</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Analytics and research</h3>
                             <p>We use cookies to better understand how people use the GIGFACTORY website so that we can improve them.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Where do we use cookies?</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Where do we use cookies?</h3>
                             <p>We may place cookies on your computer or device, and receive information stored in cookies, when you use or visit our website.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Disabling Cookies</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Disabling Cookies</h3>
                             <p>You can prevent the setting of cookies by adjusting the settings on your browser (see your browser Help for how to do this). Be aware that disabling cookies will affect the functionality of this and many other websites that you visit. Disabling cookies will usually result in also disabling certain functionality and features of this site. Therefore, it is recommended that you do not disable cookies.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">More information about online advertising:</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">More information about online advertising:</h3>
                             <p>The advertising companies we work with generally use cookies and similar technologies as part of their services.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">Browser cookie controls:</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">Browser cookie controls:</h3>
                             <p>In addition, your browser or device may offer settings that allow you to choose whether browser cookies are set and to delete them. For more information about these controls, visit your browser or device&apos;s help material. Certain parts of the website may not work properly if you have disabled browser cookie use.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">What is Do Not Track (DNT)?</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">What is Do Not Track (DNT)?</h3>
                             <p>DNT is a concept that has been promoted by regulatory agencies such as the U.S. Federal Trade Commission (FTC), for the Internet industry to develop and implement a mechanism for allowing Internet users to control the tracking of their online activities across websites by using browser settings. As such, GIGFACTORY does not generally respond to “do not track” signals.</p>
 
-                            <h3 className="text-xl font-bold text-white mt-8 mb-4">More Information</h3>
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mt-8 mb-4">More Information</h3>
                             <p>Hopefully that has clarified things for you and as was previously mentioned if there is something that you aren&apos;t sure whether you need or not it&apos;s usually safer to leave cookies enabled in case it does interact with one of the features you use on our site.</p>
                             <p>However, if you are still looking for more information, then you can contact us through one of our preferred contact methods.</p>
                         </PolicyBlock>

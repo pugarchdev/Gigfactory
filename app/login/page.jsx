@@ -48,21 +48,18 @@ export default function Login() {
         { title: "Continuous Learning", description: "We strive for outstanding quality in everything we do", icon: <TrendingUp size={24} /> }
     ]
 
-    const inputBaseStyle = "w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#6EDD4D] transition-all placeholder:text-zinc-600 focus:bg-zinc-900/50"
-    const labelStyle = "block text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2"
+    const inputBaseStyle = "w-full bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white focus:outline-none focus:border-[#6EDD4D] transition-all placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:bg-zinc-50 dark:focus:bg-zinc-900/50"
+    const labelStyle = "block text-xs font-bold text-zinc-600 dark:text-zinc-500 uppercase tracking-widest mb-2"
 
     return (
-        <main className="min-h-screen bg-[#030303] text-zinc-100 selection:bg-[#6EDD4D]/30 relative overflow-hidden">
+        <main className="min-h-screen bg-zinc-100 dark:bg-[#030303] text-zinc-900 dark:text-zinc-100 selection:bg-[#6EDD4D]/30 relative overflow-hidden">
 
             {/* --- ADVANCED BACKGROUND SYSTEM --- */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 {/* 1. Blueprint Grid */}
-                <div className="absolute inset-0 opacity-[0.12]"
-                    style={{
-                        backgroundImage: `linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px)`,
-                        backgroundSize: '45px 45px'
-                    }}>
-                </div>
+                <div
+                    className="absolute inset-0 opacity-[0.07] dark:opacity-[0.12] [background-size:45px_45px] [background-image:linear-gradient(#d4d4d8_1px,transparent_1px),linear-gradient(90deg,#d4d4d8_1px,transparent_1px)] dark:[background-image:linear-gradient(#1e1e1e_1px,transparent_1px),linear-gradient(90deg,#1e1e1e_1px,transparent_1px)]"
+                />
 
                 {/* 2. Moving Laser Scanning Beams */}
                 <motion.div
@@ -86,8 +83,8 @@ export default function Login() {
                 <AnimatedSection animationClass="opacity-0 scale-95">
                     <section className="mb-20 relative group">
                         <div className="absolute -inset-1 bg-[#6EDD4D]/20 rounded-[2.6rem] blur-xl opacity-0 group-hover:opacity-20 transition duration-1000"></div>
-                        <div className="relative flex flex-col items-center justify-center rounded-[2.5rem] border border-zinc-800 bg-zinc-900/30 backdrop-blur-2xl p-12 md:p-20 text-center shadow-2xl">
-                            <h2 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tighter leading-tight">
+                        <div className="relative flex flex-col items-center justify-center rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/30 backdrop-blur-2xl p-12 md:p-20 text-center shadow-2xl">
+                            <h2 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-10 tracking-tighter leading-tight">
                                 Interested in becoming a <br /> <span className="text-[#6EDD4D]">Gigfactory Expert?</span>
                             </h2>
                             <div className="flex flex-col sm:flex-row gap-6">
@@ -112,7 +109,7 @@ export default function Login() {
 
                 {/* ===== MAIN LOGIN CARD (CORE Section) ===== */}
                 <AnimatedSection animationClass="opacity-0 translate-y-12" delay={200}>
-                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-[3rem] border border-white/5 bg-zinc-900/40 overflow-hidden mb-32 shadow-[0_40px_100px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-0 rounded-[3rem] border border-zinc-200 dark:border-white/5 bg-white/95 dark:bg-zinc-900/40 overflow-hidden mb-32 shadow-xl dark:shadow-[0_40px_100px_rgba(0,0,0,0.8)] backdrop-blur-md">
 
                         {/* LEFT SIDE: GREEN BOX */}
                         <div className="p-16 md:p-24 flex flex-col items-center justify-center bg-[#6EDD4D] relative overflow-hidden">
@@ -134,8 +131,8 @@ export default function Login() {
                         </div>
 
                         {/* RIGHT SIDE: LOGIN FORM */}
-                        <div className="p-12 md:p-20 flex flex-col justify-center bg-zinc-950/50">
-                            <h2 className="text-4xl font-bold text-white mb-10 tracking-tight">Login to your account</h2>
+                        <div className="p-12 md:p-20 flex flex-col justify-center bg-zinc-50/90 dark:bg-zinc-950/50">
+                            <h2 className="text-4xl font-bold text-zinc-900 dark:text-white mb-10 tracking-tight">Login to your account</h2>
                             <form className="space-y-8">
                                 <div className="group">
                                     <label className={labelStyle}>Mail ID</label>
@@ -162,7 +159,7 @@ export default function Login() {
                     {/* LEFT COLUMN */}
                     <div className="lg:col-span-5 pt-4">
                         <AnimatedSection animationClass="opacity-0 -translate-x-10">
-                            <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.85] mb-2 uppercase tracking-tighter">
+                            <h2 className="text-6xl md:text-8xl font-black text-zinc-900 dark:text-white leading-[0.85] mb-2 uppercase tracking-tighter">
                                 Our Culture
                             </h2>
                             <h2 className="text-6xl md:text-8xl font-black text-[#6EDD4D] leading-[0.85] mb-12 uppercase tracking-tighter">
@@ -170,7 +167,7 @@ export default function Login() {
                             </h2>
                             <div className="relative">
                                 <div className="absolute top-0 left-0 w-1 h-full bg-[#6EDD4D]/40 rounded-full"></div>
-                                <p className="text-zinc-400 text-xl max-w-md leading-relaxed font-medium pl-8 italic">
+                                <p className="text-zinc-600 dark:text-zinc-400 text-xl max-w-md leading-relaxed font-medium pl-8 italic">
                                     At Gigfactory, culture is not just about where we work — it&apos;s about how we think, collaborate, and build.
                                 </p>
                             </div>
@@ -185,15 +182,15 @@ export default function Login() {
                                 animationClass="opacity-0 translate-y-12"
                                 delay={index * 150}
                             >
-                                <div className="p-10 h-full rounded-[2.5rem] bg-white/5 border border-white/5 transition-all duration-500 hover:border-[#6EDD4D]/30 hover:bg-[#6EDD4D]/5 group">
-                                    <div className="w-12 h-12 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-[#6EDD4D]/40 transition-all duration-500 text-[#6EDD4D] group-hover:text-white">
+                                <div className="p-10 h-full rounded-[2.5rem] bg-white/80 dark:bg-white/5 border border-zinc-200 dark:border-white/5 transition-all duration-500 hover:border-[#6EDD4D]/30 hover:bg-[#6EDD4D]/5 group">
+                                    <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-[#6EDD4D]/40 transition-all duration-500 text-[#6EDD4D] group-hover:text-zinc-900 dark:group-hover:text-white">
                                         {pillar.icon}
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[#6EDD4D] transition-colors tracking-tight">
+                                    <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 group-hover:text-[#6EDD4D] transition-colors tracking-tight">
                                         {pillar.title}
                                     </h3>
-                                    <p className="text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-300 transition-colors">
+                                    <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed group-hover:text-zinc-800 dark:group-hover:text-zinc-300 transition-colors">
                                         {pillar.description}
                                     </p>
                                 </div>

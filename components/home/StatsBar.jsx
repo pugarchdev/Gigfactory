@@ -60,11 +60,11 @@ export default function StatsBar() {
                 />
 
                 {/* ADJUSTED RADIUS: Changed rounded-[calc(2rem-1px)] to rounded-[calc(2rem-4px)] to match the new border thickness */}
-                <div className="relative z-10 rounded-[calc(2rem-4px)] bg-zinc-950/90 backdrop-blur-xl p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-500 w-full h-full">
+                <div className="relative z-10 rounded-[calc(2rem-4px)] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl p-8 md:p-12 shadow-lg dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-500 w-full h-full">
 
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#6EDD4D]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[calc(2rem-4px)]"></div>
 
-                    <div className="relative z-20 flex flex-col md:flex-row items-center justify-between divide-y md:divide-y-0 md:divide-x divide-zinc-800/50">
+                    <div className="relative z-20 flex flex-col md:flex-row items-center justify-between divide-y md:divide-y-0 md:divide-x divide-zinc-200 dark:divide-zinc-800/50">
                         {stats.map((stat, index) => (
                             <div
                                 key={index}
@@ -73,7 +73,7 @@ export default function StatsBar() {
                                 <h3 className="text-5xl md:text-6xl font-black mb-2 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#6EDD4D] to-[#4ade80] drop-shadow-sm">
                                     <AnimatedNumber value={stat.value} />
                                 </h3>
-                                <p className="text-zinc-400 text-base md:text-lg font-medium tracking-wide">
+                                <p className="text-zinc-600 dark:text-zinc-400 text-base md:text-lg font-medium tracking-wide">
                                     {stat.label}
                                 </p>
                             </div>

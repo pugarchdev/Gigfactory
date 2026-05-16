@@ -18,16 +18,32 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var savedTheme = localStorage.getItem('theme');
+                  var isDark = savedTheme ? savedTheme === 'dark' : true;
+                  document.documentElement.classList.toggle('dark', isDark);
+                  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+                } catch (e) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                }
+              })();
+            `,
+          }}
+        />
         {/* FontAwesome CDN for Icons */}
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body className="antialiased bg-[#050505] text-slate-50 selection:bg-emerald-500/30 overflow-x-hidden">
-
+      <body className="antialiased bg-zinc-100 dark:bg-[#050505] text-slate-900 dark:text-slate-50 transition-colors duration-500">
         {/* --- Google Analytics Scripts --- */}
         <Script
           strategy="afterInteractive"

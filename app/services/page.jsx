@@ -65,7 +65,7 @@ const FeatureItem = ({ text, index }) => (
         </motion.div>
 
         {/* Text */}
-        <span className="text-zinc-400 text-lg font-medium leading-tight group-hover:text-white transition-colors duration-300">
+        <span className="text-zinc-600 dark:text-zinc-400 text-lg font-medium leading-tight group-hover:text-zinc-900 dark:group-hover:text-white transition-colors duration-300">
             {text}
         </span>
     </motion.li>
@@ -177,7 +177,7 @@ const ServicesPageContent = () => {
     }, [])
 
     return (
-        <main className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32">
+        <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-32">
             <div className="relative z-10 container mx-auto px-6 pt-24 max-w-7xl">
 
                 {/* PAGE HEADER */}
@@ -188,7 +188,7 @@ const ServicesPageContent = () => {
                     variants={popUpVariants}
                     className="mb-16 md:mb-24"
                 >
-                    <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter mb-6">Our Services</h1>
+                    <h1 className="text-5xl md:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter mb-6">Our Services</h1>
                     <div className="w-32 h-2.5 bg-[#6EDD4D] rounded-full"></div>
                 </motion.div>
 
@@ -196,7 +196,7 @@ const ServicesPageContent = () => {
 
                     {/* STICKY SIDEBAR */}
                     <aside className="hidden lg:block lg:w-1/4 xl:w-1/5 sticky top-32 z-30 self-start">
-                        <div className="bg-zinc-900/30 backdrop-blur-xl border border-zinc-800/50 rounded-[2rem] p-6 shadow-2xl">
+                        <div className="bg-white/90 dark:bg-zinc-900/30 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800/50 rounded-[2rem] p-6 shadow-2xl">
                             <nav className="flex flex-col gap-1.5">
                                 {servicesData.map((service) => (
                                     <button
@@ -204,7 +204,7 @@ const ServicesPageContent = () => {
                                         onClick={() => handleServiceClick(service.id)}
                                         className={`text-left px-5 py-3.5 rounded-xl text-sm font-bold transition-all duration-300 ${activeService === service.id
                                             ? 'bg-[#6EDD4D] text-zinc-950 shadow-[0_0_20px_rgba(110,221,77,0.2)]'
-                                            : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                                            : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white'
                                             }`}
                                     >
                                         {service.title}
@@ -230,15 +230,15 @@ const ServicesPageContent = () => {
                                     variants={popUpVariants}
                                     className="mb-12"
                                 >
-                                    <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
+                                    <h2 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight">
                                         {service.title}
                                     </h2>
-                                    <p className="text-xl text-zinc-400 leading-relaxed max-w-3xl font-medium">
+                                    <p className="text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-3xl font-medium">
                                         {service.description}
                                     </p>
                                 </motion.div>
 
-                                <div className="w-full h-[220px] sm:h-[280px] md:h-[500px] rounded-[2rem] border border-zinc-800/50 overflow-hidden mb-16 shadow-2xl relative group">                                    {service.type === 'video' ? (
+                                <div className="w-full h-[220px] sm:h-[280px] md:h-[500px] rounded-[2rem] border border-zinc-200 dark:border-zinc-800/50 overflow-hidden mb-16 shadow-2xl relative group">                                    {service.type === 'video' ? (
                                     <video
                                         src={service.media}
                                         autoPlay
@@ -254,7 +254,7 @@ const ServicesPageContent = () => {
                                         alt={service.title}
                                     />
                                 )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 to-transparent"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-transparent dark:from-zinc-950/60 to-transparent"></div>
                                 </div>
 
                                 {/* CARDS GRID */}
@@ -266,13 +266,13 @@ const ServicesPageContent = () => {
                                         whileInView="visible"
                                         viewport={{ once: true }}
                                         variants={slideInLeft}
-                                        className="bg-zinc-900/30 border border-zinc-800/50 rounded-[2.5rem] p-10 shadow-xl"
+                                        className="bg-white/90 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800/50 rounded-[2.5rem] p-10 shadow-xl"
                                     >
                                         <div className="flex items-center gap-4 mb-8">
-                                            <div className="p-3 bg-zinc-800/80 rounded-2xl text-[#6EDD4D]">
+                                            <div className="p-3 bg-zinc-100 dark:bg-zinc-800/80 rounded-2xl text-[#6EDD4D]">
                                                 <Sparkles size={24} />
                                             </div>
-                                            <h3 className="text-2xl font-black text-white">Features</h3>
+                                            <h3 className="text-2xl font-black text-zinc-900 dark:text-white">Features</h3>
                                         </div>
                                         <ul className="flex flex-col gap-1">
                                             {service.features.map((f, i) => (
@@ -287,13 +287,13 @@ const ServicesPageContent = () => {
                                         whileInView="visible"
                                         viewport={{ once: true }}
                                         variants={slideInRight}
-                                        className="bg-[#6EDD4D]/[0.02] border border-[#6EDD4D]/10 rounded-[2.5rem] p-10 shadow-xl"
+                                        className="bg-[#6EDD4D]/[0.06] dark:bg-[#6EDD4D]/[0.02] border border-[#6EDD4D]/25 dark:border-[#6EDD4D]/10 rounded-[2.5rem] p-10 shadow-xl"
                                     >
                                         <div className="flex items-center gap-4 mb-8">
-                                            <div className="p-3 bg-[#6EDD4D]/10 rounded-2xl text-[#6EDD4D]">
+                                            <div className="p-3 bg-[#6EDD4D]/15 dark:bg-[#6EDD4D]/10 rounded-2xl text-[#6EDD4D]">
                                                 <BarChart3 size={24} />
                                             </div>
-                                            <h3 className="text-2xl font-black text-white">Value & Output</h3>
+                                            <h3 className="text-2xl font-black text-zinc-900 dark:text-white">Value & Output</h3>
                                         </div>
                                         <ul className="flex flex-col gap-1">
                                             {service.benefits.map((b, i) => (
@@ -304,7 +304,7 @@ const ServicesPageContent = () => {
                                 </div>
 
                                 {index !== servicesData.length - 1 && (
-                                    <div className="my-20 h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent" />
+                                    <div className="my-20 h-px bg-gradient-to-r from-transparent via-zinc-300 dark:via-zinc-800 to-transparent" />
                                 )}
                             </section>
                         ))}
@@ -316,11 +316,11 @@ const ServicesPageContent = () => {
                     initial="hidden"
                     whileInView="visible"
                     variants={popUpVariants}
-                    className="mt-48 bg-zinc-900/40 border border-zinc-800 rounded-[3rem] p-16 text-center max-w-5xl mx-auto relative overflow-hidden"
+                    className="mt-48 bg-white/90 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-[3rem] p-16 text-center max-w-5xl mx-auto relative overflow-hidden"
                 >
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#6EDD4D] to-transparent" />
-                    <h2 className="text-4xl md:text-6xl font-black text-white mb-6">Have a project in mind?</h2>
-                    <p className="text-zinc-400 text-xl mb-10 max-w-2xl mx-auto">Let's discuss how our specialized BIM and engineering services can bring your vision to life.</p>
+                    <h2 className="text-4xl md:text-6xl font-black text-zinc-900 dark:text-white mb-6">Have a project in mind?</h2>
+                    <p className="text-zinc-600 dark:text-zinc-400 text-xl mb-10 max-w-2xl mx-auto">Let's discuss how our specialized BIM and engineering services can bring your vision to life.</p>
                     <button
                         onClick={() => router.push('/contact')}
                         className="bg-[#6EDD4D] text-zinc-950 font-black px-12 py-5 rounded-2xl text-lg hover:scale-105 transition-all shadow-[0_20px_40px_rgba(110,221,77,0.2)]"
@@ -336,9 +336,9 @@ const ServicesPageContent = () => {
 export default function ServicesPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center">
                 <div className="w-12 h-12 border-4 border-[#6EDD4D]/20 border-t-[#6EDD4D] rounded-full animate-spin mb-4" />
-                <p className="text-[#6EDD4D] font-bold tracking-widest animate-pulse">LOADING GIGFACTORY SERVICES</p>
+                <p className="text-zinc-700 dark:text-[#6EDD4D] font-bold tracking-widest animate-pulse">LOADING GIGFACTORY SERVICES</p>
             </div>
         }>
             <ServicesPageContent />

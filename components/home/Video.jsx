@@ -56,7 +56,7 @@ const Videos = () => {
 
       <div className="container mx-auto max-w-7xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-zinc-900 dark:text-white mb-6">
             Trusted by hundreds of <span className="text-[#6EDD4D]">Industry Professionals</span>
           </h2>
           <div className="h-1.5 w-24 bg-[#6EDD4D] mx-auto rounded-full"></div>
@@ -71,7 +71,7 @@ const Videos = () => {
                 className="w-[300px] md:w-[350px] shrink-0"
               >
                 <div
-                  className="group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_30px_rgba(110,221,77,0.15)] cursor-pointer h-full flex flex-col"
+                  className="group/card relative overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 transition-all duration-500 hover:border-[#6EDD4D]/50 hover:shadow-[0_0_30px_rgba(110,221,77,0.15)] cursor-pointer h-full flex flex-col"
                   onClick={() => setActiveModal(video.youtubeLink)}
                 >
                   {/* Thumbnail */}
@@ -92,7 +92,7 @@ const Videos = () => {
 
                   {/* Info */}
                   <div className="p-5">
-                    <h4 className="text-zinc-100 font-bold text-base leading-tight group-hover/card:text-[#6EDD4D] transition-colors line-clamp-2">
+                    <h4 className="text-zinc-900 dark:text-zinc-100 font-bold text-base leading-tight group-hover/card:text-[#6EDD4D] transition-colors line-clamp-2">
                       {video.title}
                     </h4>
                   </div>
@@ -102,14 +102,14 @@ const Videos = () => {
           </div>
 
           {/* Faded edges for better transition */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-zinc-950 to-transparent"></div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-zinc-950 to-transparent"></div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent"></div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white dark:from-zinc-950 to-transparent"></div>
         </div>
 
         {/* Description Section */}
-        <div className="max-w-4xl mx-auto text-center space-y-6 pt-16 border-t border-zinc-900 mt-10">
-          <p className="text-zinc-400 text-lg leading-relaxed italic">
-            &apos;At Gigfactory, our success is measured by the confidence our clients place in us. Across <span className="text-zinc-100">10+ million sq.ft.</span> of delivered projects, we have partnered with developers and consultants to bring clarity to complex construction.&apos;
+        <div className="max-w-4xl mx-auto text-center space-y-6 pt-16 border-t border-zinc-300 dark:border-zinc-900 mt-10">
+          <p className="text-zinc-700 dark:text-zinc-400 text-lg leading-relaxed italic">
+            &apos;At Gigfactory, our success is measured by the confidence our clients place in us. Across <span className="text-zinc-900 dark:text-zinc-100">10+ million sq.ft.</span> of delivered projects, we have partnered with developers and consultants to bring clarity to complex construction.&apos;
           </p>
           <h3 className="text-xl font-bold text-[#6EDD4D] uppercase tracking-widest">
             Insights & Industry Knowledge

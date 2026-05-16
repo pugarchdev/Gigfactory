@@ -162,7 +162,7 @@ export default function CaseStudies({ onContactClick }) {
   }
 
   return (
-    <section id="case-studies" className="container mx-auto px-6 py-20 -mt-24 border-t border-zinc-800/50 overflow-hidden relative">
+    <section id="case-studies" className="container mx-auto px-6 py-20 -mt-24 border-t border-zinc-300 dark:border-zinc-800/50 overflow-hidden relative">
 
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -173,10 +173,10 @@ export default function CaseStudies({ onContactClick }) {
       {/* Header */}
       <div className="text-center mb-16">
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 -mt-12 tracking-tight">Our Case <span className="text-[#6EDD4D]">Studies</span></h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-4 -mt-12 tracking-tight"> White<span className="text-[#6EDD4D]">papers</span></h2>
         </AnimatedSection>
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">
             Real construction projects delivered with quality, precision, and efficiency. Scroll to explore.
           </p>
         </AnimatedSection>
@@ -197,11 +197,11 @@ export default function CaseStudies({ onContactClick }) {
                 delay={idx * 100}
                 className="snap-start shrink-0 w-[85vw] max-w-[320px] md:max-w-none md:w-[400px]"
               >
-                <div className="group bg-zinc-900/40 backdrop-blur-xl border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col hover:border-[#6EDD4D]/50 hover:shadow-[0_0_30px_rgba(110,221,77,0.1)] transition-all duration-500 h-full">
+                <div className="group bg-zinc-100/80 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-300 dark:border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col hover:border-[#6EDD4D]/50 hover:shadow-[0_0_30px_rgba(110,221,77,0.1)] transition-all duration-500 h-full">
 
                   {/* Image Container with Hover Zoom */}
                   <div className="w-full h-56 md:h-64 overflow-hidden relative">
-                    <div className="absolute inset-0 bg-zinc-950/20 z-10 group-hover:bg-transparent transition-all duration-500"></div>
+                    <div className="absolute inset-0 bg-white/15 dark:bg-zinc-950/20 z-10 group-hover:bg-transparent transition-all duration-500"></div>
                     <img
                       src={study.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'}
                       alt={study.name}
@@ -216,12 +216,12 @@ export default function CaseStudies({ onContactClick }) {
 
                   {/* Content */}
                   <div className="p-8 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#6EDD4D] transition-colors line-clamp-1">{study.name}</h3>
-                    <p className="text-zinc-400 mb-8 flex-grow text-sm leading-relaxed line-clamp-3">{study.features}</p>
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-4 group-hover:text-[#6EDD4D] transition-colors line-clamp-1">{study.name}</h3>
+                    <p className="text-zinc-700 dark:text-zinc-400 mb-8 flex-grow text-sm leading-relaxed line-clamp-3">{study.features}</p>
 
                     <button
                       onClick={() => handleOpenModal(study)}
-                      className="w-full py-3.5 rounded-xl bg-zinc-950 text-white font-bold border border-zinc-800 hover:bg-[#6EDD4D] hover:text-zinc-950 hover:border-[#6EDD4D] hover:shadow-[0_0_15px_rgba(110,221,77,0.3)] transition-all flex justify-center items-center gap-2 group/btn"
+                      className="w-full py-3.5 rounded-xl bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white font-bold border border-zinc-300 dark:border-zinc-800 hover:bg-[#6EDD4D] hover:text-zinc-950 hover:border-[#6EDD4D] hover:shadow-[0_0_15px_rgba(110,221,77,0.3)] transition-all flex justify-center items-center gap-2 group/btn"
                     >
                       Download Case Study
                       <i className="fa-solid fa-download text-sm group-hover/btn:-translate-y-0.5 transition-transform"></i>
@@ -235,7 +235,7 @@ export default function CaseStudies({ onContactClick }) {
 
         {/* SLIDER INDICATOR */}
         <div className="flex justify-center items-center mt-4">
-          <div className="w-24 md:w-48 h-1.5 bg-zinc-800 rounded-full relative overflow-hidden">
+          <div className="w-24 md:w-48 h-1.5 bg-zinc-300 dark:bg-zinc-800 rounded-full relative overflow-hidden">
             <div
               className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
               style={{ transform: `translateX(${scrollProgress * 2}%)` }}
@@ -249,7 +249,7 @@ export default function CaseStudies({ onContactClick }) {
         <AnimatedSection animationClass="opacity-0 scale-90" delay={200}>
           <button
             onClick={() => router.push('/case-studies')}
-            className="text-zinc-400 hover:text-[#6EDD4D] font-bold text-sm tracking-widest uppercase transition-colors flex items-center group"
+            className="text-zinc-700 dark:text-zinc-400 hover:text-[#6EDD4D] font-bold text-sm tracking-widest uppercase transition-colors flex items-center group"
           >
             View All Case Studies
             <i className="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
@@ -260,11 +260,11 @@ export default function CaseStudies({ onContactClick }) {
         <div className="w-full max-w-4xl text-center space-y-10">
           <AnimatedSection animationClass="opacity-0 translate-y-10" delay={300}>
             <div className="space-y-4">
-              <h3 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-tight">
+              <h3 className="text-4xl md:text-6xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
                 Ready to move your <br className="hidden md:block" />
                 project <span className="text-[#6EDD4D]">forward?</span>
               </h3>
-              <p className="text-zinc-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+              <p className="text-zinc-600 dark:text-zinc-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
                 Let&apos;s discuss how our expertise can bring your vision to life with precision and speed.
               </p>
             </div>
