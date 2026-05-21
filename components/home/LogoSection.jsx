@@ -107,7 +107,7 @@ const LogoSection = () => {
   const allLogos = [...logos, ...logos];
 
   return (
-    <section className="py-12 -mt-24 border-y border-dark-border overflow-hidden relative bg-white">
+    <section className="py-12 -mt-24 overflow-hidden relative bg-white">
       <div className="container mx-auto px-6 mb-8">
         <p className="text-center text-xs font-bold text-gray-500 uppercase tracking-widest">
           Trusted by industry leaders globally
