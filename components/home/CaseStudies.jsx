@@ -177,7 +177,7 @@ export default function CaseStudies({ onContactClick }) {
         </AnimatedSection>
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
           <p className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">
-            Real construction projects delivered with quality, precision, and efficiency. Scroll to explore.
+            On ground impact on construction projects delivered with quality, precision, and efficiency. Scroll to explore.
           </p>
         </AnimatedSection>
       </div>
