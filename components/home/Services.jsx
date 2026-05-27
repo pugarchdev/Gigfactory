@@ -105,13 +105,37 @@ export default function Services({ onContactClick }) {
     setScrollProgress(progress);
   };
 
+  // Intercept scrollIntoView calls targeting horizontal slide components (like Lifecycle)
+  // to prevent vertical page hijacking on mobile/tablet viewports.
+  useEffect(() => {
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+
+    Element.prototype.scrollIntoView = function (options) {
+      if (options && options.block === 'nearest' && options.inline === 'start') {
+        const container = this.closest('.overflow-x-auto');
+        if (container) {
+          container.scrollTo({
+            left: this.offsetLeft - 24,
+            behavior: options.behavior || 'smooth'
+          });
+          return;
+        }
+      }
+      return originalScrollIntoView.apply(this, arguments);
+    };
+
+    return () => {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    };
+  }, []);
+
   // ✅ ADD THIS EXACTLY HERE
-  // ✅ PERFECT HORIZONTAL AUTO SCROLL
+  // ✅ PERFECT HORIZONTAL AUTO SCROLL (NO VERTICAL MOVEMENT)
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    // Only mobile
+    // Only on mobile
     if (window.innerWidth >= 768) return
 
     const cards = container.querySelectorAll('.service-card')
@@ -120,6 +144,7 @@ export default function Services({ onContactClick }) {
     let currentIndex = 0
 
     const interval = setInterval(() => {
+
       // Stop at last card
       if (currentIndex >= cards.length - 1) {
         clearInterval(interval)
@@ -130,11 +155,21 @@ export default function Services({ onContactClick }) {
 
       const targetCard = cards[currentIndex]
 
+      // Save current page vertical scroll
+      const currentPageY = window.scrollY
+
+      // Horizontal scroll only
       container.scrollTo({
         left: targetCard.offsetLeft - 24,
-        top: 0, // prevents vertical movement
         behavior: 'smooth'
       })
+
+      // Prevent page vertical movement
+      window.scrollTo({
+        top: currentPageY,
+        behavior: 'instant'
+      })
+
     }, 5000)
 
     return () => clearInterval(interval)
@@ -182,8 +217,7 @@ export default function Services({ onContactClick }) {
           ref={scrollContainerRef}
           onScroll={handleScroll}
           // Added snap-x and snap-mandatory for smooth mobile swiping
-          className="overflow-x-auto no-scrollbar -mx-6 px-6 pb-8 snap-x snap-mandatory"
-        >
+          className="overflow-x-auto overflow-y-hidden no-scrollbar -mx-6 px-6 pb-8 snap-x snap-mandatory"        >
           {/* Changed min-w-full to md:min-w-0 so grid doesn't break on desktop */}
           <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-max md:w-auto items-stretch">            {services.map((service, idx) => (
             <AnimatedSection
