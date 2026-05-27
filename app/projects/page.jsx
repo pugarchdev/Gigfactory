@@ -187,20 +187,43 @@ const MobileBatchRow = ({ projects }) => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    const interval = setInterval(() => {
-      const card = container.querySelector('div')
-      const cardWidth = card?.offsetWidth || 300
-      const gap = 16
-      const scrollAmount = cardWidth + gap
+    let interval
 
-      const maxScroll = container.scrollWidth - container.clientWidth
+    const startAutoScroll = () => {
+      interval = setInterval(() => {
+        const firstCard = container.children[0]
 
-      if (container.scrollLeft + scrollAmount >= maxScroll) {
-        container.scrollTo({ left: 0, behavior: 'smooth' })
-      } else {
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-      }
-    }, 5000)
+        if (!firstCard) return
+
+        const cardWidth = firstCard.offsetWidth
+        const gap = 16
+        const scrollAmount = cardWidth + gap
+
+        const maxScrollLeft =
+          container.scrollWidth - container.clientWidth
+
+        const currentScroll = container.scrollLeft
+
+        // 🔥 STOP EXACTLY AT LAST CARD
+        if (currentScroll >= maxScrollLeft - 5) {
+          clearInterval(interval)
+
+          container.scrollTo({
+            left: maxScrollLeft,
+            behavior: 'smooth'
+          })
+
+          return
+        }
+
+        container.scrollBy({
+          left: scrollAmount,
+          behavior: 'smooth'
+        })
+      }, 5000)
+    }
+
+    startAutoScroll()
 
     return () => clearInterval(interval)
   }, [projects])

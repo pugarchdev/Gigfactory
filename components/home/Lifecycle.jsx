@@ -67,27 +67,36 @@ export default function Lifecycle({ onContactClick }) {
   };
 
   // ✅ ADD THIS WHOLE BLOCK RIGHT HERE
+  // ✅ AUTO SCROLL — STOP AT LAST CARD
+  // ✅ AUTO SCROLL — STOP EXACTLY AT LAST CARD
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    // Only run on mobile
-    if (window.innerWidth >= 768) return
+    // Mobile only
+    if (window.innerWidth >= 1024) return
 
-    const scrollStep = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = container
+    const cards = container.querySelectorAll('.snap-center')
 
-      if (scrollLeft + clientWidth >= scrollWidth - 5) {
-        container.scrollTo({ left: 0, behavior: 'smooth' })
-      } else {
-        container.scrollBy({
-          left: container.clientWidth * 0.85,
-          behavior: 'smooth'
-        })
+    if (!cards.length) return
+
+    let currentIndex = 0
+
+    const interval = setInterval(() => {
+      currentIndex++
+
+      // ✅ Stop AFTER reaching last card
+      if (currentIndex >= cards.length) {
+        clearInterval(interval)
+        return
       }
-    }
 
-    const interval = setInterval(scrollStep, 5000)
+      cards[currentIndex].scrollIntoView({
+        behavior: 'smooth',
+        inline: 'start',
+        block: 'nearest'
+      })
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [])

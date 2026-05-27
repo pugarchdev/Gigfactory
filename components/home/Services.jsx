@@ -106,32 +106,39 @@ export default function Services({ onContactClick }) {
   };
 
   // ✅ ADD THIS EXACTLY HERE
+  // ✅ PERFECT HORIZONTAL AUTO SCROLL
   useEffect(() => {
     const container = scrollContainerRef.current
     if (!container) return
 
-    // Only mobile view
+    // Only mobile
     if (window.innerWidth >= 768) return
 
-    const scrollStep = () => {
-      const { scrollLeft, scrollWidth, clientWidth } = container
+    const cards = container.querySelectorAll('.service-card')
+    if (!cards.length) return
 
-      // If end → go back to start
-      if (scrollLeft + clientWidth >= scrollWidth - 5) {
-        container.scrollTo({ left: 0, behavior: 'smooth' })
-      } else {
-        container.scrollBy({
-          left: container.clientWidth * 0.85, // matches your card width
-          behavior: 'smooth'
-        })
+    let currentIndex = 0
+
+    const interval = setInterval(() => {
+      // Stop at last card
+      if (currentIndex >= cards.length - 1) {
+        clearInterval(interval)
+        return
       }
-    }
 
-    const interval = setInterval(scrollStep, 5000)
+      currentIndex++
+
+      const targetCard = cards[currentIndex]
+
+      container.scrollTo({
+        left: targetCard.offsetLeft - 24,
+        top: 0, // prevents vertical movement
+        behavior: 'smooth'
+      })
+    }, 5000)
 
     return () => clearInterval(interval)
   }, [])
-
   return (
     <section className="container mx-auto px-6 py-20 relative overflow-hidden">
 
@@ -178,42 +185,40 @@ export default function Services({ onContactClick }) {
           className="overflow-x-auto no-scrollbar -mx-6 px-6 pb-8 snap-x snap-mandatory"
         >
           {/* Changed min-w-full to md:min-w-0 so grid doesn't break on desktop */}
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 min-w-max md:min-w-0">
-            {services.map((service, idx) => (
-              <AnimatedSection
-                key={idx}
-                animationClass="opacity-0 scale-75"
-                delay={idx * 100}
-                // Dynamic width: 85vw on mobile lets the next card peek in. Snap-center snaps it into place.
-                className="w-[85vw] max-w-[320px] md:max-w-none md:w-auto h-full flex-shrink-0 md:flex-shrink snap-center"
-              >
-                <div className="relative overflow-hidden bg-white dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-8 rounded-[2.5rem] transition-all duration-500 ease-out hover:-translate-y-3 hover:border-[#6EDD4D]/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1),0_0_20px_rgba(110,221,77,0.1)] group flex flex-col items-center text-center h-full">
+          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-max md:w-auto items-stretch">            {services.map((service, idx) => (
+            <AnimatedSection
+              key={idx}
+              animationClass="opacity-0 scale-75"
+              delay={idx * 100}
+              // Dynamic width: 85vw on mobile lets the next card peek in. Snap-center snaps it into place.
+              className="service-card w-[85vw] max-w-[320px] md:max-w-none md:w-auto h-full flex-shrink-0 md:flex-shrink snap-center"              >
+              <div className="relative overflow-hidden bg-white dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 p-8 rounded-[2.5rem] transition-all duration-500 ease-out hover:-translate-y-3 hover:border-[#6EDD4D]/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1),0_0_20px_rgba(110,221,77,0.1)] group flex flex-col items-center text-center h-full">
 
-                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#6EDD4D]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#6EDD4D]/10 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                  {/* ICON CONTAINER */}
-                  <div className="w-24 h-24 rounded-3xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-8 relative z-10 group-hover:bg-[#6EDD4D] group-hover:rotate-[10deg] transition-all duration-500 overflow-hidden shadow-xl">
-                    {service.iconPath ? (
-                      <img
-                        src={service.iconPath}
-                        alt={service.title}
-                        className="w-24 h-24 object-contain scale-150 relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
-                      />
-                    ) : (
-                      <i className={`fa-solid ${service.icon} text-4xl text-[#6EDD4D] group-hover:text-zinc-950 transition-colors duration-500`}></i>
-                    )}
-                  </div>
-
-                  <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 relative z-10 group-hover:text-[#6EDD4D] transition-colors duration-300">{service.title}</h3>
-                  <div className="relative bg-zinc-50 dark:bg-zinc-950/50 p-5 rounded-2xl flex-grow mb-8 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-left w-full border-l-2 border-zinc-200 dark:border-zinc-800 group-hover:border-[#6EDD4D] transition-all duration-500">{service.desc}</div>
-
-                  <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn mt-auto">
-                    <span className="relative z-10 flex items-center gap-2">Know More <i className="fa-solid fa-arrow-right text-xs group-hover/btn:translate-x-2 transition-transform duration-300"></i></span>
-                    <div className="absolute inset-0 bg-[#6EDD4D] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
-                  </Link>
+                {/* ICON CONTAINER */}
+                <div className="w-24 h-24 rounded-3xl bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center mb-8 relative z-10 group-hover:bg-[#6EDD4D] group-hover:rotate-[10deg] transition-all duration-500 overflow-hidden shadow-xl">
+                  {service.iconPath ? (
+                    <img
+                      src={service.iconPath}
+                      alt={service.title}
+                      className="w-24 h-24 object-contain scale-150 relative z-20 transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+                    />
+                  ) : (
+                    <i className={`fa-solid ${service.icon} text-4xl text-[#6EDD4D] group-hover:text-zinc-950 transition-colors duration-500`}></i>
+                  )}
                 </div>
-              </AnimatedSection>
-            ))}
+
+                <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4 relative z-10 group-hover:text-[#6EDD4D] transition-colors duration-300">{service.title}</h3>
+                <div className="relative bg-zinc-50 dark:bg-zinc-950/50 p-5 rounded-2xl flex-grow mb-8 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-left w-full border-l-2 border-zinc-200 dark:border-zinc-800 group-hover:border-[#6EDD4D] transition-all duration-500">{service.desc}</div>
+
+                <Link href={`/services?service=${service.param}`} className="relative z-10 px-8 py-3 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white hover:text-zinc-950 text-sm font-bold overflow-hidden transition-all duration-300 hover:border-[#6EDD4D] group/btn mt-auto">
+                  <span className="relative z-10 flex items-center gap-2">Know More <i className="fa-solid fa-arrow-right text-xs group-hover/btn:translate-x-2 transition-transform duration-300"></i></span>
+                  <div className="absolute inset-0 bg-[#6EDD4D] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                </Link>
+              </div>
+            </AnimatedSection>
+          ))}
           </div>
         </div>
 
