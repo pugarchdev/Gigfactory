@@ -49,6 +49,9 @@ const LogoSection = () => {
     'creative_luxury': { maxHeight: 'px', maxWidth: 'px' },
     'microsoft': { maxHeight: 'px', maxWidth: 'px' },
     'DesignHouse': { maxHeight: 'px', maxWidth: 'px' },
+    'XGroup': { maxHeight: 'px', maxWidth: 'px' },
+    'SterlingWilson': { maxHeight: 'px', maxWidth: 'px' },
+    'BlueStar': { maxHeight: 'px', maxWidth: 'px' },
   };
 
   const logos = [
@@ -71,6 +74,9 @@ const LogoSection = () => {
     { name: 'natash', image: '/assets/natash-17.png' },
     { name: 'spa', image: '/assets/spa-18.png' },
     { name: 'Exotic', image: '/assets/Exotic-20.png' },
+    {name:"XGroup",image:'/assets/XGroup.png' },
+    {name:"SterlingWilson",image:'/assets/SterlingWilson.jpeg' },
+    {name:"BlueStar",image:'/assets/BlueStar.png' },
     { name: 'Labindia', image: '/assets/labindia-34.png' },
     { name: 'AMs', image: '/assets/AMs-19.png' },
     { name: 'Aesthetic', image: '/assets/Aesthetic-23.png' },
