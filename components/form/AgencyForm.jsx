@@ -1,11 +1,16 @@
 import React, { useState } from 'react'
 import { recruitmentApi } from '../../lib/api'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+
 const AgencyForm = ({ onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [errors, setErrors] = useState({})
+    const [warnings, setWarnings] = useState({})
     const [formData, setFormData] = useState({
         // 1. Identity & Accountability
         authPersonName: '', designation: '', linkedinUrl: '', headquarters: '', website: '',
+        email: '', mobile: '', // Unified fields
 
         // 2. Legal & Tax Identity
         registeredName: '', gstNumber: '', cin: '', companyPan: '',
@@ -25,12 +30,102 @@ const AgencyForm = ({ onClose }) => {
         declarationAccepted: false, signatureName: '', submissionDate: new Date().toISOString().split('T')[0]
     })
 
+    const validateField = async (name, value) => {
+        if (name === 'email') {
+            if (!value) {
+                setErrors(prev => ({ ...prev, email: 'Email address is required.' }));
+                return;
+            }
+            if (!/\S+@\S+\.\S+/.test(value)) {
+                setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE_URL}/auth/check-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: value }),
+                });
+                const data = await res.json();
+                if (data.available === false) {
+                    let msg = data.message;
+                    if (data.status === 'rejected_cooldown') {
+                        const formattedDate = new Date(data.canReapplyAt).toLocaleDateString('en-IN');
+                        msg = `Your registration request is under cooldown until ${formattedDate}. Reason: ${data.rejectionReason}`;
+                    }
+                    setErrors(prev => ({ ...prev, email: msg }));
+                } else {
+                    setErrors(prev => {
+                        const next = { ...prev };
+                        delete next.email;
+                        return next;
+                    });
+                    if (data.status === 'approved') {
+                        setWarnings(prev => ({ ...prev, email: data.message }));
+                    } else {
+                        setWarnings(prev => {
+                            const next = { ...prev };
+                            delete next.email;
+                            return next;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn('Email availability check failed:', err);
+            }
+        }
+
+        if (name === 'mobile') {
+            if (!value) {
+                setErrors(prev => ({ ...prev, mobile: 'Mobile number is required.' }));
+                return;
+            }
+            if (value.length < 10) {
+                setErrors(prev => ({ ...prev, mobile: 'Mobile number must be at least 10 digits.' }));
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE_URL}/auth/check-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: value, currentEmail: formData.email }),
+                });
+                const data = await res.json();
+                if (data.available === false) {
+                    let msg = data.message;
+                    if (data.status === 'rejected_cooldown') {
+                        const formattedDate = new Date(data.canReapplyAt).toLocaleDateString('en-IN');
+                        msg = `Mobile is under cooldown until ${formattedDate}. Reason: ${data.rejectionReason}`;
+                    }
+                    setErrors(prev => ({ ...prev, mobile: msg }));
+                } else {
+                    setErrors(prev => {
+                        const next = { ...prev };
+                        delete next.mobile;
+                        return next;
+                    });
+                    if (data.status === 'approved') {
+                        setWarnings(prev => ({ ...prev, mobile: data.message }));
+                    } else {
+                        setWarnings(prev => {
+                            const next = { ...prev };
+                            delete next.mobile;
+                            return next;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn('Mobile availability check failed:', err);
+            }
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target
-        if (type === 'checkbox' && name === 'declarationAccepted') {
-            setFormData(prev => ({ ...prev, [name]: checked }))
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }))
+        const val = type === 'checkbox' && name === 'declarationAccepted' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }))
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }))
         }
     }
 
@@ -67,34 +162,92 @@ const AgencyForm = ({ onClose }) => {
             return
         }
 
+        if (errors.email || errors.mobile) {
+            alert("Please resolve form validation errors before submitting.")
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
-            let finalFormData = { ...formData };
+            const regFormData = new FormData();
+            regFormData.append('email', formData.email);
+            regFormData.append('fullName', formData.authPersonName);
+            regFormData.append('mobile', formData.mobile);
+            regFormData.append('roleName', 'agency');
 
-            // Handle PDF upload if chosen
-            if (formData.portfolioFile) {
-                try {
-                    const uploadRes = await recruitmentApi.uploadFile(formData.portfolioFile);
-                    if (uploadRes && uploadRes.url) {
-                        finalFormData.portfolioPdfUrl = uploadRes.url;
-                        // Remove the file object as it's not needed by the final JSON submission
-                        delete finalFormData.portfolioFile;
-                    }
-                } catch (uploadError) {
-                    console.error('File upload failed:', uploadError);
-                    alert("Failed to upload portfolio PDF. Please try again or provide a link instead.");
-                    setIsSubmitting(false);
-                    return;
+            const appData = {
+                authPersonName: formData.authPersonName,
+                designation: formData.designation,
+                email: formData.email,
+                mobile: formData.mobile,
+                headquarters: formData.headquarters,
+                linkedinUrl: formData.linkedinUrl,
+                website: formData.website,
+
+                registeredName: formData.registeredName,
+                gstNumber: formData.gstNumber,
+                cin: formData.cin,
+                companyPan: formData.companyPan,
+
+                selectedServices: formData.selectedServices,
+                bimDetails: formData.bimDetails,
+                auditDetails: formData.auditDetails,
+                peerReviewDetails: formData.peerReviewDetails,
+                boqDetails: formData.boqDetails,
+                vizDetails: formData.vizDetails,
+
+                portfolioUrl: formData.portfolioUrl || '',
+                portfolioPdfUrl: '',
+                commercialBasis: formData.commercialBasis,
+                baseRate: formData.baseRate,
+                noticePeriod: formData.noticePeriod,
+                teamSize: formData.teamSize,
+
+                declarationAccepted: formData.declarationAccepted,
+                signatureName: formData.signatureName,
+
+                // compatibility fields
+                bio: `Company Website: ${formData.website || 'N/A'}. Authorized signatory: ${formData.authPersonName}`,
+                employeeCount: parseInt(formData.teamSize, 10) || 5,
+                gstNumber: formData.gstNumber,
+                website: formData.website,
+                address: formData.headquarters,
+                city: formData.headquarters ? formData.headquarters.split(',')[0]?.trim() || 'Mumbai' : 'Mumbai',
+                country: formData.headquarters ? formData.headquarters.split(',')[1]?.trim() || 'India' : 'India',
+                skillsList: formData.selectedServices,
+                serviceDetails: {
+                    selectedServices: formData.selectedServices,
+                    bimDetails: formData.bimDetails,
+                    auditDetails: formData.auditDetails,
+                    peerReviewDetails: formData.peerReviewDetails,
+                    boqDetails: formData.boqDetails,
+                    vizDetails: formData.vizDetails
                 }
+            };
+
+            regFormData.append('applicationData', JSON.stringify(appData));
+
+            if (formData.portfolioFile) {
+                regFormData.append('portfolioFile', formData.portfolioFile);
             }
 
-            await recruitmentApi.submitAgency(finalFormData)
-            alert("Application submitted successfully! Our team will review your profile.")
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                body: regFormData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed.');
+            }
+
+            alert(data.message || "Application submitted successfully! Our team will review your profile.")
             onClose()
         } catch (error) {
             console.error('Failed to submit agency application:', error)
-            alert("Failed to submit application. Please try again.")
+            alert(error.message || "Failed to submit application. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
@@ -145,6 +298,40 @@ const AgencyForm = ({ onClose }) => {
                             <div>
                                 <label className={labelStyle}>Role *</label>
                                 <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} placeholder="e.g., Director, Partner, Manager" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Email Address *</label>
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    required 
+                                    value={formData.email} 
+                                    onChange={handleInputChange} 
+                                    onBlur={(e) => validateField('email', e.target.value)}
+                                    placeholder="yourname@domain.com" 
+                                    className={`${inputBaseStyle} ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`} 
+                                />
+                                {errors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.email}</p>}
+                                {warnings.email && <p className="text-amber-500 text-xs mt-1 font-semibold">{warnings.email}</p>}
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Mobile Number *</label>
+                                <input 
+                                    type="text" 
+                                    name="mobile" 
+                                    required 
+                                    value={formData.mobile} 
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                                        setFormData(prev => ({ ...prev, mobile: val }));
+                                        if (errors.mobile) setErrors(prev => ({ ...prev, mobile: '' }));
+                                    }} 
+                                    onBlur={(e) => validateField('mobile', e.target.value)}
+                                    placeholder="10-digit mobile number" 
+                                    className={`${inputBaseStyle} ${errors.mobile ? 'border-red-500 focus:border-red-500' : ''}`} 
+                                />
+                                {errors.mobile && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.mobile}</p>}
+                                {warnings.mobile && <p className="text-amber-500 text-xs mt-1 font-semibold">{warnings.mobile}</p>}
                             </div>
                             <div>
                                 <label className={labelStyle}>LinkedIn Profile URL</label>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import AgencyForm from '@/components/form/AgencyForm'
-import FreelancerForm from '@/components/form/FreelancerForm'
+import GigExpertRegisterForm from '@/components/form/GigExpertRegisterForm'
 import { Lightbulb, Users, Target, TrendingUp } from 'lucide-react'
 
 // --- REUSABLE ANIMATION WRAPPER ---
@@ -37,9 +37,144 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
     )
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const PLATFORM_URL = process.env.NEXT_PUBLIC_PLATFORM_URL || "http://localhost:5173";
+
 export default function Login() {
     const [showAgencyForm, setShowAgencyForm] = useState(false)
-    const [showFreelancerForm, setShowFreelancerForm] = useState(false)
+    const [showGigExpertRegisterForm, setShowGigExpertRegisterForm] = useState(false)
+
+    // SSO login and OTP States
+    const [authMethod, setAuthMethod] = useState('otp') // 'otp' or 'password'
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [otp, setOtp] = useState('')
+    const [isOtpSent, setIsOtpSent] = useState(false)
+    const [timer, setTimer] = useState(0)
+    const [isLoading, setIsLoading] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
+    const [successMsg, setSuccessMsg] = useState('')
+
+    // Countdown Timer for OTP Resending
+    useEffect(() => {
+        let interval = null;
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer(prev => prev - 1);
+            }, 1000);
+        } else if (timer === 0 && isOtpSent) {
+            clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+    }, [timer, isOtpSent]);
+
+    const handleSendOtp = async (e) => {
+        e?.preventDefault();
+        if (!email) {
+            setErrorMsg("Please enter your email address first.");
+            return;
+        }
+        setIsLoading(true);
+        setErrorMsg('');
+        setSuccessMsg('');
+        try {
+            const res = await fetch(`${API_BASE_URL}/auth/request-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, purpose: 'login_verification' }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to send OTP.");
+            }
+            setSuccessMsg(data.message || "OTP sent successfully to your email!");
+            setIsOtpSent(true);
+            setTimer(30);
+        } catch (err) {
+            setErrorMsg(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleOtpLoginSubmit = async (e) => {
+        e.preventDefault();
+        if (!otp || otp.length !== 6) {
+            setErrorMsg("Please enter the 6-digit OTP code.");
+            return;
+        }
+        setIsLoading(true);
+        setErrorMsg('');
+        setSuccessMsg('');
+        try {
+            const res = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || "OTP verification failed.");
+            }
+            setSuccessMsg("OTP verified! Redirecting to platform...");
+            setTimeout(() => {
+                window.location.href = `${PLATFORM_URL}/?token=${data.token}&refreshToken=${data.refreshToken}&user=${encodeURIComponent(JSON.stringify(data.user))}`;
+            }, 1000);
+        } catch (err) {
+            setErrorMsg(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePasswordLoginSubmit = async (e) => {
+        e.preventDefault();
+        if (!email || !password) {
+            setErrorMsg("Please fill in both email and password.");
+            return;
+        }
+        setIsLoading(true);
+        setErrorMsg('');
+        setSuccessMsg('');
+        try {
+            const res = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || "Login failed.");
+            }
+            setSuccessMsg("Login successful! Redirecting to platform...");
+            setTimeout(() => {
+                window.location.href = `${PLATFORM_URL}/?token=${data.token}&refreshToken=${data.refreshToken}&user=${encodeURIComponent(JSON.stringify(data.user))}`;
+            }, 1000);
+        } catch (err) {
+            setErrorMsg(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleToggleAuthMethod = () => {
+        setErrorMsg('');
+        setSuccessMsg('');
+        if (authMethod === 'password') {
+            setAuthMethod('otp');
+            setIsOtpSent(false);
+            setOtp('');
+        } else {
+            setAuthMethod('password');
+        }
+    };
+
+    const handleBackToEmail = () => {
+        setIsOtpSent(false);
+        setOtp('');
+        setErrorMsg('');
+        setSuccessMsg('');
+    };
 
     const culturePillars = [
         { title: "Intelligence-Driven Thinking", description: "We embrace creativity and forward-thinking solutions", icon: <Lightbulb size={20} /> },
@@ -97,10 +232,10 @@ export default function Login() {
                                 </motion.button>
                                 <motion.button
                                     whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                                    onClick={() => setShowFreelancerForm(true)}
+                                    onClick={() => setShowGigExpertRegisterForm(true)}
                                     className="px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs bg-[#6EDD4D] text-zinc-950 hover:shadow-[0_0_30px_rgba(110,221,77,0.4)] transition-all"
                                 >
-                                    Apply as a Freelancer
+                                    Apply as a Gig Expert
                                 </motion.button>
                             </div>
                         </div>
@@ -132,24 +267,127 @@ export default function Login() {
 
                         {/* RIGHT SIDE: LOGIN FORM */}
                         <div className="p-12 md:p-20 flex flex-col justify-center bg-zinc-50/90 dark:bg-zinc-950/50">
-                            <h2 className="text-4xl font-bold text-zinc-900 dark:text-white mb-10 tracking-tight">Login to your account</h2>
-                            <form className="space-y-8">
-                                <div className="group">
-                                    <label className={labelStyle}>Mail ID</label>
-                                    <input type="email" placeholder="Enter your email" className={inputBaseStyle} />
+                            <h2 className="text-4xl font-bold text-zinc-900 dark:text-white mb-6 tracking-tight">Login to your account</h2>
+
+                            {/* Alert Notifications */}
+                            {errorMsg && (
+                                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-xl text-sm mb-6 flex items-center justify-between transition-all">
+                                    <span className="font-semibold">{errorMsg}</span>
+                                    <button type="button" onClick={() => setErrorMsg('')} className="text-red-500 hover:text-red-700 font-bold ml-2 text-lg leading-none">&times;</button>
                                 </div>
-                                <div className="group">
-                                    <label className={labelStyle}>Password</label>
-                                    <input type="password" placeholder="Enter your password" className={inputBaseStyle} />
+                            )}
+                            {successMsg && (
+                                <div className="bg-[#6EDD4D]/10 border border-[#6EDD4D]/30 text-[#6EDD4D] px-4 py-3 rounded-xl text-sm mb-6 flex items-center justify-between transition-all">
+                                    <span className="font-semibold">{successMsg}</span>
+                                    <button type="button" onClick={() => setSuccessMsg('')} className="text-[#6EDD4D] hover:text-[#5bc43f] font-bold ml-2 text-lg leading-none">&times;</button>
                                 </div>
-                                <motion.button
-                                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                                    type="submit"
-                                    className="w-full mt-6 bg-[#6EDD4D] text-zinc-950 font-black text-sm tracking-[0.2em] py-5 rounded-2xl shadow-[0_15px_30px_rgba(110,221,77,0.2)] hover:shadow-[0_20px_40px_rgba(110,221,77,0.3)] transition-all uppercase"
+                            )}
+
+                            {authMethod === 'otp' ? (
+                                /* OTP Login flow */
+                                <form onSubmit={isOtpSent ? handleOtpLoginSubmit : handleSendOtp} className="space-y-6">
+                                    <div className="group">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="text-xs font-bold text-zinc-600 dark:text-zinc-500 uppercase tracking-widest">Mail ID</label>
+                                            {isOtpSent && (
+                                                <button type="button" onClick={handleBackToEmail} className="text-[#6EDD4D] hover:underline text-xs flex items-center gap-1 font-bold">
+                                                    Change Email
+                                                </button>
+                                            )}
+                                        </div>
+                                        <input 
+                                            type="email" 
+                                            placeholder="Enter your email" 
+                                            required
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            disabled={isOtpSent}
+                                            className={`${inputBaseStyle} ${isOtpSent ? 'opacity-60 cursor-not-allowed' : ''}`} 
+                                        />
+                                    </div>
+
+                                    {isOtpSent && (
+                                        <div className="group">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="text-xs font-bold text-zinc-600 dark:text-zinc-500 uppercase tracking-widest">One Time Password (OTP)</label>
+                                                {timer > 0 ? (
+                                                    <span className="text-zinc-500 text-xs font-medium">Resend in {timer}s</span>
+                                                ) : (
+                                                    <button type="button" onClick={handleSendOtp} className="text-[#6EDD4D] hover:underline text-xs font-bold">
+                                                        Resend OTP
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                placeholder="Enter 6-Digit OTP" 
+                                                required
+                                                maxLength={6}
+                                                value={otp}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+                                                    setOtp(val);
+                                                }}
+                                                className={inputBaseStyle} 
+                                            />
+                                        </div>
+                                    )}
+
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full mt-6 bg-[#6EDD4D] text-zinc-950 font-black text-sm tracking-[0.2em] py-5 rounded-2xl shadow-[0_15px_30px_rgba(110,221,77,0.2)] hover:shadow-[0_20px_40px_rgba(110,221,77,0.3)] transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isLoading ? 'Processing...' : isOtpSent ? 'Verify & Log In' : 'Send OTP'}
+                                    </motion.button>
+                                </form>
+                            ) : (
+                                /* Password Login flow */
+                                <form onSubmit={handlePasswordLoginSubmit} className="space-y-6">
+                                    <div className="group">
+                                        <label className={labelStyle}>Mail ID</label>
+                                        <input 
+                                            type="email" 
+                                            placeholder="Enter your email" 
+                                            required
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className={inputBaseStyle} 
+                                        />
+                                    </div>
+                                    <div className="group">
+                                        <label className={labelStyle}>Password</label>
+                                        <input 
+                                            type="password" 
+                                            placeholder="Enter your password" 
+                                            required
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className={inputBaseStyle} 
+                                        />
+                                    </div>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full mt-6 bg-[#6EDD4D] text-zinc-950 font-black text-sm tracking-[0.2em] py-5 rounded-2xl shadow-[0_15px_30px_rgba(110,221,77,0.2)] hover:shadow-[0_20px_40px_rgba(110,221,77,0.3)] transition-all uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isLoading ? 'Logging In...' : 'LOG IN'}
+                                    </motion.button>
+                                </form>
+                            )}
+
+                            {/* Toggle login method */}
+                            <div className="mt-8 text-center">
+                                <button 
+                                    type="button" 
+                                    onClick={handleToggleAuthMethod}
+                                    className="text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 text-sm underline font-bold"
                                 >
-                                    LOG IN
-                                </motion.button>
-                            </form>
+                                    {authMethod === 'otp' ? 'Login with password instead' : 'Login with OTP instead'}
+                                </button>
+                            </div>
                         </div>
                     </section>
                 </AnimatedSection>
@@ -203,9 +441,9 @@ export default function Login() {
 
             {/* Form Modals */}
             <AnimatePresence>
-                {showFreelancerForm && (
+                {showGigExpertRegisterForm && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100]">
-                        <FreelancerForm onClose={() => setShowFreelancerForm(false)} />
+                        <GigExpertRegisterForm onClose={() => setShowGigExpertRegisterForm(false)} />
                     </motion.div>
                 )}
                 {showAgencyForm && (

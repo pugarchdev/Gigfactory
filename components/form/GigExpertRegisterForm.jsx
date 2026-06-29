@@ -1,11 +1,16 @@
 import React, { useState } from 'react'
 import { recruitmentApi } from '../../lib/api'
 
-const FreelancerForm = ({ onClose }) => {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+
+const GigExpertRegisterForm = ({ onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [errors, setErrors] = useState({})
+    const [warnings, setWarnings] = useState({})
     const [formData, setFormData] = useState({
         // 1. Identity & Accountability
         fullName: '', designation: '', linkedinUrl: '', location: '',
+        email: '', mobile: '', // Unified fields
 
         // 2. Legal & Tax Identity
         legalNamePan: '', personalPan: '',
@@ -25,12 +30,102 @@ const FreelancerForm = ({ onClose }) => {
         declarationAccepted: false, signatureName: '', submissionDate: new Date().toISOString().split('T')[0]
     })
 
+    const validateField = async (name, value) => {
+        if (name === 'email') {
+            if (!value) {
+                setErrors(prev => ({ ...prev, email: 'Email address is required.' }));
+                return;
+            }
+            if (!/\S+@\S+\.\S+/.test(value)) {
+                setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE_URL}/auth/check-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: value }),
+                });
+                const data = await res.json();
+                if (data.available === false) {
+                    let msg = data.message;
+                    if (data.status === 'rejected_cooldown') {
+                        const formattedDate = new Date(data.canReapplyAt).toLocaleDateString('en-IN');
+                        msg = `Your registration request is under cooldown until ${formattedDate}. Reason: ${data.rejectionReason}`;
+                    }
+                    setErrors(prev => ({ ...prev, email: msg }));
+                } else {
+                    setErrors(prev => {
+                        const next = { ...prev };
+                        delete next.email;
+                        return next;
+                    });
+                    if (data.status === 'approved') {
+                        setWarnings(prev => ({ ...prev, email: data.message }));
+                    } else {
+                        setWarnings(prev => {
+                            const next = { ...prev };
+                            delete next.email;
+                            return next;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn('Email availability check failed:', err);
+            }
+        }
+
+        if (name === 'mobile') {
+            if (!value) {
+                setErrors(prev => ({ ...prev, mobile: 'Mobile number is required.' }));
+                return;
+            }
+            if (value.length < 10) {
+                setErrors(prev => ({ ...prev, mobile: 'Mobile number must be at least 10 digits.' }));
+                return;
+            }
+            try {
+                const res = await fetch(`${API_BASE_URL}/auth/check-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: value, currentEmail: formData.email }),
+                });
+                const data = await res.json();
+                if (data.available === false) {
+                    let msg = data.message;
+                    if (data.status === 'rejected_cooldown') {
+                        const formattedDate = new Date(data.canReapplyAt).toLocaleDateString('en-IN');
+                        msg = `Mobile is under cooldown until ${formattedDate}. Reason: ${data.rejectionReason}`;
+                    }
+                    setErrors(prev => ({ ...prev, mobile: msg }));
+                } else {
+                    setErrors(prev => {
+                        const next = { ...prev };
+                        delete next.mobile;
+                        return next;
+                    });
+                    if (data.status === 'approved') {
+                        setWarnings(prev => ({ ...prev, mobile: data.message }));
+                    } else {
+                        setWarnings(prev => {
+                            const next = { ...prev };
+                            delete next.mobile;
+                            return next;
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn('Mobile availability check failed:', err);
+            }
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target
-        if (type === 'checkbox' && name === 'declarationAccepted') {
-            setFormData(prev => ({ ...prev, [name]: checked }))
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }))
+        const val = type === 'checkbox' && name === 'declarationAccepted' ? checked : value;
+        setFormData(prev => ({ ...prev, [name]: val }))
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }))
         }
     }
 
@@ -67,34 +162,89 @@ const FreelancerForm = ({ onClose }) => {
             return
         }
 
+        if (errors.email || errors.mobile) {
+            alert("Please resolve form validation errors before submitting.")
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
-            let finalFormData = { ...formData };
+            const regFormData = new FormData();
+            regFormData.append('email', formData.email);
+            regFormData.append('fullName', formData.fullName);
+            regFormData.append('mobile', formData.mobile);
+            regFormData.append('roleName', 'gig_expert');
 
-            // Handle PDF upload if chosen
-            if (formData.portfolioFile) {
-                try {
-                    const uploadRes = await recruitmentApi.uploadFile(formData.portfolioFile);
-                    if (uploadRes && uploadRes.url) {
-                        finalFormData.portfolioPdfUrl = uploadRes.url;
-                        // Remove the file object as it's not needed by the final JSON submission
-                        delete finalFormData.portfolioFile;
-                    }
-                } catch (uploadError) {
-                    console.error('File upload failed:', uploadError);
-                    alert("Failed to upload portfolio PDF. Please try again or provide a link instead.");
-                    setIsSubmitting(false);
-                    return;
+            const appData = {
+                fullName: formData.fullName,
+                designation: formData.designation,
+                email: formData.email,
+                mobile: formData.mobile,
+                location: formData.location,
+                linkedinUrl: formData.linkedinUrl,
+
+                legalNamePan: formData.legalNamePan,
+                personalPan: formData.personalPan,
+
+                selectedServices: formData.selectedServices,
+                bimDetails: formData.bimDetails,
+                auditDetails: formData.auditDetails,
+                peerReviewDetails: formData.peerReviewDetails,
+                boqDetails: formData.boqDetails,
+                vizDetails: formData.vizDetails,
+
+                portfolioUrl: formData.portfolioUrl || '',
+                portfolioPdfUrl: '',
+                commercialBasis: formData.commercialBasis,
+                baseRate: formData.baseRate,
+                noticePeriod: formData.noticePeriod,
+                availability: formData.availability,
+
+                declarationAccepted: formData.declarationAccepted,
+                signatureName: formData.signatureName,
+
+                // compatibility fields
+                title: formData.designation,
+                bio: `Designation: ${formData.designation}. LinkedIn: ${formData.linkedinUrl || 'N/A'}. Legal PAN Name: ${formData.legalNamePan}`,
+                experienceYears: parseInt(formData.peerReviewDetails?.teamExperience, 10) || 3,
+                hourlyRate: parseFloat(formData.baseRate) || 0,
+                availability: formData.availability ? formData.availability.toLowerCase() : 'project basis',
+                city: formData.location ? formData.location.split(',')[0]?.trim() || 'Mumbai' : 'Mumbai',
+                country: formData.location ? formData.location.split(',')[1]?.trim() || 'India' : 'India',
+                skillsList: formData.selectedServices,
+                serviceDetails: {
+                    selectedServices: formData.selectedServices,
+                    bimDetails: formData.bimDetails,
+                    auditDetails: formData.auditDetails,
+                    peerReviewDetails: formData.peerReviewDetails,
+                    boqDetails: formData.boqDetails,
+                    vizDetails: formData.vizDetails
                 }
+            };
+
+            regFormData.append('applicationData', JSON.stringify(appData));
+
+            if (formData.portfolioFile) {
+                regFormData.append('portfolioFile', formData.portfolioFile);
             }
 
-            await recruitmentApi.submitFreelancer(finalFormData)
-            alert("Application submitted successfully! Our team will contact you for technical vetting.")
+            const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                method: 'POST',
+                body: regFormData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed.');
+            }
+
+            alert(data.message || "Application submitted successfully! Our team will contact you for technical vetting.")
             onClose()
         } catch (error) {
-            console.error('Failed to submit freelancer application:', error)
-            alert("Failed to submit application. Please try again.")
+            console.error('Failed to submit gig expert application:', error)
+            alert(error.message || "Failed to submit application. Please try again.")
         } finally {
             setIsSubmitting(false)
         }
@@ -124,8 +274,8 @@ const FreelancerForm = ({ onClose }) => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
                     <div>
-                        <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Apply as a Freelancer / Individual</h2>
-                        <p className="text-zinc-600 dark:text-zinc-400 mt-2">Join the Gigfactory network as an independent expert.</p>
+                        <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Apply as a Gig Expert / Individual</h2>
+                        <p className="text-zinc-600 dark:text-zinc-400 mt-2">Join the Gigfactory network as a gig expert.</p>
                     </div>
                     <button onClick={onClose} className="text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors p-2 text-3xl leading-none">
                         &times;
@@ -145,6 +295,40 @@ const FreelancerForm = ({ onClose }) => {
                             <div>
                                 <label className={labelStyle}> Role *</label>
                                 <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} placeholder="e.g., BIM Modeller, Structural Engineer" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Email Address *</label>
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    required 
+                                    value={formData.email} 
+                                    onChange={handleInputChange} 
+                                    onBlur={(e) => validateField('email', e.target.value)}
+                                    placeholder="yourname@domain.com" 
+                                    className={`${inputBaseStyle} ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`} 
+                                />
+                                {errors.email && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.email}</p>}
+                                {warnings.email && <p className="text-amber-500 text-xs mt-1 font-semibold">{warnings.email}</p>}
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Mobile Number *</label>
+                                <input 
+                                    type="text" 
+                                    name="mobile" 
+                                    required 
+                                    value={formData.mobile} 
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                                        setFormData(prev => ({ ...prev, mobile: val }));
+                                        if (errors.mobile) setErrors(prev => ({ ...prev, mobile: '' }));
+                                    }} 
+                                    onBlur={(e) => validateField('mobile', e.target.value)}
+                                    placeholder="10-digit mobile number" 
+                                    className={`${inputBaseStyle} ${errors.mobile ? 'border-red-500 focus:border-red-500' : ''}`} 
+                                />
+                                {errors.mobile && <p className="text-red-500 text-xs mt-1 font-semibold">{errors.mobile}</p>}
+                                {warnings.mobile && <p className="text-amber-500 text-xs mt-1 font-semibold">{warnings.mobile}</p>}
                             </div>
                             <div>
                                 <label className={labelStyle}>LinkedIn Profile URL</label>
@@ -494,4 +678,4 @@ const FreelancerForm = ({ onClose }) => {
     )
 }
 
-export default FreelancerForm
+export default GigExpertRegisterForm
