@@ -69,7 +69,7 @@ export default function LetsDiscuss() {
                         <div className="space-y-3">
                             {/* Email */}
                             <a
-                                href="mailto:contact@gigfactory.com"
+                                href="mailto:contact@gigfactory.in"
                                 className="text-lg md:text-xl font-medium text-zinc-900 dark:text-white hover:text-[#6EDD4D] transition-colors block"
                             >
                                 contact@gigfactory.in

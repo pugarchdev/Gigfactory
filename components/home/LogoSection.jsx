@@ -8,6 +8,7 @@ const LogoSection = () => {
     'lt': { maxHeight: 'px', maxWidth: 'px' },
     'salesforce': { maxHeight: 'px', maxWidth: 'px' },
     'emaar': { maxHeight: 'px', maxWidth: 'px' },
+    'fcd':{maxHeight:'75px',maxWidth:'px'},
     'labindia': { maxHeight: 'px', maxWidth: 'px' },
     'sk': { maxHeight: 'px', maxWidth: 'px' },
     'spa': { maxHeight: 'px', maxWidth: 'px' },
@@ -79,6 +80,8 @@ const LogoSection = () => {
     {name:"BlueStar",image:'/assets/BlueStar.png' },
     { name: 'Labindia', image: '/assets/labindia-34.png' },
     { name: 'AMs', image: '/assets/AMs-19.png' },
+    {name:"fcd",image:"/assets/FCD.webp"},
+
     { name: 'Aesthetic', image: '/assets/Aesthetic-23.png' },
     { name: 'mmoser', image: '/assets/mmoser-22.png' },
     { name: 'EDIFICE', image: '/assets/EDIFICE-25.png' },

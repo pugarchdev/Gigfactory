@@ -138,8 +138,8 @@ export default function TermsPage() {
             <SimpleSection title="Contact Information" number={11}>
               <p>For official legal inquiries or support regarding these terms, please contact:</p>
               <div className="flex flex-col sm:flex-row gap-6 mt-6">
-                  <a href="mailto:contact@gigfactory.com" className="flex items-center gap-3 text-zinc-900 dark:text-white font-bold hover:text-[#6EDD4D] transition-colors">
-                      <Mail size={20} className="text-[#6EDD4D]" /> contact@gigfactory.com
+                  <a href="mailto:contact@gigfactory.in" className="flex items-center gap-3 text-zinc-900 dark:text-white font-bold hover:text-[#6EDD4D] transition-colors">
+                      <Mail size={20} className="text-[#6EDD4D]" /> contact@gigfactory.in
                   </a>
               </div>
             </SimpleSection>
