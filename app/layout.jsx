@@ -1,0 +1,80 @@
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import Script from 'next/script'; // Import the Next.js Script component
+
+import './globals.css';
+
+export const metadata = {
+  title: 'GigFactory - Global Construction Experts',
+  description: 'Global Capability Center for Construction Services',
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: '/favicon.png',
+  },
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <Script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var savedTheme = localStorage.getItem('theme');
+                  var isDark = savedTheme ? savedTheme === 'dark' : true;
+                  document.documentElement.classList.toggle('dark', isDark);
+                  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+                } catch (e) {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.style.colorScheme = 'dark';
+                }
+              })();
+            `,
+          }}
+        />
+        {/* FontAwesome CDN for Icons */}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+      </head>
+      <body className="antialiased bg-zinc-100 dark:bg-[#050505] text-slate-900 dark:text-slate-50 transition-colors duration-500">
+        {/* --- Google Analytics Scripts --- */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-4NBF7RBYVE`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-4NBF7RBYVE');
+            `,
+          }}
+        />
+        {/* ------------------------------ */}
+
+        {/* Top Navigation Bar */}
+        <Navbar />
+
+        {/* Main Content Area where your page.jsx content will be injected */}
+        <main className="min-h-[80vh] pt-20">
+          {children}
+        </main>
+
+        {/* Global Footer */}
+        <Footer />
+
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,506 @@
+import React, { useState } from 'react'
+import { recruitmentApi } from '../../lib/api'
+
+const AgencyForm = ({ onClose }) => {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [formData, setFormData] = useState({
+        // 1. Identity & Accountability
+        authPersonName: '', designation: '', linkedinUrl: '', headquarters: '', website: '',
+
+        // 2. Legal & Tax Identity
+        registeredName: '', gstNumber: '', cin: '', companyPan: '',
+
+        // 3. Service Selection
+        selectedServices: [], // BIM, Audit, Peer, BOQ, Viz
+        bimDetails: { softwareStack: [], maxLod: '', cdeExperience: '' },
+        auditDetails: { equipmentOwned: '', serviceRadius: '' },
+        peerReviewDetails: { teamExperience: '', specialisation: '' },
+        boqDetails: { measurementStandards: '', estimationSoftware: '' },
+        vizDetails: { renderingEngines: '', hardwareCapacity: '', animationCapability: 'No' },
+
+        // 4. Evidence & Commercials
+        portfolioUrl: '', commercialBasis: '', baseRate: '', noticePeriod: '', teamSize: '',
+
+        // 5. Final Declaration
+        declarationAccepted: false, signatureName: '', submissionDate: new Date().toISOString().split('T')[0]
+    })
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target
+        if (type === 'checkbox' && name === 'declarationAccepted') {
+            setFormData(prev => ({ ...prev, [name]: checked }))
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }))
+        }
+    }
+
+    const handleServiceToggle = (service) => {
+        setFormData(prev => {
+            const services = prev.selectedServices.includes(service)
+                ? prev.selectedServices.filter(s => s !== service)
+                : [...prev.selectedServices, service]
+            return { ...prev, selectedServices: services }
+        })
+    }
+
+    const handleNestedChange = (section, field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [section]: { ...prev[section], [field]: value }
+        }))
+    }
+
+    const handleSoftwareToggle = (software) => {
+        setFormData(prev => {
+            const currentStack = prev.bimDetails.softwareStack
+            const newStack = currentStack.includes(software)
+                ? currentStack.filter(s => s !== software)
+                : [...currentStack, software]
+            return { ...prev, bimDetails: { ...prev.bimDetails, softwareStack: newStack } }
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (!formData.declarationAccepted) {
+            alert("Please accept the final declaration.")
+            return
+        }
+
+        setIsSubmitting(true)
+
+        try {
+            let finalFormData = { ...formData };
+
+            // Handle PDF upload if chosen
+            if (formData.portfolioFile) {
+                try {
+                    const uploadRes = await recruitmentApi.uploadFile(formData.portfolioFile);
+                    if (uploadRes && uploadRes.url) {
+                        finalFormData.portfolioPdfUrl = uploadRes.url;
+                        // Remove the file object as it's not needed by the final JSON submission
+                        delete finalFormData.portfolioFile;
+                    }
+                } catch (uploadError) {
+                    console.error('File upload failed:', uploadError);
+                    alert("Failed to upload portfolio PDF. Please try again or provide a link instead.");
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
+            await recruitmentApi.submitAgency(finalFormData)
+            alert("Application submitted successfully! Our team will review your profile.")
+            onClose()
+        } catch (error) {
+            console.error('Failed to submit agency application:', error)
+            alert("Failed to submit application. Please try again.")
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    // Reusable Tailwind classes
+    const inputBaseStyle = "w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-900 dark:text-white focus:outline-none focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] transition-all placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
+    const labelStyle = "block text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider mb-2"
+
+    // Helper component for Section Headers
+    const SectionHeader = ({ number, title }) => (
+        <h3 className="text-[#6EDD4D] text-sm font-bold uppercase tracking-widest mb-6 flex items-center gap-3">
+            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#6EDD4D]/20 text-[#6EDD4D] text-xs">
+                {number}
+            </span>
+            {title}
+            <div className="h-px bg-zinc-300 dark:bg-zinc-800 flex-grow"></div>
+        </h3>
+    )
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 overflow-y-auto bg-zinc-900/50 dark:bg-zinc-950/80 backdrop-blur-md">
+            <div
+                className="relative w-full max-w-4xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 md:p-12 shadow-2xl my-8 overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">Apply as an Agency / Company</h2>
+                        <p className="text-zinc-600 dark:text-zinc-400 mt-2">Join the Gigfactory network of professional service providers.</p>
+                    </div>
+                    <button onClick={onClose} className="text-zinc-600 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors p-2 text-3xl leading-none">
+                        &times;
+                    </button>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-12">
+
+                    {/* Section 1: Basic Details */}
+                    <div>
+                        <SectionHeader number="1" title="Basic Details" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className={labelStyle}>Name of Authorised Person *</label>
+                                <input type="text" name="authPersonName" required value={formData.authPersonName} onChange={handleInputChange} placeholder="Person submitting this form" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Role *</label>
+                                <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} placeholder="e.g., Director, Partner, Manager" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>LinkedIn Profile URL</label>
+                                <input type="url" name="linkedinUrl" value={formData.linkedinUrl} onChange={handleInputChange} placeholder="Company or personal LinkedIn" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Company Headquarters *</label>
+                                <input type="text" name="headquarters" required value={formData.headquarters} onChange={handleInputChange} placeholder="City, Country" className={inputBaseStyle} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className={labelStyle}>Company Website</label>
+                                <input type="url" name="website" value={formData.website} onChange={handleInputChange} placeholder="https://" className={inputBaseStyle} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 2: Legal & Tax Identity */}
+                    <div>
+                        <SectionHeader number="2" title="Legal & Tax Identity (Company)" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className={labelStyle}>Registered Company Name *</label>
+                                <input type="text" name="registeredName" required value={formData.registeredName} onChange={handleInputChange} placeholder="As per official records" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>GST Number (GSTIN)</label>
+                                <input type="text" name="gstNumber" value={formData.gstNumber} onChange={handleInputChange} placeholder="15 or 18 character identifier" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>CIN</label>
+                                <input type="text" name="cin" value={formData.cin} onChange={handleInputChange} placeholder="Corporate Identification Number" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Company PAN *</label>
+                                <input type="text" name="companyPan" required value={formData.companyPan} onChange={handleInputChange} placeholder="10-character PAN" className={inputBaseStyle} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 3: Service */}
+                    <div>
+                        <SectionHeader number="3" title="Service" />
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">Select services your agency provides (check all applicable)</p>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                            {[
+                                { id: 'BIM', label: 'BIM & 2D Drafting' },
+                                { id: 'Audit', label: 'As-Built Audit' },
+                                { id: 'Peer', label: 'Peer Review' },
+                                { id: 'BOQ', label: 'BOQ Creation' },
+                                { id: 'Viz', label: '3D Visualisation' }
+                            ].map(service => {
+                                const isActive = formData.selectedServices.includes(service.id);
+                                return (
+                                    <div
+                                        key={service.id}
+                                        onClick={() => handleServiceToggle(service.id)}
+                                        className={`cursor-pointer rounded-xl border p-4 flex flex-col items-center justify-center text-center gap-2 transition-all ${isActive
+                                            ? 'border-[#6EDD4D] bg-[#6EDD4D]/10 text-zinc-900 dark:text-white shadow-[0_0_15px_rgba(110,221,77,0.1)]'
+                                            : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-600'
+                                            }`}
+                                    >
+                                        <div className={`w-5 h-5 rounded flex items-center justify-center border ${isActive ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'border-zinc-400 bg-zinc-200 dark:border-zinc-600 dark:bg-zinc-900'}`}>
+                                            {isActive && <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg>}
+                                        </div>
+                                        <span className="font-bold text-sm">{service.label}</span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        {/* Dynamic Sub-Panels */}
+                        <div className="space-y-6">
+
+                            {/* BIM Details */}
+                            {formData.selectedServices.includes('BIM') && (
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">BIM & 2D Drafting Details</h4>
+                                    <div className="mb-6">
+                                        <label className={labelStyle}>Software Stack</label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {['Revit', 'AutoCAD', 'Navisworks', 'Tekla', 'Civil 3D'].map(sw => {
+                                                const isSelected = formData.bimDetails.softwareStack.includes(sw);
+                                                return (
+                                                    <label key={sw} className={`cursor-pointer px-4 py-2 rounded-full text-sm font-bold border transition-all ${isSelected ? 'bg-[#6EDD4D] text-zinc-950 border-[#6EDD4D]' : 'bg-zinc-100 text-zinc-700 border-zinc-300 hover:border-zinc-400 dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-500'}`}>
+                                                        <input type="checkbox" className="hidden" checked={isSelected} onChange={() => handleSoftwareToggle(sw)} />
+                                                        {sw}
+                                                    </label>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={labelStyle}>Max LOD Capability</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.bimDetails.maxLod} onChange={(e) => handleNestedChange('bimDetails', 'maxLod', e.target.value)}>
+                                                <option value="">Select option</option>
+                                                <option value="LOD 300">LOD 300</option>
+                                                <option value="LOD 350">LOD 350</option>
+                                                <option value="LOD 400">LOD 400</option>
+                                                <option value="LOD 500">LOD 500</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>CDE Experience</label>
+                                            <input type="text" className={inputBaseStyle} value={formData.bimDetails.cdeExperience} onChange={(e) => handleNestedChange('bimDetails', 'cdeExperience', e.target.value)} placeholder="e.g., BIM 360, ACC, ProjectWise" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* As-Built Audit Details */}
+                            {formData.selectedServices.includes('Audit') && (
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">As-Built Audit Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={labelStyle}>Equipment Owned</label>
+                                            <input type="text" className={inputBaseStyle} value={formData.auditDetails.equipmentOwned} onChange={(e) => handleNestedChange('auditDetails', 'equipmentOwned', e.target.value)} placeholder="Laser Scanners, Drones, etc." />
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>Service Radius</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.auditDetails.serviceRadius} onChange={(e) => handleNestedChange('auditDetails', 'serviceRadius', e.target.value)}>
+                                                <option value="">Select option</option>
+                                                <option value="City-wide">City-wide</option>
+                                                <option value="State-wide">State-wide</option>
+                                                <option value="Nationwide">Nationwide</option>
+                                                <option value="Pan-India + Export">Pan-India + Export</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Peer Review Details */}
+                            {formData.selectedServices.includes('Peer') && (
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">Peer Review Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={labelStyle}>Total Team Experience *</label>
+                                            <input type="text" className={inputBaseStyle} required value={formData.peerReviewDetails.teamExperience} onChange={(e) => handleNestedChange('peerReviewDetails', 'teamExperience', e.target.value)} placeholder="Combined years of experience" />
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>Specialisation</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.peerReviewDetails.specialisation} onChange={(e) => handleNestedChange('peerReviewDetails', 'specialisation', e.target.value)}>
+                                                <option value="">Select option</option>
+                                                <option value="Structural">Structural</option>
+                                                <option value="MEP">MEP</option>
+                                                <option value="Architectural">Architectural</option>
+                                                <option value="Fire & Life Safety">Fire & Life Safety</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* BOQ Details */}
+                            {formData.selectedServices.includes('BOQ') && (
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">BOQ (Bill of Quantities) Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className={labelStyle}>Measurement Standards</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.boqDetails.measurementStandards} onChange={(e) => handleNestedChange('boqDetails', 'measurementStandards', e.target.value)}>
+                                                <option value="">Select option</option>
+                                                <option value="IS 1200">IS 1200</option>
+                                                <option value="RICS">RICS</option>
+                                                <option value="NRM2">NRM2</option>
+                                                <option value="SMM7">SMM7</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>Estimation Software</label>
+                                            <input type="text" className={inputBaseStyle} value={formData.boqDetails.estimationSoftware} onChange={(e) => handleNestedChange('boqDetails', 'estimationSoftware', e.target.value)} placeholder="e.g., CostX, PlanSwift, Excel" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 3D Visualisation Details */}
+                            {formData.selectedServices.includes('Viz') && (
+                                <div className="bg-zinc-100/90 dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6">
+                                    <h4 className="text-zinc-900 dark:text-white font-bold mb-4">3D Visualisation & Rendering Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="md:col-span-2">
+                                            <label className={labelStyle}>Rendering Engine(s)</label>
+                                            <input type="text" className={inputBaseStyle} value={formData.vizDetails.renderingEngines} onChange={(e) => handleNestedChange('vizDetails', 'renderingEngines', e.target.value)} placeholder="e.g., V-Ray, Corona, Unreal Engine" />
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>Hardware Capacity</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.vizDetails.hardwareCapacity} onChange={(e) => handleNestedChange('vizDetails', 'hardwareCapacity', e.target.value)}>
+                                                <option value="">Select option</option>
+                                                <option value="Dedicated Render Farm">Dedicated Render Farm</option>
+                                                <option value="Cloud Rendering">Cloud Rendering</option>
+                                                <option value="Standard Workstation">Standard Workstation</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelStyle}>Animation Capability</label>
+                                            <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} value={formData.vizDetails.animationCapability} onChange={(e) => handleNestedChange('vizDetails', 'animationCapability', e.target.value)}>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+
+                    {/* Section 4: Portfolio & Commercials */}
+                    <div>
+                        <SectionHeader number="4" title="Portfolio & Commercials" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="md:col-span-2">
+
+                                {/* URL FIELD */}
+                                <label className={labelStyle}>Portfolio / Work Samples URL</label>
+                                <input
+                                    type="url"
+                                    name="portfolioUrl"
+                                    value={formData.portfolioUrl}
+                                    onChange={handleInputChange}
+                                    placeholder="Dropbox / Drive / Website link"
+                                    className={`${inputBaseStyle} mb-4`}
+                                />
+
+                                {/* PDF UPLOAD */}
+                                <label className={labelStyle}>Or Upload Portfolio (PDF)</label>
+
+                                <div className="flex items-center gap-4">
+                                    <input
+                                        type="file"
+                                        name="portfolioFile"
+                                        accept="application/pdf"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file && file.size > 10 * 1024 * 1024) {
+                                                alert("File is too large! Maximum limit is 10MB. Please compress your PDF or provide a link instead.");
+                                                e.target.value = '';
+                                                return;
+                                            }
+                                            setFormData({
+                                                ...formData,
+                                                portfolioFile: file,
+                                            })
+                                        }}
+                                        className={`${inputBaseStyle} file:bg-[#6EDD4D] file:text-black file:font-bold file:px-4 file:py-2 file:rounded-lg file:border-0 file:mr-4 cursor-pointer`}
+                                    />
+                                </div>
+
+                                {/* FILE NAME + REMOVE */}
+                                {formData.portfolioFile && (
+                                    <div className="flex items-center justify-between mt-3 bg-zinc-200/80 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2">
+
+                                        <p className="text-sm text-zinc-800 dark:text-zinc-300 truncate max-w-[85%]">
+                                            {formData.portfolioFile.name}
+                                        </p>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setFormData({
+                                                    ...formData,
+                                                    portfolioFile: null,
+                                                })
+                                            }
+                                            className="ml-3 w-6 h-6 flex items-center justify-center rounded-full border border-red-500 text-red-500 text-xs hover:bg-red-500 hover:text-white transition-all"
+                                        >
+                                            ✕
+                                        </button>
+
+                                    </div>
+                                )}
+
+                                <p className="text-xs text-zinc-500 mt-2">
+                                    Provide a link or upload a PDF (max 10MB allowed)
+                                </p>
+
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Standard Commercial Basis</label>
+                                <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} name="commercialBasis" value={formData.commercialBasis} onChange={handleInputChange}>
+                                    <option value="">Select option</option>
+                                    <option value="Hourly Rate">Hourly Rate</option>
+                                    <option value="Per Sq. Ft.">Per Sq. Ft.</option>
+                                    <option value="Per Sheet">Per Sheet</option>
+                                    <option value="Lump Sum">Lump Sum</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Base Rate (INR / Unit)</label>
+                                <input type="number" name="baseRate" value={formData.baseRate} onChange={handleInputChange} placeholder="Numeric value" className={inputBaseStyle} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Notice Period / Lead Time</label>
+                                <select className={`${inputBaseStyle} [&>option]:bg-white dark:[&>option]:bg-zinc-900`} name="noticePeriod" value={formData.noticePeriod} onChange={handleInputChange}>
+                                    <option value="">Select option</option>
+                                    <option value="Immediate">Immediate</option>
+                                    <option value="1 Week">1 Week</option>
+                                    <option value="2 Weeks">2 Weeks</option>
+                                    <option value="4 Weeks">4 Weeks</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Team Size</label>
+                                <input type="number" name="teamSize" value={formData.teamSize} onChange={handleInputChange} placeholder="Approx. number of professionals" className={inputBaseStyle} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 5: Final Declaration */}
+                    <div className="bg-[#6EDD4D]/5 border border-[#6EDD4D]/20 rounded-[1.5rem] p-6 md:p-8">
+                        <SectionHeader number="5" title="Final Declaration" />
+
+                        <div className="flex items-start gap-4 mb-8">
+                            <input
+                                type="checkbox"
+                                name="declarationAccepted"
+                                checked={formData.declarationAccepted}
+                                onChange={handleInputChange}
+                                className="mt-1 w-5 h-5 accent-[#6EDD4D] bg-zinc-100 dark:bg-zinc-900 border border-zinc-400 dark:border-zinc-700 rounded cursor-pointer"
+                            />
+                            <label onClick={() => handleInputChange({ target: { name: 'declarationAccepted', type: 'checkbox', checked: !formData.declarationAccepted } })} className="text-zinc-700 dark:text-zinc-300 text-sm md:text-base leading-relaxed cursor-pointer select-none">
+                                I hereby certify that all PAN / GST / CIN details provided are authentic. I am authorised to represent this entity and understand that onboarding is subject to a technical audit of my previous work.
+                            </label>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className={labelStyle}>Authorised Signatory Name *</label>
+                                <input type="text" name="signatureName" required value={formData.signatureName} onChange={handleInputChange} placeholder="Type full name as signature" className={`${inputBaseStyle} bg-zinc-100/80 dark:bg-zinc-950/50`} />
+                            </div>
+                            <div>
+                                <label className={labelStyle}>Date</label>
+                                <input type="date" name="submissionDate" value={formData.submissionDate} readOnly className={`${inputBaseStyle} bg-zinc-100/80 dark:bg-zinc-950/50 [color-scheme:light] dark:[color-scheme:dark]`} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer Actions */}
+                    <div className="flex justify-end gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+                        <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+                            Cancel
+                        </button>
+                        <button type="submit" className="px-8 py-3 rounded-xl font-bold bg-[#6EDD4D] text-zinc-950 hover:bg-[#5bc43f] hover:shadow-[0_0_20px_rgba(110,221,77,0.3)] transition-all">
+                            Submit Application
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export default AgencyForm
