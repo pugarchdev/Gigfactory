@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Building2, Home, Factory, HeartPulse, GraduationCap, Ship, Zap, Network, ShoppingBag, Server, MoveRight } from 'lucide-react'
 import ContactModal from '@/components/home/ContactModal'
 import { caseStudiesApi, enquiryApi } from '@/lib/api'
@@ -65,12 +65,6 @@ const CaseStudyCard = ({ study, onDownload }) => (
         alt={study.name}
         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
-      {/* <div className="absolute top-4 left-4">
-        <span className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-950/80 border border-zinc-800 text-white text-[10px] font-bold uppercase tracking-widest backdrop-blur-md">
-          <span className="text-[#6EDD4D]">{getIconForCategory(study.category)}</span>
-          {study.category}
-        </span>
-      </div> */}
     </div>
 
     {/* Content */}
@@ -108,6 +102,37 @@ const CaseStudyCard = ({ study, onDownload }) => (
   </div>
 )
 
+// --- CASE STUDY SKELETON LOADER ---
+const CaseStudySkeleton = () => (
+  <div className="bg-white dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 rounded-[1.5rem] p-6 animate-pulse h-[450px] flex flex-col justify-between">
+    <div className="space-y-4">
+      {/* Image placeholder */}
+      <div className="aspect-[16/10] bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full" />
+      
+      {/* Title placeholder */}
+      <div className="space-y-2">
+        <div className="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-5/6" />
+        <div className="h-5 bg-zinc-200 dark:bg-zinc-800 rounded w-2/3" />
+      </div>
+
+      {/* Description placeholder */}
+      <div className="space-y-2 pt-2">
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-full" />
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-4/5" />
+      </div>
+
+      {/* Tags placeholder */}
+      <div className="flex gap-2 pt-2">
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/4" />
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/4" />
+      </div>
+    </div>
+
+    {/* Button placeholder */}
+    <div className="h-12 bg-zinc-200 dark:bg-zinc-800 rounded-xl w-full mt-4" />
+  </div>
+)
+
 const CaseStudiesListing = () => {
   const router = useRouter()
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
@@ -115,6 +140,8 @@ const CaseStudiesListing = () => {
   // --- LIVE DATA STATE ---
   const [caseStudies, setCaseStudies] = useState([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
 
   // --- MODAL & FORM STATE ---
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false)
@@ -128,19 +155,69 @@ const CaseStudiesListing = () => {
   const [scrollProgress, setScrollProgress] = useState(0)
   const scrollContainerRef = useRef(null)
 
-  useEffect(() => {
-    const fetchStudies = async () => {
-      try {
-        const data = await caseStudiesApi.list()
-        setCaseStudies(data)
-      } catch (error) {
-        console.error('Failed to fetch case studies:', error)
-      } finally {
-        setLoading(false)
+  const fetchStudies = useCallback(async (pageNum) => {
+    try {
+      const params = { page: pageNum, limit: 6 };
+      const response = await caseStudiesApi.list(params);
+      
+      let listData = [];
+      let totalPages = 1;
+      
+      if (response && response.data) {
+        listData = response.data;
+        totalPages = response.pagination?.totalPages || 1;
+      } else if (Array.isArray(response)) {
+        listData = response;
       }
+
+      setHasMore(pageNum < totalPages && listData.length > 0);
+
+      if (pageNum === 1) {
+        setCaseStudies(listData);
+      } else {
+        setCaseStudies(prev => {
+          // Avoid duplicates by ID
+          const existingIds = new Set(prev.map(c => c.id));
+          const uniqueNew = listData.filter(c => !existingIds.has(c.id));
+          return [...prev, ...uniqueNew];
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch case studies:', error);
+      if (pageNum === 1) setCaseStudies([]);
+      setHasMore(false);
     }
-    fetchStudies()
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      await fetchStudies(1);
+      setLoading(false);
+    };
+    init();
+  }, [fetchStudies]);
+
+  // Scrolling Intersection Observer
+  const observerRef = useRef();
+  const lastElementRef = useCallback(node => {
+    if (typeof window === 'undefined') return;
+    if (loading) return;
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => {
+          const nextPage = prev + 1;
+          fetchStudies(nextPage);
+          return nextPage;
+        });
+      }
+    });
+
+    if (node) observerRef.current.observe(node);
+  }, [loading, hasMore, fetchStudies]);
+
   // ✅ AUTO SCROLL EFFECT (ADD HERE)
   useEffect(() => {
     const container = scrollContainerRef.current
@@ -186,21 +263,41 @@ const CaseStudiesListing = () => {
 
     return () => clearInterval(interval)
   }, [caseStudies])
+
   // Desktop chunks
   const desktopRows = []
   for (let i = 0; i < caseStudies.length; i += 3) desktopRows.push(caseStudies.slice(i, i + 3))
 
   // --- HANDLERS ---
-  const handleScroll = () => {
+  // Update scroll state when caseStudies render or window is resized
+  const updateScrollState = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    if (scrollWidth === clientWidth) {
-      setScrollProgress(0);
+    if (scrollWidth <= clientWidth) {
+      setScrollProgress(-1);
       return;
     }
     const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
     setScrollProgress(progress);
+  }, []);
+
+  const handleScroll = () => {
+    updateScrollState();
   };
+
+  useEffect(() => {
+    if (!loading && caseStudies.length > 0) {
+      const timer = setTimeout(() => {
+        updateScrollState();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, caseStudies, updateScrollState]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateScrollState);
+    return () => window.removeEventListener('resize', updateScrollState);
+  }, [updateScrollState]);
 
   const handleOpenModal = (study) => {
     setSelectedStudy(study)
@@ -281,61 +378,85 @@ const CaseStudiesListing = () => {
 
         {/* Header */}
         <div className="text-center mb-16">
-          <AnimatedSection animationClass="opacity-0 -translate-y-10">
+          <AnimatedSection animationClass="opacity-0 translate-y-10">
             <h2 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
               White<span className="text-[#6EDD4D]">papers</span>
             </h2>
-            <p className="max-w-2xl mx-auto text-zinc-600 dark:text-zinc-400 text-lg font-semibold leading-relaxed">
+            <p className="max-w-2xl mx-auto text-zinc-650 dark:text-zinc-400 text-lg font-semibold leading-relaxed">
               Real construction projects delivered with quality, precision, and efficiency.
             </p>
           </AnimatedSection>
         </div>
 
-        {/* Desktop View (Grid) */}
-        <div className="hidden md:flex flex-col gap-12">
-          {desktopRows.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-3 gap-8">
-              {row.map((study) => (
-                <AnimatedSection key={study.id} animationClass="opacity-0 translate-y-10" delay={100}>
-                  <CaseStudyCard study={study} onDownload={handleOpenModal} />
-                </AnimatedSection>
+        {loading && page === 1 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            {[1, 2, 3].map(n => <CaseStudySkeleton key={n} />)}
+          </div>
+        ) : (
+          <>
+            {/* Desktop View (Grid) */}
+            <div className="hidden md:flex flex-col gap-12 relative z-10">
+              {desktopRows.map((row, idx) => (
+                <div key={idx} className="grid grid-cols-3 gap-8">
+                  {row.map((study) => (
+                    <AnimatedSection key={study.id} animationClass="opacity-0 translate-y-10" delay={100}>
+                      <CaseStudyCard study={study} onDownload={handleOpenModal} />
+                    </AnimatedSection>
+                  ))}
+                </div>
               ))}
             </div>
-          ))}
-        </div>
 
-        {/* Mobile View (Single Continuous Slider) */}
-        <div className="md:hidden relative z-10">
-          <div className="-mx-6">
-            <div
-              ref={scrollContainerRef}
-              onScroll={handleScroll}
-              /* FORCE NATIVE SCROLLBAR TO HIDE USING ARBITRARY VARIANTS */
-              className="flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory px-6 scroll-pl-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-            >
-              {caseStudies.map((study, idx) => (
-                <AnimatedSection
-                  key={study.id}
-                  animationClass="opacity-0 translate-y-12"
-                  delay={(idx % 3) * 100}
-                  className="snap-start shrink-0 w-[85vw] max-w-[320px] flex"
+            {/* Mobile View (Single Continuous Slider) */}
+            <div className="md:hidden relative z-10">
+              <div className="-mx-6">
+                <div
+                  ref={scrollContainerRef}
+                  onScroll={handleScroll}
+                  /* FORCE NATIVE SCROLLBAR TO HIDE USING ARBITRARY VARIANTS */
+                  className="flex gap-4 overflow-x-auto pb-8 snap-x snap-mandatory px-6 scroll-pl-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
-                  <CaseStudyCard study={study} onDownload={handleOpenModal} />
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
+                  {caseStudies.map((study, idx) => (
+                    <AnimatedSection
+                      key={study.id}
+                      animationClass="opacity-0 translate-y-12"
+                      delay={(idx % 3) * 100}
+                      className="snap-start shrink-0 w-[85vw] max-w-[320px] flex"
+                    >
+                      <CaseStudyCard study={study} onDownload={handleOpenModal} />
+                    </AnimatedSection>
+                  ))}
+                </div>
+              </div>
 
-          {/* CUSTOM MOBILE SLIDER INDICATOR */}
-          <div className="flex justify-center items-center mt-2">
-            <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
-              <div
-                className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
-                style={{ transform: `translateX(${scrollProgress * 2}%)` }}
-              />
+              {/* CUSTOM MOBILE SLIDER INDICATOR */}
+              <div className="flex justify-center items-center mt-2">
+                <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+                    style={{
+                      width: scrollProgress === -1 ? '100%' : '33.33%',
+                      transform: scrollProgress === -1 ? 'none' : `translateX(${scrollProgress * 2}%)`
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+
+            {/* Infinite Scroll target observer element */}
+            {hasMore && !loading && (
+              <div ref={lastElementRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 relative z-10">
+                {[1, 2, 3].map(n => <CaseStudySkeleton key={n} />)}
+              </div>
+            )}
+
+            {caseStudies.length === 0 && (
+              <div className="text-center py-20 text-zinc-500 dark:text-zinc-400 relative z-10">
+                No case studies found.
+              </div>
+            )}
+          </>
+        )}
 
         {/* CTA SECTION */}
         <div className="mt-20 mb-6 px-4">

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/static-components */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { expertiseApi } from '@/lib/api'
 
 // --- REUSABLE ANIMATION WRAPPER ---
@@ -34,6 +34,33 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
     </div>
   )
 }
+
+// --- EXPERTISE SKELETON LOADER ---
+const ExpertiseSkeleton = () => (
+  <div className="w-full flex flex-col rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/10 backdrop-blur-xl overflow-hidden animate-pulse h-[500px] justify-between">
+    <div className="space-y-6">
+      {/* Video/Image area */}
+      <div className="aspect-video w-full bg-zinc-200 dark:bg-zinc-800" />
+      
+      <div className="p-8 space-y-4">
+        {/* Title */}
+        <div className="h-6 bg-zinc-200 dark:bg-zinc-850 rounded w-2/3" />
+        
+        {/* Description */}
+        <div className="space-y-2">
+          <div className="h-4 bg-zinc-200 dark:bg-zinc-850 rounded w-full" />
+          <div className="h-4 bg-zinc-200 dark:bg-zinc-850 rounded w-5/6" />
+        </div>
+      </div>
+    </div>
+
+    {/* Points */}
+    <div className="p-8 pt-0 space-y-3">
+      <div className="h-4 bg-zinc-200 dark:bg-zinc-850 rounded w-3/4" />
+      <div className="h-4 bg-zinc-200 dark:bg-zinc-850 rounded w-1/2" />
+    </div>
+  </div>
+)
 
 export default function OurExpertise() {
   const [expertiseItems, setExpertiseItems] = useState([])
@@ -125,18 +152,32 @@ export default function OurExpertise() {
 
       return () => clearInterval(interval)
     }, [items])
-    const handleScroll = () => {
+    const updateScrollState = useCallback(() => {
       if (!scrollContainerRef.current) return;
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-
-      if (scrollWidth === clientWidth) {
-        setScrollProgress(0);
+      if (scrollWidth <= clientWidth) {
+        setScrollProgress(-1);
         return;
       }
-
       const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
       setScrollProgress(progress);
+    }, []);
+
+    const handleScroll = () => {
+      updateScrollState();
     };
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        updateScrollState();
+      }, 100);
+      return () => clearTimeout(timer);
+    }, [items, updateScrollState]);
+
+    useEffect(() => {
+      window.addEventListener('resize', updateScrollState);
+      return () => window.removeEventListener('resize', updateScrollState);
+    }, [updateScrollState]);
 
     return (
       <div id={id} className="mb-24 scroll-mt-24">
@@ -231,8 +272,11 @@ export default function OurExpertise() {
           <div className="md:hidden flex justify-center items-center mt-2">
             <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
               <div
-                className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
-                style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+                className="absolute top-0 left-0 h-full bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+                style={{
+                  width: scrollProgress === -1 ? '100%' : '33.33%',
+                  transform: scrollProgress === -1 ? 'none' : `translateX(${scrollProgress * 2}%)`
+                }}
               />
             </div>
           </div>
@@ -253,7 +297,7 @@ export default function OurExpertise() {
       <div className="relative z-10">
         <header className="py-24 md:py-12 px-6 text-center border-b border-zinc-200 dark:border-zinc-900 backdrop-blur-md mb-16 mt-[-40px] md:mt-[-80px]">
           <div className="container mx-auto pt-20">
-            <AnimatedSection animationClass="opacity-0 scale-50 translate-y-10">
+            <AnimatedSection animationClass="opacity-0 translate-y-10">
               <span className="inline-block px-4 py-1.5 rounded-full bg-[#6EDD4D]/10 border border-[#6EDD4D]/20 text-[#6EDD4D] text-xs font-bold uppercase tracking-widest mb-6">
                 Our Expertise
               </span>
@@ -269,7 +313,25 @@ export default function OurExpertise() {
 
         <div className="container mx-auto px-6 ">
           {loading ? (
-            <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">Loading expertise items...</div>
+            <div className="space-y-20 relative z-10">
+              {[1, 2].map((catIndex) => (
+                <div key={catIndex} className="mb-24">
+                  {/* Category Title Skeleton */}
+                  <div className="flex justify-center mb-12 md:mb-16 px-6">
+                    <div className="flex flex-col items-center animate-pulse">
+                      <div className="h-10 bg-zinc-200 dark:bg-zinc-800 rounded w-48 mb-4" />
+                      <div className="h-1 w-24 bg-zinc-300 dark:bg-zinc-700 rounded-full" />
+                    </div>
+                  </div>
+                  {/* Category Items Skeleton Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[1, 2, 3].map((n) => (
+                      <ExpertiseSkeleton key={n} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <>
               {categories.map((category) => {

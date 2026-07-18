@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -53,18 +53,32 @@ export default function Lifecycle({ onContactClick }) {
   }
 
   // NEW: Calculate scroll progress for the slider indicator
-  const handleScroll = () => {
+  const updateScrollState = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-
-    if (scrollWidth === clientWidth) {
-      setScrollProgress(0);
+    if (scrollWidth <= clientWidth) {
+      setScrollProgress(-1);
       return;
     }
-
     const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
     setScrollProgress(progress);
+  }, []);
+
+  const handleScroll = () => {
+    updateScrollState();
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateScrollState();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [updateScrollState]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateScrollState);
+    return () => window.removeEventListener('resize', updateScrollState);
+  }, [updateScrollState]);
 
   // ✅ ADD THIS WHOLE BLOCK RIGHT HERE
   // ✅ AUTO SCROLL — STOP AT LAST CARD
@@ -194,12 +208,14 @@ export default function Lifecycle({ onContactClick }) {
           </div>
         </div>
 
-        {/* NEW: MOBILE SLIDER INDICATOR (Hidden on lg screens) */}
         <div className="lg:hidden flex justify-center items-center -mt-4 mb-4">
-          <div className="w-24 h-1.5 bg-zinc-300 dark:bg-zinc-800 rounded-full relative overflow-hidden">
+          <div className="w-24 h-1.5 bg-zinc-350 dark:bg-zinc-800 rounded-full relative overflow-hidden">
             <div
-              className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
-              style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+              className="absolute top-0 left-0 h-full bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+              style={{
+                width: scrollProgress === -1 ? '100%' : '33.33%',
+                transform: scrollProgress === -1 ? 'none' : `translateX(${scrollProgress * 2}%)`
+              }}
             />
           </div>
         </div>

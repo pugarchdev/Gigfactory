@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { caseStudiesApi, enquiryApi } from '../../lib/api'
 
@@ -34,12 +34,27 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
   )
 }
 
+// --- CASE STUDY SKELETON LOADER ---
+const CaseStudySkeleton = () => (
+  <div className="shrink-0 w-[85vw] max-w-[320px] md:max-w-none md:w-[400px] bg-zinc-150/40 dark:bg-zinc-900/10 border border-zinc-200 dark:border-zinc-800/80 rounded-[2rem] p-6 animate-pulse h-[460px] flex flex-col justify-between">
+    <div className="space-y-4">
+      <div className="h-44 md:h-52 bg-zinc-200 dark:bg-zinc-800 rounded-[1.5rem]" />
+      <div className="h-6 bg-zinc-200 dark:bg-zinc-800 w-2/3 rounded-md" />
+      <div className="h-16 bg-zinc-200 dark:bg-zinc-800 rounded-md" />
+    </div>
+    <div className="h-12 bg-zinc-200 dark:bg-zinc-800 w-full rounded-xl mt-4" />
+  </div>
+);
+
 export default function CaseStudies({ onContactClick }) {
   const router = useRouter()
 
   // State and Ref for the mobile scroll slider
   const [scrollProgress, setScrollProgress] = useState(0)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
   const scrollContainerRef = useRef(null)
+  const CARD_W = 416 // card width + gap
 
   // --- NEW: MODAL & FORM STATE ---
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -65,18 +80,39 @@ export default function CaseStudies({ onContactClick }) {
     loadCaseStudies()
   }, [])
 
-  // Calculate scroll progress for the slider indicator
-  const handleScroll = () => {
+  // Calculate scroll progress + arrow states
+  const updateScrollState = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-
-    if (scrollWidth === clientWidth) {
-      setScrollProgress(0);
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 2);
+    if (scrollWidth <= clientWidth) {
+      setScrollProgress(-1);
       return;
     }
+    setScrollProgress((scrollLeft / (scrollWidth - clientWidth)) * 100);
+  }, []);
 
-    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
-    setScrollProgress(progress);
+  const handleScroll = () => {
+    updateScrollState();
+  };
+
+  useEffect(() => {
+    if (!loading && caseStudies.length > 0) {
+      const timer = setTimeout(() => {
+        updateScrollState();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, caseStudies, updateScrollState]);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateScrollState);
+    return () => window.removeEventListener('resize', updateScrollState);
+  }, [updateScrollState]);
+
+  const scrollBy = (dir) => {
+    scrollContainerRef.current?.scrollBy({ left: dir * CARD_W, behavior: 'smooth' });
   };
 
   // --- NEW: MODAL HANDLERS ---
@@ -153,13 +189,7 @@ export default function CaseStudies({ onContactClick }) {
     }
   }
 
-  if (loading && caseStudies.length === 0) {
-    return (
-      <section id="case-studies" className="py-20 text-center">
-        <div className="animate-pulse text-zinc-500">Loading Case Studies...</div>
-      </section>
-    )
-  }
+
 
   return (
     <section id="case-studies" className="container mx-auto px-6 py-20 -mt-24 border-t border-zinc-300 dark:border-zinc-800/50 overflow-hidden relative">
@@ -170,16 +200,55 @@ export default function CaseStudies({ onContactClick }) {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      {/* Header */}
-      <div className="text-center mb-16">
-        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-          <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-4 -mt-12 tracking-tight"> White<span className="text-[#6EDD4D]">papers</span></h2>
-        </AnimatedSection>
-        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-          <p className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">
-            On ground impact on construction projects delivered with quality, precision, and efficiency. Scroll to explore.
-          </p>
-        </AnimatedSection>
+      {/* Header row — title left, arrows right */}
+      <div className="flex items-end justify-between mb-16 relative z-10">
+        {loading ? (
+          <div className="animate-pulse space-y-4">
+            <div className="h-10 bg-zinc-200 dark:bg-zinc-800 w-48 rounded-md -mt-12" />
+            <div className="h-6 bg-zinc-200 dark:bg-zinc-800 w-[80vw] max-w-md rounded-md" />
+          </div>
+        ) : (
+          <div>
+            <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
+              <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-white mb-4 -mt-12 tracking-tight"> White<span className="text-[#6EDD4D]">papers</span></h2>
+            </AnimatedSection>
+            <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
+              <p className="text-zinc-600 dark:text-zinc-400 text-lg max-w-2xl mx-auto">
+                On ground impact on construction projects delivered with quality, precision, and efficiency.
+              </p>
+            </AnimatedSection>
+          </div>
+        )}
+
+        {/* Arrow nav buttons */}
+        {!loading && (
+          <AnimatedSection animationClass="opacity-0 translate-x-6" delay={200} className="flex items-center gap-3 shrink-0 ml-6 mb-1">
+            <button
+              onClick={() => scrollBy(-1)}
+              disabled={!canScrollLeft}
+              aria-label="Scroll left"
+              className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-300
+                ${canScrollLeft
+                  ? 'border-[#6EDD4D]/50 text-[#6EDD4D] hover:bg-[#6EDD4D] hover:text-black hover:border-[#6EDD4D] shadow-[0_0_14px_rgba(110,221,77,0.2)]'
+                  : 'border-zinc-300 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed opacity-50'
+                }`}
+            >
+              ←
+            </button>
+            <button
+              onClick={() => scrollBy(1)}
+              disabled={!canScrollRight}
+              aria-label="Scroll right"
+              className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-300
+                ${canScrollRight
+                  ? 'border-[#6EDD4D]/50 text-[#6EDD4D] hover:bg-[#6EDD4D] hover:text-black hover:border-[#6EDD4D] shadow-[0_0_14px_rgba(110,221,77,0.2)]'
+                  : 'border-zinc-300 dark:border-zinc-800 text-zinc-400 dark:text-zinc-600 cursor-not-allowed opacity-50'
+                }`}
+            >
+              →
+            </button>
+          </AnimatedSection>
+        )}
       </div>
 
       <div className="relative">
@@ -190,9 +259,16 @@ export default function CaseStudies({ onContactClick }) {
             onScroll={handleScroll}
             className="flex gap-6 md:gap-8 overflow-x-auto pb-8 no-scrollbar snap-x snap-mandatory px-6 scroll-pl-6"
           >
-            {caseStudies.map((study, idx) => (
-              <AnimatedSection
-                key={study.id}
+            {loading ? (
+              <>
+                <CaseStudySkeleton />
+                <CaseStudySkeleton />
+                <CaseStudySkeleton />
+              </>
+            ) : (
+              caseStudies.map((study, idx) => (
+                <AnimatedSection
+                  key={study.id}
                 animationClass="opacity-0 translate-y-12"
                 delay={idx * 100}
                 className="snap-start shrink-0 w-[85vw] max-w-[320px] md:max-w-none md:w-[400px]"
@@ -229,7 +305,8 @@ export default function CaseStudies({ onContactClick }) {
                   </div>
                 </div>
               </AnimatedSection>
-            ))}
+            ))
+            )}
           </div>
         </div>
 
@@ -237,8 +314,11 @@ export default function CaseStudies({ onContactClick }) {
         <div className="flex justify-center items-center mt-4">
           <div className="w-24 md:w-48 h-1.5 bg-zinc-300 dark:bg-zinc-800 rounded-full relative overflow-hidden">
             <div
-              className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
-              style={{ transform: `translateX(${scrollProgress * 2}%)` }}
+              className="absolute top-0 left-0 h-full bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
+              style={{
+                width: scrollProgress === -1 ? '100%' : '33.33%',
+                transform: scrollProgress === -1 ? 'none' : `translateX(${scrollProgress * 2}%)`
+              }}
             />
           </div>
         </div>
@@ -255,35 +335,6 @@ export default function CaseStudies({ onContactClick }) {
             <i className="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
           </button>
         </AnimatedSection>
-
-        {/* Let's Connect CTA */}
-        <div className="w-full max-w-4xl text-center space-y-10">
-          <AnimatedSection animationClass="opacity-0 translate-y-10" delay={300}>
-            <div className="space-y-4">
-              <h3 className="text-4xl md:text-6xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
-                Ready to move your <br className="hidden md:block" />
-                project <span className="text-[#6EDD4D]">forward?</span>
-              </h3>
-              <p className="text-zinc-600 dark:text-zinc-400 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
-                Let&apos;s discuss how our expertise can bring your vision to life with precision and speed.
-              </p>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection animationClass="opacity-0 scale-95" delay={500}>
-            <button
-              onClick={onContactClick}
-              className="group relative inline-flex items-center justify-center"
-            >
-              <div className="absolute -inset-1 bg-[#6EDD4D] rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-
-              <div className="relative bg-[#6EDD4D] text-zinc-950 font-black px-12 py-5 rounded-2xl transition-all duration-300 hover:scale-105 flex items-center gap-3 text-lg">
-                <span>Let&apos;s Connect</span>
-                <span className="text-2xl leading-none group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </button>
-          </AnimatedSection>
-        </div>
       </div>
 
       {/* --- NEW DOWNLOAD MODAL --- */}

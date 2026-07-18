@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Plus, Minus, HelpCircle } from 'lucide-react'
 import ContactModal from '@/components/home/ContactModal' // Make sure this path matches your folder structure
+import { faqApi } from '@/lib/api'
 
 // --- REUSABLE ANIMATION WRAPPER ---
 const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }) => {
@@ -36,60 +37,121 @@ const AnimatedSection = ({ children, animationClass, className = "", delay = 0 }
     )
 }
 
-const faqs = [
-  {
-    q: "How does the GigScore system work for GigExperts on Gigfactory?",
-    a: "The GigScore system helps gigowners choose the right GigExpert. It is based on Gigfactory’s vetting process and ratings from previous projects. It considers qualifications, portfolio, and feedback. Higher GigScore means more experienced and qualified experts."
-  },
-  {
-    q: "How long does it take to complete a project on GigFactory?",
-    a: "Project timelines vary based on scope and availability. It can range from one day to a year. Clear milestones and timelines help ensure timely completion. The platform also provides real-time tracking."
-  },
-  {
-    q: "How do I make sure that my project stays within budget on Gigfactory?",
-    a: "Clearly define scope, expectations, and outputs. Break the project into milestones for better tracking and cost control."
-  },
-  {
-    q: "What happens if I'm not satisfied with the work delivered?",
-    a: "You can communicate with the GigExpert to resolve issues. If unresolved, Gigfactory provides a dispute resolution process."
-  },
-  {
-    q: "How can I ensure confidentiality of my project?",
-    a: "Gigfactory enforces strict confidentiality policies, NDAs, and secure encrypted communication tools."
-  },
-  {
-    q: "How can I track project progress?",
-    a: "You can track milestones, communicate, share files, and request updates including video meetings."
-  },
-  {
-    q: "Is there a limit to number of projects?",
-    a: "No, you can post unlimited projects and work with multiple GigExperts."
-  },
-  {
-    q: "Can I work with the same GigExpert on multiple projects?",
-    a: "Yes, you can collaborate with the same expert across multiple projects and even mark them as preferred."
-  },
-  {
-    q: "How do I ensure project quality and timely completion?",
-    a: "Gigfactory vets experts, provides communication tools, and uses escrow payments to ensure quality and timely delivery."
-  },
-  {
-    q: "How long does it take to find a suitable GigExpert?",
-    a: "It depends on project scope, but GigScore helps you quickly find the best match."
-  },
-  {
-    q: "Can I work with multiple GigExperts?",
-    a: "Yes, you can assign different experts to different tasks or project stages."
-  },
-  {
-    q: "Can I cancel a project?",
-    a: "Yes, but completed milestone payments will be released to the expert. Always communicate before cancellation."
-  }
-]
+// --- FAQ SKELETON LOADER ---
+const FaqSkeleton = () => (
+  <div className="border border-zinc-800 rounded-3xl p-6 md:p-8 bg-zinc-900/10 animate-pulse space-y-4">
+    <div className="flex justify-between items-center">
+      <div className="h-6 bg-zinc-800/85 rounded w-2/3" />
+      <div className="w-10 h-10 rounded-full bg-zinc-800/85 shrink-0" />
+    </div>
+  </div>
+)
 
 export default function FAQPage() {
   const [activeIndex, setActiveIndex] = useState(null)
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false) // 1. Added State
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false)
+
+  // --- LIVE DATA & PAGINATION STATES ---
+  const [faqs, setFaqs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searching, setSearching] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+
+  const debounceRef = useRef(null)
+
+  const fetchFaqs = useCallback(async (search, pageNum) => {
+    try {
+      const params = { page: pageNum, limit: 6 }
+      if (search && search.trim()) {
+        params.search = search.trim()
+      }
+
+      const response = await faqApi.list(params)
+      
+      let listData = []
+      let totalPages = 1
+
+      if (response && response.items) {
+        listData = response.items
+        totalPages = response.totalPages || 1
+      } else if (Array.isArray(response)) {
+        listData = response
+      }
+
+      setHasMore(pageNum < totalPages && listData.length > 0)
+
+      if (pageNum === 1) {
+        setFaqs(listData)
+      } else {
+        setFaqs(prev => {
+          const existingIds = new Set(prev.map(f => f.id))
+          const uniqueNew = listData.filter(f => !existingIds.has(f.id))
+          return [...prev, ...uniqueNew]
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch FAQs:', error)
+      if (pageNum === 1) setFaqs([])
+      setHasMore(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true)
+      await fetchFaqs(searchTerm, 1)
+      setLoading(false)
+    }
+    init()
+  }, [fetchFaqs])
+
+  // Scrolling Intersection Observer
+  const observerRef = useRef()
+  const lastElementRef = useCallback(node => {
+    if (typeof window === 'undefined') return
+    if (loading || searching) return
+    if (observerRef.current) observerRef.current.disconnect()
+
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => {
+          const nextPage = prev + 1
+          fetchFaqs(searchTerm, nextPage)
+          return nextPage
+        })
+      }
+    })
+
+    if (node) observerRef.current.observe(node)
+  }, [loading, searching, hasMore, searchTerm, fetchFaqs])
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value
+    setSearchTerm(value)
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    setSearching(true)
+    debounceRef.current = setTimeout(async () => {
+      setPage(1)
+      setHasMore(true)
+      setLoading(true)
+      await fetchFaqs(value, 1)
+      setLoading(false)
+      setSearching(false)
+    }, 400)
+  }
+
+  const handleClearSearch = async () => {
+    setSearchTerm('')
+    setPage(1)
+    setHasMore(true)
+    setLoading(true)
+    await fetchFaqs('', 1)
+    setLoading(false)
+  }
 
   const toggleFAQ = (index) => {
     setActiveIndex(activeIndex === index ? null : index)
@@ -117,54 +179,101 @@ export default function FAQPage() {
           </header>
         </AnimatedSection>
 
-        {/* FAQ Accordion List */}
-        <div className="space-y-4">
-          {faqs.map((item, index) => {
-            const isOpen = activeIndex === index;
-            
-            return (
-              <AnimatedSection 
-                key={index} 
-                animationClass="opacity-0 translate-y-8" 
-                delay={index * 50}
+        {/* Search Input */}
+        <div className="mb-14 flex justify-center">
+          <div className="relative w-full ">
+            <input
+              type="text"
+              placeholder="Search questions..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full pl-12 pr-10 py-3 rounded-full text-sm bg-zinc-900/50 border border-zinc-800 focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] text-white placeholder-zinc-500 outline-none transition-all"
+            />
+            {searching ? (
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-zinc-300 border-t-[#6EDD4D] rounded-full animate-spin" />
+            ) : (
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500 text-sm">🔍</span>
+            )}
+            {searchTerm && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white font-bold"
               >
-                <div 
-                  className={`group border border-zinc-800 rounded-3xl overflow-hidden transition-all duration-500 ${
-                    isOpen ? 'bg-zinc-900/50 border-[#6EDD4D]/30 shadow-[0_0_30px_rgba(110,221,77,0.05)]' : 'bg-transparent hover:border-zinc-700'
-                  }`}
-                >
-                  <button 
-                    onClick={() => toggleFAQ(index)}
-                    className="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none"
-                  >
-                    <span className={`text-lg md:text-xl font-bold transition-colors duration-300 ${
-                      isOpen ? 'text-[#6EDD4D]' : 'text-white'
-                    }`}>
-                      {item.q}
-                    </span>
-                    <div className={`shrink-0 ml-4 w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ${
-                        isOpen ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'bg-zinc-900 border-zinc-800 text-zinc-500'
-                    }`}>
-                        {isOpen ? <Minus size={20} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
-                    </div>
-                  </button>
-
-                  <div 
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                      isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
-                  >
-                    <div className="p-6 md:p-8 pt-0 md:pt-0 text-zinc-400 text-base md:text-lg leading-relaxed border-t border-zinc-800/50 mx-6 md:mx-8 mt-[-1px]">
-                        <div className="pt-6">
-                            {item.a}
-                        </div>
-                    </div>
-                  </div>
-                </div>
-              </AnimatedSection>
-            )
-          })}
+                ✕
+              </button>
+            )}
+          </div>
         </div>
+
+        {loading && page === 1 ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map(n => <FaqSkeleton key={n} />)}
+          </div>
+        ) : (
+          <>
+            {/* FAQ Accordion List */}
+            <div className="space-y-4">
+              {faqs.map((item, index) => {
+                const isOpen = activeIndex === index;
+                
+                return (
+                  <AnimatedSection 
+                    key={item.id || index} 
+                    animationClass="opacity-0 translate-y-8" 
+                    delay={(index % 6) * 50}
+                  >
+                    <div 
+                      className={`group border border-zinc-800 rounded-3xl overflow-hidden transition-all duration-500 ${
+                        isOpen ? 'bg-zinc-900/50 border-[#6EDD4D]/30 shadow-[0_0_30px_rgba(110,221,77,0.05)]' : 'bg-transparent hover:border-zinc-700'
+                      }`}
+                    >
+                      <button 
+                        onClick={() => toggleFAQ(index)}
+                        className="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none"
+                      >
+                        <span className={`text-lg md:text-xl font-bold transition-colors duration-300 ${
+                          isOpen ? 'text-[#6EDD4D]' : 'text-white'
+                        }`}>
+                          {item.q}
+                        </span>
+                        <div className={`shrink-0 ml-4 w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ${
+                            isOpen ? 'bg-[#6EDD4D] border-[#6EDD4D] text-zinc-950' : 'bg-zinc-900 border-zinc-800 text-zinc-500'
+                        }`}>
+                            {isOpen ? <Minus size={20} strokeWidth={3} /> : <Plus size={20} strokeWidth={3} />}
+                        </div>
+                      </button>
+
+                      <div 
+                        className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                          isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="text-zinc-400 text-base md:text-lg leading-relaxed border-t border-zinc-800/50">
+                            <div className="px-6 md:px-8 pb-4 pt-6">
+                                {item.a}
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </AnimatedSection>
+                )
+              })}
+            </div>
+
+            {/* Infinite Scroll target observer element */}
+            {hasMore && !loading && !searching && (
+              <div ref={lastElementRef} className="space-y-4 mt-4">
+                {[1, 2].map(n => <FaqSkeleton key={n} />)}
+              </div>
+            )}
+
+            {faqs.length === 0 && (
+              <div className="text-center py-20 text-zinc-500">
+                No FAQs found.
+              </div>
+            )}
+          </>
+        )}
 
         {/* Professional Contact Support Footer */}
         <AnimatedSection animationClass="opacity-0 translate-y-10" delay={400}>
@@ -175,15 +284,12 @@ export default function FAQPage() {
                     If you couldn&apos;t find the answer you were looking for, our support team is ready to assist you directly.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    
-                    {/* 2. UPDATED BUTTON: Added onClick */}
                     <button 
                         onClick={() => setIsContactModalOpen(true)}
                         className="bg-[#6EDD4D] text-zinc-950 font-black px-10 py-4 rounded-xl hover:scale-105 transition-all shadow-[0_0_20px_rgba(110,221,77,0.2)]"
                     >
                         Contact Support
                     </button>
-                    
                     <button className="bg-zinc-950 text-white border border-zinc-800 font-bold px-10 py-4 rounded-xl hover:bg-zinc-900 transition-all">
                         View Tutorials
                     </button>
@@ -193,7 +299,6 @@ export default function FAQPage() {
 
       </div>
 
-      {/* 3. ADDED MODAL RENDER: Conditional rendering with props */}
       {isContactModalOpen && (
         <ContactModal 
           isOpen={isContactModalOpen} 

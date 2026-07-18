@@ -166,6 +166,8 @@ export default function Footer() {
                                 <li><Link href="/about" className="hover:text-[#6EDD4D] transition-colors inline-block">About</Link></li>
                                 <li><Link href="/projects" className="hover:text-[#6EDD4D] dark:hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Projects</Link></li>
                                 <li><Link href="/case-studies" className="hover:text-[#6EDD4D] dark:hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Case Studies</Link></li>
+                                <li><Link href="/media" className="hover:text-[#6EDD4D] dark:hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Media</Link></li>
+                                <li><Link href="/faq" className="hover:text-[#6EDD4D] dark:hover:text-white hover:translate-x-1 inline-block transition-all duration-300">FAQ</Link></li>
                                 <li><Link href="/login" className="hover:text-[#6EDD4D] dark:hover:text-white hover:translate-x-1 inline-block transition-all duration-300">Become a Gigfactory Expert</Link></li>
                             </ul>
                         </motion.div>

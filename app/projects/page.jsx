@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { projectsApi } from '@/lib/api'
 import {
   MapPin,
@@ -143,21 +143,31 @@ const ProjectCard = ({ project }) => (
   </div>
 )
 
-// --- SYNCING INDICATOR ---
-const SyncingIndicator = () => (
-  <div className="flex justify-center py-20">
-    <div className="flex items-center text-zinc-600 dark:text-zinc-500 font-bold tracking-[0.2em] text-xs uppercase">
-      <span>Loading Projects</span>
-      <span className="flex gap-1 ml-2">
-        <span className="animate-bounce [animation-delay:-0.3s]">.</span>
-        <span className="animate-bounce [animation-delay:-0.15s]">.</span>
-        <span className="animate-bounce">.</span>
-      </span>
+// --- PROJECT SKELETON LOADER ---
+const ProjectSkeleton = () => (
+  <div className="bg-zinc-150/45 dark:bg-zinc-900/10 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 animate-pulse h-[400px] flex flex-col justify-between">
+    <div className="space-y-4">
+      {/* Image space */}
+      <div className="aspect-[16/10] bg-zinc-200 dark:bg-zinc-800 rounded-xl" />
+      {/* Category / Status row */}
+      <div className="flex justify-between">
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 w-1/4 rounded" />
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 w-1/5 rounded" />
+      </div>
+      {/* Title */}
+      <div className="h-6 bg-zinc-200 dark:bg-zinc-800 w-3/4 rounded" />
+      {/* Description */}
+      <div className="space-y-2">
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded" />
+        <div className="h-4 bg-zinc-200 dark:bg-zinc-800 w-5/6 rounded" />
+      </div>
     </div>
+    {/* Footer row */}
+    <div className="h-10 bg-zinc-200 dark:bg-zinc-800 rounded-xl mt-4" />
   </div>
-)
+);
 
-// --- ROW WRAPPER (For Desktop View) ---
+// --- ROW WRAPPER (For both Desktop & Mobile Stacked Views) ---
 const ProjectRow = ({ projects }) => {
   const [isVisible, setIsVisible] = useState(false)
   const rowRef = useRef(null)
@@ -177,147 +187,128 @@ const ProjectRow = ({ projects }) => {
   )
 }
 
-// --- NEW: MOBILE BATCH ROW COMPONENT (Handles slider per row) ---
-const MobileBatchRow = ({ projects }) => {
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const scrollContainerRef = useRef(null)
+export default function Projects() {
+  const [projects, setProjects]       = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [searching, setSearching]     = useState(false);
+  const [searchTerm, setSearchTerm]   = useState('');
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [page, setPage]               = useState(1);
+  const [hasMore, setHasMore]         = useState(true);
 
-  // 🔥 AUTO SCROLL EFFECT (ADD EXACTLY HERE)
+  const debounceRef = useRef(null);
+
+  /* ──────────────────────────────────────────
+     Core fetch — called with current params
+  ────────────────────────────────────────── */
+  const fetchProjects = useCallback(async (status, search, pageNum) => {
+    try {
+      const params = { page: pageNum, limit: 6 };
+      if (status) params.status = status;
+      if (search && search.trim()) params.search = search.trim();
+
+      const response = await projectsApi.list(params);
+      
+      let listData = [];
+      let totalPages = 1;
+      
+      if (response && response.data) {
+        listData = response.data;
+        totalPages = response.pagination?.totalPages || 1;
+      } else if (Array.isArray(response)) {
+        listData = response;
+      }
+
+      setHasMore(pageNum < totalPages && listData.length > 0);
+
+      if (pageNum === 1) {
+        setProjects(listData);
+      } else {
+        setProjects(prev => {
+          // Avoid duplicates by ID
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNew = listData.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNew];
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch projects:', error);
+      if (pageNum === 1) setProjects([]);
+      setHasMore(false);
+    }
+  }, []);
+
+  /* ──────────────────────────────────────────
+     Initial load
+  ────────────────────────────────────────── */
   useEffect(() => {
-    const container = scrollContainerRef.current
-    if (!container) return
+    const init = async () => {
+      setLoading(true);
+      await fetchProjects(statusFilter, searchTerm, 1);
+      setLoading(false);
+    };
+    init();
+  }, [statusFilter, fetchProjects]);
 
-    let interval
+  /* ──────────────────────────────────────────
+     Scrolling Intersection Observer
+  ────────────────────────────────────────── */
+  const observerRef = useRef();
+  const lastElementRef = useCallback(node => {
+    if (typeof window === 'undefined') return;
+    if (loading || searching) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => {
+          const nextPage = prev + 1;
+          fetchProjects(statusFilter, searchTerm, nextPage);
+          return nextPage;
+        });
+      }
+    });
+    
+    if (node) observerRef.current.observe(node);
+  }, [loading, searching, hasMore, statusFilter, searchTerm, fetchProjects]);
 
-    const startAutoScroll = () => {
-      interval = setInterval(() => {
-        const firstCard = container.children[0]
-
-        if (!firstCard) return
-
-        const cardWidth = firstCard.offsetWidth
-        const gap = 16
-        const scrollAmount = cardWidth + gap
-
-        const maxScrollLeft =
-          container.scrollWidth - container.clientWidth
-
-        const currentScroll = container.scrollLeft
-
-        // 🔥 STOP EXACTLY AT LAST CARD
-        if (currentScroll >= maxScrollLeft - 5) {
-          clearInterval(interval)
-
-          container.scrollTo({
-            left: maxScrollLeft,
-            behavior: 'smooth'
-          })
-
-          return
-        }
-
-        container.scrollBy({
-          left: scrollAmount,
-          behavior: 'smooth'
-        })
-      }, 5000)
-    }
-
-    startAutoScroll()
-
-    return () => clearInterval(interval)
-  }, [projects])
-
-  const handleScroll = () => {
-    if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    if (scrollWidth === clientWidth) {
-      setScrollProgress(0);
-      return;
-    }
-    const progress = (scrollLeft / (scrollWidth - clientWidth)) * 100;
-    setScrollProgress(progress);
+  /* ──────────────────────────────────────────
+     Filter action resets page and loads page 1
+  ────────────────────────────────────────── */
+  const handleStatusFilterChange = async (status) => {
+    setStatusFilter(status);
+    setPage(1);
+    setHasMore(true);
+    setLoading(true);
+    await fetchProjects(status, searchTerm, 1);
+    setLoading(false);
   };
 
-  return (
-    <div className="relative mb-12 z-10">
-      <div className="-mx-6">
-        <div
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-          className="flex gap-4 overflow-x-auto pb-6 no-scrollbar snap-x snap-mandatory px-6 scroll-pl-6"
-        >
-          {projects.map((p, i) => (
-            <AnimatedSection
-              key={i}
-              animationClass="opacity-0 translate-y-12"
-              delay={(i % 3) * 100}
-              className="snap-start shrink-0 w-[85vw] max-w-[320px] flex"
-            >
-              <ProjectCard project={p} />
-            </AnimatedSection>
-          ))}
-        </div>
-      </div>
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
 
-      {/* MOBILE SLIDER INDICATOR */}
-      <div className="flex justify-center items-center mt-2">
-        <div className="w-24 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full relative overflow-hidden">
-          <div
-            className="absolute top-0 left-0 h-full w-1/3 bg-[#6EDD4D] rounded-full transition-transform duration-150 ease-out"
-            style={{ transform: `translateX(${scrollProgress * 2}%)` }}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-export default function Projects() {
-  const [projects, setProjects] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState(null)
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await projectsApi.list()
-        setProjects(data || [])
-      } catch (error) {
-        console.error('Failed to fetch projects:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchProjects()
-  }, [])
+    setSearching(true);
+    debounceRef.current = setTimeout(async () => {
+      setPage(1);
+      setHasMore(true);
+      setLoading(true);
+      await fetchProjects(statusFilter, value, 1);
+      setLoading(false);
+      setSearching(false);
+    }, 400);
+  };
 
-  const filteredProjects = projects.filter((project) => {
-    const matchesSearch =
-      project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.location?.toLowerCase().includes(searchTerm.toLowerCase())
-
-    const matchesStatus =
-      statusFilter === null ? true
-        : project.status?.toLowerCase() === statusFilter
-
-    return matchesSearch && matchesStatus
-  })
   // Split into chunks of 3 for desktop rows
   const desktopRows = [];
-  for (let i = 0; i < filteredProjects.length; i += 3) {
-    desktopRows.push(filteredProjects.slice(i, i + 3));
-  }
-
-  // Split into chunks of 5 for Mobile Batches
-  const mobileChunks = [];
-  for (let i = 0; i < filteredProjects.length; i += 5) {
-    mobileChunks.push(filteredProjects.slice(i, i + 5));
+  for (let i = 0; i < projects.length; i += 3) {
+    desktopRows.push(projects.slice(i, i + 3));
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-22 overflow-x-hidden relative">
+    <main className="min-h-screen  text-zinc-900 dark:text-zinc-100 font-sans selection:bg-[#6EDD4D]/30 pb-22 overflow-x-hidden relative">
 
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -325,110 +316,100 @@ export default function Projects() {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      <header className="py-14 px-6 text-center border-b border-zinc-200 dark:border-zinc-900 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-md mb-8 relative z-10">        <div className="container mx-auto">
-        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
-          <h1 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
-            Project <span className="text-[#6EDD4D]">Portfolio</span>
-          </h1>
-        </AnimatedSection>
-        <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
-          <p className="max-w-2xl mx-auto text-zinc-600 dark:text-zinc-400 text-lg">
-            Delivered across 10+ million sq.ft of construction projects worldwide.
-          </p>
-        </AnimatedSection>
-      </div>
+      <header className="py-14 px-6 text-center border-b border-zinc-200 dark:border-zinc-900 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-md mb-8 relative z-10">
+        <div className="container mx-auto">
+          <AnimatedSection animationClass="opacity-0 translate-y-10" delay={0}>
+            <h1 className="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white mb-6 tracking-tighter">
+              Project <span className="text-[#6EDD4D]">Portfolio</span>
+            </h1>
+          </AnimatedSection>
+          <AnimatedSection animationClass="opacity-0 translate-y-10" delay={150}>
+            <p className="max-w-2xl mx-auto text-zinc-650 dark:text-zinc-400 text-lg">
+              Delivered across 10+ million sq.ft of construction projects worldwide.
+            </p>
+          </AnimatedSection>
+        </div>
       </header>
 
       <div className="container mx-auto max-w-7xl px-6">
-        <div className="mb-14 flex flex-col md:flex-row gap-5 justify-end items-center">
-
-          {/* Search Bar */}
-          {/* 
-          <div className="relative w-full md:w-[650px] group">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-hover:text-[#6EDD4D] transition-all"
-            />
-
+        <div className="mb-14 flex flex-col md:flex-row gap-5 justify-between items-center">
+          {/* Search Input */}
+          <div className="relative w-full md:w-80">
             <input
               type="text"
               placeholder="Search projects..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="
-        w-full pl-12 pr-4 py-3 rounded-2xl
-        bg-zinc-900/30
-        border border-zinc-800
-        text-white
-        placeholder:text-zinc-700
-        backdrop-blur-md
-        outline-none
-        transition-all duration-500
-        hover:bg-zinc-900/60
-        hover:border-[#6EDD4D]/30
-        focus:border-[#6EDD4D]
-        focus:bg-zinc-900/80
-      "
+              onChange={handleSearchChange}
+              className="w-full pl-12 pr-10 py-3 rounded-full text-sm bg-white dark:bg-black/50 border border-zinc-350 dark:border-zinc-800 focus:border-[#6EDD4D] focus:ring-1 focus:ring-[#6EDD4D] text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 outline-none transition-all"
             />
+            {searching ? (
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-zinc-300 border-t-[#6EDD4D] rounded-full animate-spin" />
+            ) : (
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-600 text-sm">🔍</span>
+            )}
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  handleStatusFilterChange(statusFilter);
+                }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-450 hover:text-zinc-600 dark:hover:text-white font-bold"
+              >
+                ✕
+              </button>
+            )}
           </div>
-          */}
 
           <div className="flex items-center gap-2">
-
             <div
               className="
-    relative w-[180px] h-[38px]
-    rounded-full
-    bg-white/90 dark:bg-zinc-950/30
-    border border-[#6EDD4D]/20
-    overflow-hidden
-    backdrop-blur-xl
-    opacity-45
-    hover:opacity-100
-    transition-all duration-500
-    group
-    "
+                relative w-[180px] h-[38px]
+                rounded-full
+                bg-white/90 dark:bg-zinc-950/30
+                border border-[#6EDD4D]/20
+                overflow-hidden
+                backdrop-blur-xl
+                hover:opacity-100
+                transition-all duration-500
+                group
+              "
             >
-
               {statusFilter && (
                 <div
                   className={`
-        absolute top-[3px]
-        w-[85px] h-[32px]
-        rounded-full
-        bg-[#6EDD4D]
-        shadow-[0_0_18px_rgba(110,221,77,0.25)]
-        transition-all duration-500
-        ${statusFilter === 'ongoing'
-                      ? 'left-[3px]'
-                      : 'left-[92px]'
-                    }
-        `}
+                    absolute top-[3px]
+                    w-[85px] h-[32px]
+                    rounded-full
+                    bg-[#6EDD4D]
+                    shadow-[0_0_18px_rgba(110,221,77,0.25)]
+                    transition-all duration-500
+                    ${statusFilter === 'ongoing' ? 'left-[3px]' : 'left-[92px]'}
+                  `}
                 />
               )}
 
               <button
-                onClick={() => setStatusFilter('ongoing')}
+                onClick={() => handleStatusFilterChange('ongoing')}
                 className={`
-      relative z-10 w-1/2 h-full text-[11px] font-black uppercase
-      ${statusFilter === 'ongoing'
+                  relative z-10 w-1/2 h-full text-[11px] font-black uppercase transition-all duration-300
+                  ${statusFilter === 'ongoing'
                     ? 'text-black'
-                    : 'text-zinc-600 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-300'
+                    : 'text-zinc-650 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                   }
-      `}
+                `}
               >
                 Ongoing
               </button>
 
               <button
-                onClick={() => setStatusFilter('completed')}
+                onClick={() => handleStatusFilterChange('completed')}
                 className={`
-      relative z-10 w-1/2 h-full text-[11px] font-black uppercase
-      ${statusFilter === 'completed'
+                  relative z-10 w-1/2 h-full text-[11px] font-black uppercase transition-all duration-300
+                  ${statusFilter === 'completed'
                     ? 'text-black'
-                    : 'text-zinc-600 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-300'
+                    : 'text-zinc-655 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                   }
-      `}
+                `}
               >
                 Complete
               </button>
@@ -436,45 +417,44 @@ export default function Projects() {
 
             {statusFilter && (
               <button
-                onClick={() => setStatusFilter(null)}
+                onClick={() => handleStatusFilterChange(null)}
                 className="
-      px-3 h-[38px]
-      rounded-full
-      border border-zinc-300 dark:border-zinc-700
-      text-zinc-600 dark:text-zinc-400
-      text-[11px] font-bold uppercase
-      hover:border-[#6EDD4D]
-      hover:text-[#6EDD4D]
-      transition-all
-      "
+                  px-3 h-[38px]
+                  rounded-full
+                  border border-zinc-300 dark:border-zinc-700
+                  text-zinc-600 dark:text-zinc-400
+                  text-[11px] font-bold uppercase
+                  hover:border-[#6EDD4D]
+                  hover:text-[#6EDD4D]
+                  transition-all
+                "
               >
                 Clear
               </button>
             )}
-
           </div>
         </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">Loading projects...</div>
+        {loading || searching ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            {[1, 2, 3].map(n => <ProjectSkeleton key={n} />)}
+          </div>
         ) : (
           <>
-            {/* DESKTOP VIEW */}
-            <div className="hidden md:flex flex-col gap-12 relative z-10">
+            {/* Projects list — responsive grid stacks vertically on mobile */}
+            <div className="flex flex-col gap-12 relative z-10">
               {desktopRows.map((row, idx) => <ProjectRow key={idx} projects={row} />)}
             </div>
 
-            {/* MOBILE VIEW */}
-            <div className="md:hidden flex flex-col relative z-10">
-              {mobileChunks.map((chunk, idx) => (
-                <MobileBatchRow key={idx} projects={chunk} />
-              ))}
-            </div>
-
-            <SyncingIndicator />
+            {/* Infinite Scroll target observer element */}
+            {hasMore && !loading && !searching && (
+              <div ref={lastElementRef} className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 relative z-10">
+                {[1, 2, 3].map(n => <ProjectSkeleton key={n} />)}
+              </div>
+            )}
 
             {projects.length === 0 && (
-              <div className="text-center py-20 text-zinc-500 dark:text-zinc-400">No projects found.</div>
+              <div className="text-center py-20 text-zinc-500 dark:text-zinc-400 relative z-10">No projects found.</div>
             )}
           </>
         )}

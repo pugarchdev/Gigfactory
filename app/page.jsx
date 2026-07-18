@@ -10,6 +10,7 @@ import Services from '@/components/home/Services';
 import Lifecycle from '@/components/home/Lifecycle';
 import Advantages from '@/components/home/Advantages';
 import CaseStudies from '@/components/home/CaseStudies';
+import MediaFeed from '@/components/home/MediaFeed';
 
 import ContactModal from '@/components/home/ContactModal';
 import Video from '@/components/home/Video'
@@ -63,6 +64,9 @@ export default function Home() {
 
       {/* Case Studies Section */}
       <CaseStudies onContactClick={() => openContactModal('Case Study Details')} />
+
+      {/* Latest insights feed */}
+      <MediaFeed onContactClick={() => openContactModal('Media Section Inquiry')} />
 
       {/* Contact Modal - Set to initialStep={1} to skip intro and open form directly */}
       <ContactModal 
