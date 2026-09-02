@@ -90,6 +90,13 @@ export default function Navbar() {
             Case Studies
           </Link>
 
+          <Link
+            href="https://lacma.gigfactory.in"
+            className={`text-sm font-semibold transition-colors ${isActive('https://lacma.gigfactory.in') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
+          >
+            Product
+          </Link>
+          
           <div className="w-px h-6 bg-zinc-200 dark:bg-dark-border mx-2"></div>
 
           <Link
