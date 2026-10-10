@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { recruitmentApi } from '../../lib/api'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_PLATFORM_API_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_PLATFORM_API_URL || "http://localhost:5000/api";
 
 const AgencyForm = ({ onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
