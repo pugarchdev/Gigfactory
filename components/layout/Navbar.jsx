@@ -96,6 +96,13 @@ export default function Navbar() {
           >
             Product
           </Link>
+
+          <Link
+            href="/careers"
+            className={`text-sm font-semibold transition-colors ${isActive('/careers') || isActive('/career') ? 'text-neon-green' : 'text-zinc-500 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white'}`}
+          >
+            Careers
+          </Link>
           
           <div className="w-px h-6 bg-zinc-200 dark:bg-dark-border mx-2"></div>
 
@@ -155,6 +162,14 @@ export default function Navbar() {
             className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/https://lacma.gigfactory.in') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
           >
             Product
+          </Link>
+
+          <Link
+            href="/careers"
+            onClick={() => setIsOpen(false)}
+            className={`text-left text-lg font-medium p-3 rounded-lg ${isActive('/careers') || isActive('/career') ? 'bg-zinc-100 dark:bg-dark-surface text-neon-green' : 'text-zinc-600 dark:text-gray-300'}`}
+          >
+            Careers
           </Link>
              
           <div className="flex items-center justify-between p-3 mt-2">
