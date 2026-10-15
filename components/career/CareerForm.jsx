@@ -86,6 +86,12 @@ export default function CareerForm() {
       setIsSubmitted(true);
     } catch (err) {
       setServerError(err.message || 'Failed to submit application. Please try again.');
+      if (err.field) {
+        setErrors((prev) => ({ ...prev, [err.field]: err.message }));
+        setTouched((prev) => ({ ...prev, [err.field]: true }));
+        const element = document.getElementById(err.field);
+        if (element) element.focus();
+      }
     } finally {
       setIsSubmitting(false);
     }
