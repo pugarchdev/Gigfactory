@@ -16,6 +16,15 @@ export const REGEX = {
 export const ALLOWED_CV_EXTENSIONS = ['pdf', 'doc', 'docx'];
 export const MAX_CV_SIZE = 10 * 1024 * 1024; // 10MB
 
+export const INTERESTED_IN_OPTIONS = [
+  'BIM / Modelling',
+  'Project Planning & control',
+  'BOQ / Audit',
+  'BD & Marketing',
+  'Auto CAD',
+  'Other',
+];
+
 /**
  * Validates a single form field and returns an error message or empty string
  */
@@ -50,6 +59,23 @@ export function validateField(name, value, file = null) {
       return '';
     }
 
+    case 'interestedIn': {
+      const trimmed = (value || '').trim();
+      if (!trimmed) return 'Please select an area of interest.';
+      const isValid = INTERESTED_IN_OPTIONS.some(
+        (opt) => opt.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (!isValid) return 'Please select a valid interest option.';
+      return '';
+    }
+
+    case 'otherInterestedIn': {
+      const trimmed = (value || '').trim();
+      if (!trimmed) return 'Please specify your area of interest.';
+      if (trimmed.length < 2) return 'Must be at least 2 characters.';
+      return '';
+    }
+
     case 'portfolio': {
       const trimmed = (value || '').trim();
       if (!trimmed) return ''; // Optional
@@ -72,10 +98,6 @@ export function validateField(name, value, file = null) {
     }
 
     case 'coverLetter': {
-      const trimmed = (value || '').trim();
-      if (trimmed && trimmed.length < 10) {
-        return 'Cover letter should be at least 10 characters if provided.';
-      }
       return '';
     }
 
@@ -89,11 +111,16 @@ export function validateField(name, value, file = null) {
  */
 export function validateAll(formData, cvFile) {
   const errors = {};
-  const fields = ['fullName', 'email', 'phone', 'portfolio', 'coverLetter'];
+  const fields = ['fullName', 'email', 'phone', 'interestedIn', 'portfolio'];
 
   for (const field of fields) {
     const error = validateField(field, formData[field]);
     if (error) errors[field] = error;
+  }
+
+  if (formData.interestedIn?.toLowerCase() === 'other') {
+    const otherError = validateField('otherInterestedIn', formData.otherInterestedIn);
+    if (otherError) errors.otherInterestedIn = otherError;
   }
 
   const cvError = validateField('cv', null, cvFile);

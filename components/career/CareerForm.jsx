@@ -1,16 +1,20 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Check, AlertCircle, Loader2, FileCheck, Upload } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { submitCareerApplication } from '@/lib/careerApi';
 import { validateField, validateAll } from './careerValidation';
+import CareerInterestedInField from './CareerInterestedInField';
+import CareerFileInput from './CareerFileInput';
+import CareerSuccessCard from './CareerSuccessCard';
 
 const INITIAL_FORM = {
   fullName: '',
   email: '',
   phone: '',
   portfolio: '',
-  coverLetter: '',
+  interestedIn: '',
+  otherInterestedIn: '',
 };
 
 export default function CareerForm() {
@@ -25,17 +29,35 @@ export default function CareerForm() {
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
-
-    // Real-time quick validation response
     const fieldError = validateField(id, value);
     setErrors((prev) => ({ ...prev, [id]: fieldError }));
   };
 
-  const handleInputBlur = (e) => {
-    const { id, value } = e.target;
-    setTouched((prev) => ({ ...prev, [id]: true }));
-    const fieldError = validateField(id, value);
-    setErrors((prev) => ({ ...prev, [id]: fieldError }));
+  const handleInputBlur = (fieldId) => {
+    setTouched((prev) => ({ ...prev, [fieldId]: true }));
+    const fieldError = validateField(fieldId, formData[fieldId]);
+    setErrors((prev) => ({ ...prev, [fieldId]: fieldError }));
+  };
+
+  const handleInterestedInChange = (option) => {
+    setFormData((prev) => ({
+      ...prev,
+      interestedIn: option,
+      otherInterestedIn: option.toLowerCase() === 'other' ? prev.otherInterestedIn : '',
+    }));
+    setTouched((prev) => ({ ...prev, interestedIn: true }));
+    const fieldError = validateField('interestedIn', option);
+    setErrors((prev) => ({
+      ...prev,
+      interestedIn: fieldError,
+      otherInterestedIn: option.toLowerCase() === 'other' ? prev.otherInterestedIn : '',
+    }));
+  };
+
+  const handleOtherInterestedInChange = (val) => {
+    setFormData((prev) => ({ ...prev, otherInterestedIn: val }));
+    const fieldError = validateField('otherInterestedIn', val);
+    setErrors((prev) => ({ ...prev, otherInterestedIn: fieldError }));
   };
 
   const handleFileChange = (e) => {
@@ -50,14 +72,14 @@ export default function CareerForm() {
     e.preventDefault();
     setServerError('');
 
-    // Mark all fields as touched
     const allTouched = {
       fullName: true,
       email: true,
       phone: true,
+      interestedIn: true,
+      otherInterestedIn: true,
       portfolio: true,
       cv: true,
-      coverLetter: true,
     };
     setTouched(allTouched);
 
@@ -65,7 +87,6 @@ export default function CareerForm() {
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      // Focus the first invalid field
       const firstErrorField = Object.keys(validationErrors)[0];
       const element = document.getElementById(firstErrorField);
       if (element) element.focus();
@@ -78,9 +99,16 @@ export default function CareerForm() {
       data.append('fullName', formData.fullName.trim());
       data.append('email', formData.email.trim());
       data.append('phone', formData.phone.trim());
-      if (formData.portfolio.trim()) data.append('portfolio', formData.portfolio.trim());
-      if (formData.coverLetter.trim()) data.append('coverLetter', formData.coverLetter.trim());
-      if (cvFile) data.append('cv', cvFile);
+      data.append('interestedIn', formData.interestedIn.trim());
+      if (formData.interestedIn.toLowerCase() === 'other' && formData.otherInterestedIn.trim()) {
+        data.append('otherInterestedIn', formData.otherInterestedIn.trim());
+      }
+      if (formData.portfolio.trim()) {
+        data.append('portfolio', formData.portfolio.trim());
+      }
+      if (cvFile) {
+        data.append('cv', cvFile);
+      }
 
       await submitCareerApplication(data);
       setIsSubmitted(true);
@@ -109,7 +137,6 @@ export default function CareerForm() {
   const getInputClass = (field) => {
     const hasError = touched[field] && Boolean(errors[field]);
     const isValid = touched[field] && !errors[field] && Boolean(formData[field]);
-
     const base =
       'w-full rounded-xl px-4 py-3 placeholder-gray-500 border transition-all text-base text-white outline-none';
 
@@ -120,13 +147,6 @@ export default function CareerForm() {
       return `${base} bg-[#0b0e14] border-[#22c55e]/60 focus:border-[#22c55e]`;
     }
     return `${base} bg-[#0b0e14] border-[#232d3b] focus:border-[#22c55e]`;
-  };
-
-  const formatFileSize = (bytes) => {
-    if (!bytes) return '';
-    return bytes < 1024 * 1024
-      ? `${(bytes / 1024).toFixed(1)} KB`
-      : `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   };
 
   return (
@@ -166,8 +186,8 @@ export default function CareerForm() {
                   id="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  onBlur={handleInputBlur}
-                  placeholder=""
+                  onBlur={() => handleInputBlur('fullName')}
+                  placeholder="Enter your full name"
                   className={getInputClass('fullName')}
                 />
                 {touched.fullName && errors.fullName && (
@@ -188,8 +208,8 @@ export default function CareerForm() {
                   id="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  onBlur={handleInputBlur}
-                  placeholder=""
+                  onBlur={() => handleInputBlur('email')}
+                  placeholder="name@example.com"
                   className={getInputClass('email')}
                 />
                 {touched.email && errors.email && (
@@ -210,8 +230,8 @@ export default function CareerForm() {
                   id="phone"
                   value={formData.phone}
                   onChange={handleInputChange}
-                  onBlur={handleInputBlur}
-                  placeholder=""
+                  onBlur={() => handleInputBlur('phone')}
+                  placeholder="+91 98765 43210"
                   className={getInputClass('phone')}
                 />
                 {touched.phone && errors.phone && (
@@ -222,7 +242,20 @@ export default function CareerForm() {
                 )}
               </div>
 
-              {/* Portfolio */}
+              {/* Interested In Dropdown */}
+              <CareerInterestedInField
+                value={formData.interestedIn}
+                otherValue={formData.otherInterestedIn}
+                onChange={handleInterestedInChange}
+                onOtherChange={handleOtherInterestedInChange}
+                onBlur={handleInputBlur}
+                error={errors.interestedIn}
+                otherError={errors.otherInterestedIn}
+                touched={touched.interestedIn}
+                otherTouched={touched.otherInterestedIn}
+              />
+
+              {/* Portfolio Link */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="portfolio">
                   Portfolio Link <span className="text-gray-500 text-xs font-normal">(Optional)</span>
@@ -232,7 +265,7 @@ export default function CareerForm() {
                   id="portfolio"
                   value={formData.portfolio}
                   onChange={handleInputChange}
-                  onBlur={handleInputBlur}
+                  onBlur={() => handleInputBlur('portfolio')}
                   placeholder="https://myportfolio.com"
                   className={getInputClass('portfolio')}
                 />
@@ -245,56 +278,12 @@ export default function CareerForm() {
               </div>
 
               {/* CV Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="cv">
-                  Upload CV (PDF/DOC) <span className="text-[#22c55e]">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    id="cv"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    className={`w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#22c55e]/10 file:text-[#4ade80] hover:file:bg-[#22c55e]/20 cursor-pointer border rounded-xl py-2 px-3 bg-[#0b0e14] ${
-                      touched.cv && errors.cv ? 'border-red-500/80' : cvFile ? 'border-[#22c55e]/60' : 'border-[#232d3b]'
-                    }`}
-                  />
-                </div>
-                {cvFile && !errors.cv && (
-                  <p className="text-[#4ade80] text-xs mt-1.5 flex items-center gap-1.5">
-                    <FileCheck className="w-3.5 h-3.5 shrink-0" />
-                    <span>{cvFile.name} ({formatFileSize(cvFile.size)})</span>
-                  </p>
-                )}
-                {touched.cv && errors.cv && (
-                  <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{errors.cv}</span>
-                  </p>
-                )}
-              </div>
-
-              {/* Cover Letter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="coverLetter">
-                  Cover Letter <span className="text-gray-500 text-xs font-normal">(Optional)</span>
-                </label>
-                <textarea
-                  id="coverLetter"
-                  rows={4}
-                  value={formData.coverLetter}
-                  onChange={handleInputChange}
-                  onBlur={handleInputBlur}
-                  placeholder="Tell us about your background, experience with digital construction workflows, and why you want to join Gigfactory..."
-                  className={getInputClass('coverLetter')}
-                />
-                {touched.coverLetter && errors.coverLetter && (
-                  <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1.5">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>{errors.coverLetter}</span>
-                  </p>
-                )}
-              </div>
+              <CareerFileInput
+                file={cvFile}
+                onChange={handleFileChange}
+                touched={touched.cv}
+                error={errors.cv}
+              />
 
               <button
                 type="submit"
@@ -313,32 +302,7 @@ export default function CareerForm() {
             </form>
           </div>
         ) : (
-          <div
-            id="thankYouCard"
-            className="rounded-3xl p-10 md:p-12 text-center space-y-6 shadow-2xl animate-in fade-in duration-300"
-            style={{
-              backgroundColor: '#121820',
-              border: '1px solid rgba(34, 197, 94, 0.3)',
-            }}
-          >
-            <div className="w-16 h-16 bg-[#22c55e]/15 border-2 border-[#22c55e] rounded-full flex items-center justify-center mx-auto text-[#4ade80]">
-              <Check className="w-8 h-8 stroke-[3]" />
-            </div>
-            <h3 className="text-2xl md:text-3xl font-extrabold text-white">
-              Thank you for your interest!
-            </h3>
-            <p className="text-gray-400 text-sm md:text-base max-w-md mx-auto leading-relaxed">
-              Our talent acquisition team will review your application and get in touch shortly.
-            </p>
-            {/* <div className="pt-4">
-              <button
-                onClick={handleReset}
-                className="text-xs text-gray-400 hover:text-[#4ade80] underline transition-colors cursor-pointer"
-              >
-                Submit another application
-              </button>
-            </div> */}
-          </div>
+          <CareerSuccessCard onReset={handleReset} />
         )}
       </div>
     </section>
